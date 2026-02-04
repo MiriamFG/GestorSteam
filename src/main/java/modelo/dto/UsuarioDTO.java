@@ -7,23 +7,21 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class UsuarioDTO {
-    public Long id;
-    public String nombreUsuario;
-    public String email;
-    public String contrasena;
-    public String nombreReal;
-    public String pais;
-    public LocalDate fechaNac;
-    public LocalDateTime fechaReg;
-    public String avatar;
-    public double saldoCartera;
-    public EstadoCuenta estadoCuenta;
+    private Long id;
+    private String nombreUsuario;
+    private String email;
+    private String nombreReal;
+    private String pais;
+    private LocalDate fechaNac;
+    private LocalDateTime fechaReg;
+    private String avatar;
+    private double saldoCartera;
+    private EstadoCuenta estadoCuenta;
 
-    public UsuarioDTO(Long id, String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
+    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
-        this.contrasena = contrasena;
         this.nombreReal = nombreReal;
         this.pais = pais;
         this.fechaNac = fechaNac;
@@ -43,10 +41,6 @@ public class UsuarioDTO {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getContrasena() {
-        return contrasena;
     }
 
     public String getNombreReal() {

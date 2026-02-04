@@ -1,4 +1,7 @@
 package repositorio.interfaces;
 
-public interface IUsuarioRepo {
+import modelo.entidad.UsuarioEntidad;
+import modelo.form.UsuarioForm;
+
+public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
 }

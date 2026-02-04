@@ -1,9 +1,10 @@
 package repositorio.interfaces;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ICrud <E, F, ID> {
-    Optional<E> crear(F dto);
+    Optional<E> crear(F form);
     /**
      * Obtiene una entidad por su identificador único.
      * @param id Identificador de la entidad.
