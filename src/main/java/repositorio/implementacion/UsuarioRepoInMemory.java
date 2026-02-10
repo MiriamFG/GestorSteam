@@ -14,7 +14,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
-         var usuario = new UsuarioEntidad(idCount++, form.nombreUsuario, form.email, form.contrasena, form.nombreReal, form.pais, form.fechaNac, form.fechaReg, form.avatar, form.saldoCartera, form.estadoCuenta);
+         var usuario = new UsuarioEntidad(idCount++, form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), form.getFechaReg(), form.getAvatar(), form.getSaldoCartera(), form.getEstadoCuenta());
         usuarios.add(usuario);
          return Optional.of(usuario);
     }
@@ -32,12 +32,19 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     @Override
-    public Optional<UsuarioEntidad> actualizar(Long aLong, UsuarioForm dto) {
-        return Optional.empty();
+    public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form) {
+        var usuarioOpt = obtenerPorId(id);
+        if(usuarioOpt.isEmpty()){
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        var usuarioActualizado = new UsuarioEntidad(id,form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), form.getFechaReg(), form.getAvatar(), form.getSaldoCartera(), form.getEstadoCuenta());
+        usuarios.removeIf(usuario -> usuario.getId().equals(id));
+        usuarios.add(usuarioActualizado);
+        return Optional.of(usuarioActualizado);
     }
 
     @Override
-    public boolean eliminar(Long aLong) {
-        return false;
+    public boolean eliminar(Long id) {
+        return usuarios.removeIf(usuario -> usuario.getId().equals(id));
     }
 }
