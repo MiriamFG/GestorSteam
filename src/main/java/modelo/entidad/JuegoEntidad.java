@@ -12,15 +12,15 @@ public class JuegoEntidad {
     private String descipcion;
     private String desarrollador;
     private LocalDate fechaLanz;
-    private double precioBase;
-    private int descuentoActual;
+    private Double precioBase;
+    private Integer descuentoActual;
     private String categoria;
     private ClasificacionEdad clasificacionEdad;
     private List<String> idiomasDisponibles;
     private EstadoJuego estadoJuego;
 
 
-    public JuegoEntidad(Long id, String titulo, String descipcion, String desarrollador, LocalDate fechaLanz, double precioBase, int descuentoActual, String categoria, ClasificacionEdad clasificacionEdad, List<String> idiomasDisponibles, EstadoJuego estadoJuego) {
+    public JuegoEntidad(Long id, String titulo, String descipcion, String desarrollador, LocalDate fechaLanz, Double precioBase, Integer descuentoActual, String categoria, ClasificacionEdad clasificacionEdad, List<String> idiomasDisponibles, EstadoJuego estadoJuego) {
         this.id = id;
         this.titulo = titulo;
         this.descipcion = descipcion;
@@ -54,11 +54,11 @@ public class JuegoEntidad {
         return fechaLanz;
     }
 
-    public double getPrecioBase() {
+    public Double getPrecioBase() {
         return precioBase;
     }
 
-    public int getDescuentoActual() {
+    public Integer getDescuentoActual() {
         return descuentoActual;
     }
 

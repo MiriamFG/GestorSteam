@@ -1,44 +1,29 @@
 package modelo.form;
 
 import excepciones.FormularioInvalidoException;
-import modelo.enums.EstadoCuenta;
 
-import java.math.BigDecimal;
-import java.sql.Array;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioForm {
-    private Long id;
     private String nombreUsuario;
     private String email;
     private String contrasena;
     private String nombreReal;
     private String pais;
     private LocalDate fechaNac;
-    private LocalDateTime fechaReg;
     private String avatar;
-    private Double saldoCartera;
-    private EstadoCuenta estadoCuenta;
 
-    public UsuarioForm(Long id, String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, Double saldoCartera, EstadoCuenta estadoCuenta) {
-        this.id = id;
+    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNac, String avatar) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
         this.nombreReal = nombreReal;
         this.pais = pais;
         this.fechaNac = fechaNac;
-        this.fechaReg = fechaReg;
         this.avatar = avatar;
-        this.saldoCartera = saldoCartera;
-        this.estadoCuenta = estadoCuenta;
-    }
 
-    public Long getId() {
-        return id;
     }
 
     public String getNombreUsuario() {
@@ -65,21 +50,10 @@ public class UsuarioForm {
         return fechaNac;
     }
 
-    public LocalDateTime getFechaReg() {
-        return fechaReg;
-    }
-
     public String getAvatar() {
         return avatar;
     }
 
-    public Double getSaldoCartera() {
-        return saldoCartera;
-    }
-
-    public EstadoCuenta getEstadoCuenta() {
-        return estadoCuenta;
-    }
 
     public void validarForumulario() throws FormularioInvalidoException {
         List<String> errores = new ArrayList<>();
@@ -145,22 +119,7 @@ public class UsuarioForm {
 
         if(avatar != null && avatar.length() > 100){
             errores.add("El avatar no puede superar los 100 caracteres");
-        }else
-
-        if(saldoCartera == null){
-            saldoCartera = 0.00;
-        }else if (saldoCartera < 0){
-            errores.add("El saldo de la cartera no puede ser negativo");
-        }
-        if(Math.round(saldoCartera * 100)/100.0 != saldoCartera){
-            errores.add("El saldo de la cartera no puede tener más de dos decimales");
-        }
-
-        if(estadoCuenta == null){
-            estadoCuenta = EstadoCuenta.ACTIVA;
-        }
-
-        if (!errores.isEmpty()) {
+        }else {
             throw new FormularioInvalidoException(errores);
         }
     }

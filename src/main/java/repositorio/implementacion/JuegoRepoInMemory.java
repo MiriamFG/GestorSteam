@@ -36,7 +36,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         if(juegoOpc.isEmpty()){
             throw new IllegalArgumentException("Juego no encontrado");
         }
-        var juegoActualizado = new JuegoEntidad(form.getId(),form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), form.getDescuentoActual(), form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), form.getEstadoJuego());
+        var juegoActualizado = new JuegoEntidad(id,form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), form.getDescuentoActual(), form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), form.getEstadoJuego());
         juegos.removeIf(j -> j.getId().equals(id));
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);

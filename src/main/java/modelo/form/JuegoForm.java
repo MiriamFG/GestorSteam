@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JuegoForm {
-    private Long id;
     private String titulo;
     private String descipcion;
     private String desarrollador;
@@ -22,8 +21,7 @@ public class JuegoForm {
     private EstadoJuego estadoJuego;
 
 
-    public JuegoForm(Long id, String titulo, String descipcion, String desarrollador, LocalDate fechaLanz, Double precioBase, Integer descuentoActual, String categoria, ClasificacionEdad clasificacionEdad, List<String> idiomasDisponibles, EstadoJuego estadoJuego) {
-        this.id = id;
+    public JuegoForm(String titulo, String descipcion, String desarrollador, LocalDate fechaLanz, Double precioBase, Integer descuentoActual, String categoria, ClasificacionEdad clasificacionEdad, List<String> idiomasDisponibles, EstadoJuego estadoJuego) {
         this.titulo = titulo;
         this.descipcion = descipcion;
         this.desarrollador = desarrollador;
@@ -34,10 +32,6 @@ public class JuegoForm {
         this.clasificacionEdad = clasificacionEdad;
         this.idiomasDisponibles = idiomasDisponibles;
         this.estadoJuego = estadoJuego;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getTitulo() {
