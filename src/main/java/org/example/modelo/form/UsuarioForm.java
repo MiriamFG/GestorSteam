@@ -56,64 +56,65 @@ public class UsuarioForm {
 
 
     public void validarForumulario() throws FormularioInvalidoException {
-        List<String> errores = new ArrayList<>();
+        List<ErrorDTO> errores = new ArrayList<>();
+
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
-            errores.add("El nombre es obligatorio");
+            errores.add(new ErrorDTO("nombre", ErrorTipo.REQUERIDO));
         }else{
             if(nombreUsuario.length()<3 || nombreUsuario.length() > 20){
-                errores.add("El nombre debe tener entre 3 y 20 caracteres");
+                errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, 3, 20));
             }
             if(nombreUsuario.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                errores.add("El nombre solo puede contener letras, numeros, guiones y no puede empezar por número");
+                errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
         if(email == null || email.trim().isEmpty()){
-            errores.add("el email es obligatorio");
+            errores.add(new ErrorDTO("email", ErrorTipo.REQUERIDO));
         }else {
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                errores.add("El email no tiene un formato válido");
+                errores.add(new ErrorDTO("email", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
         if(contrasena == null || contrasena.isEmpty()){
-            errores.add("La contraseña es obligatoria");
+            errores.add(new ErrorDTO("contrasena", ErrorTipo.REQUERIDO));
         }else{
             if(contrasena.length() < 8){
-                errores.add("La contraseña debe ter al menos 8 caracteres");
+                errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
 
             if (!contrasena.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                errores.add("La contraseña no tiene un formato válido");
+                errores.add(new ErrorDTO("contraseña", ErrorTipo.FORMATO_INVALIDO));
             }
 
         }
 
         if(nombreReal == null || nombreReal.trim().isEmpty()){
-            errores.add("El nombre es obligatorio");
+            errores.add(new ErrorDTO("email", ErrorTipo.FORMATO_INVALIDO));
         }else{
             if(nombreReal.length()>2 || nombreReal.length() > 50){
-                errores.add("El nombre debe tener entre 2 y 50 caracteres");
+                errores.add(new ErrorDTO("nombreReal", ErrorTipo.LONGITUD_INVALIDA, 2, 50));
             }
         }
 
 
         if(pais == null || pais.trim().isEmpty()){
-            errores.add("el país es obligatorio");
+            errores.add(new ErrorDTO("pais", ErrorTipo.REQUERIDO));
         }
 
         if(fechaNac == null){
-            errores.add("la fecha de nacimiento es obligatoria");
+            errores.add(new ErrorDTO("fechaNac", ErrorTipo.REQUERIDO));
         }else{
             int anioAct = LocalDate.now().getYear();
             int anioNac = fechaNac.getYear();
 
             if(fechaNac == null || anioAct - anioNac < 13);
-            errores.add("Año vacio o menor de 13");
+            errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
         }
 
         if(avatar != null && avatar.length() > 100){
-            errores.add("El avatar no puede superar los 100 caracteres");
+            errores.add(new ErrorDTO("avatar", ErrorTipo.CAMPO_LARGO, 100));
         }else {
             throw new FormularioInvalidoException(errores);
         }

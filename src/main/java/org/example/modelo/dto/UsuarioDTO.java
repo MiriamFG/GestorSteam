@@ -15,11 +15,11 @@ public class UsuarioDTO {
     private String pais;
     private LocalDate fechaNac;
     private LocalDateTime fechaReg;
-    private Optional<String> avatar;
+    private String avatar;
     private Double saldoCartera;
     private EstadoCuenta estadoCuenta;
 
-    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, Optional<String> avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
+    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -60,7 +60,7 @@ public class UsuarioDTO {
         return fechaReg;
     }
 
-    public Optional<String> getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 

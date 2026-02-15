@@ -15,11 +15,11 @@ public class UsuarioEntidad {
     private String pais;
     private LocalDate fechaNac;
     private LocalDateTime fechaReg;
-    private Optional<String> avatar;
+    private String avatar;
     private double saldoCartera;
     private EstadoCuenta estadoCuenta;
 
-    public UsuarioEntidad(Long id, String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, Optional<String> avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
+    public UsuarioEntidad(Long id, String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -65,7 +65,7 @@ public class UsuarioEntidad {
         return fechaReg;
     }
 
-    public Optional<String> getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 

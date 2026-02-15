@@ -56,20 +56,42 @@ public class BibliotecaForm {
         List<ErrorDTO> errores = new ArrayList<>();
 
         if(idUsuario == null){
-            errores.add("El usuario es obligatorio");
+            errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
         }
 
         if(idJuego == null){
-            errores.add("El juego es obligatorio");
+            errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
         }
 
         if(fechaAdquisicion == null){
-            errores.add((new ErrorDTO("fecha", ErrorTipo.FECHA_OBLIGATORIA));
+            errores.add(new ErrorDTO("fecha", ErrorTipo.FECHA_OBLIGATORIA));
         }
 
         if(fechaAdquisicion.isAfter(LocalDateTime.now())){
             errores.add(new ErrorDTO("fecha", ErrorTipo.FECHA_FUTURA));
         }
+
+        if(numHorasTotal <0){
+            errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
+        }
+
+        if(Math.round(numHorasTotal * 10) / 10.0 != numHorasTotal){
+            errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.FORMATO_INVALIDO));
+        }
+
+        if(ultimaFechaJuego != null) {
+            if (ultimaFechaJuego.isAfter(LocalDate.now())) {
+                errores.add(new ErrorDTO("ultimaFechaJuego", ErrorTipo.FECHA_FUTURA));
+            }
+            if(ultimaFechaJuego.isBefore(fechaAdquisicion.toLocalDate())){
+                errores.add(new ErrorDTO("ultimaFechaJuego", ErrorTipo.VALOR_DEMASIADO_BAJO));
+            }
+
+            if (estadoInstalacion == null) {
+                estadoInstalacion = EstadoInstalacion.NO_INSTALADO;
+            }
+        }
+
     }
 
 }

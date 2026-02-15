@@ -75,41 +75,41 @@ public class JuegoForm {
     }
 
     public void validarForumulario() throws FormularioInvalidoException {
-        List<String> errores = new ArrayList<>();
+        List<ErrorDTO> errores = new ArrayList<>();
 
         if(titulo == null || titulo.trim().isEmpty()){
-            errores.add("El titulo del juego es obligatorio");
+            errores.add(new ErrorDTO("titulo", ErrorTipo.REQUERIDO));
         }else{
             if(titulo.length() < 1 || titulo.length() > 100){
-                errores.add("El titulo debe tener entre 1 y 100 caracteres");
+                errores.add(new ErrorDTO("titulo", ErrorTipo.LONGITUD_INVALIDA, 1, 100));
             }
         }
 
         if(descipcion != null && descipcion.length() > 200){
-            errores.add("La descripcion no puede superar los 200 caracteres");
+            errores.add(new ErrorDTO("descripcion", ErrorTipo.CAMPO_LARGO, 200));
         }
 
         if(desarrollador == null || desarrollador.trim().isEmpty()){
-            errores.add("El nombre del desarrollador es obligatorio");
+            errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.REQUERIDO));
         }else{
             if(desarrollador.length() < 2 || desarrollador.length() > 100){
-                errores.add("El nombre del desarrollador debe tener entre 2 y 100 caracteres");
+                errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.LONGITUD_INVALIDA, 2, 100));
             }
         }
 
         if(fechaLanz == null){
-            errores.add("La fecha de lanzamiento es obligatoria");
+            errores.add(new ErrorDTO("fechaLanzamiento", ErrorTipo.REQUERIDO));
         }else{
 
         }
 
         if(precioBase == null){
-            errores.add("El precio base es obligatorio");
+            errores.add(new ErrorDTO("precioBase", ErrorTipo.REQUERIDO));
         }else if(precioBase <0 || precioBase > 999.99){
-            errores.add("El precio base debe estar entre 0,00 y 999,99");
+            errores.add(new ErrorDTO("precioBase", ErrorTipo.CAMPO_ENTRE, 0.00, 999.99));
         }else{
             if(Math.round(precioBase *100)/ 100 != precioBase){
-                errores.add("El precio base no puede tener más de 2 decimales");
+                errores.add(new ErrorDTO("precioBase", ErrorTipo.PRECIO_DECIMALES));
             }
         }
 
@@ -117,24 +117,26 @@ public class JuegoForm {
             descuentoActual = 0;
         }else{
             if(descuentoActual < 0 || descuentoActual > 100){
-                errores.add("el descuento debe estar entre 0 y 100");
+                errores.add(new ErrorDTO("descuento", ErrorTipo.LONGITUD_INVALIDA, 0, 100));
             }
         }
 
         if(clasificacionEdad == null)
-            errores.add("La clasificación por edad es obligatoria");
+            errores.add(new ErrorDTO("clasificacionEdad", ErrorTipo.REQUERIDO));
 
         if(idiomasDisponibles != null || idiomasDisponibles.isEmpty()){
-                errores.add("Debe hacer al menos un idioma");
+                errores.add(new ErrorDTO("idioma", ErrorTipo.REQUERIDO));
             }
             for (String idioma : idiomasDisponibles){
                 if(idioma.length() > 200){
-                    errores.add("Cada idioma no puede superar los 200 caracteres");
+                    errores.add(new ErrorDTO("idioma", ErrorTipo.CAMPO_LARGO, 200));
                 }
             }
 
         if(estadoJuego == null){
             estadoJuego = EstadoJuego.DISPONIBLE;
+        }else {
+            throw new FormularioInvalidoException(errores);
         }
 
     }
