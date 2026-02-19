@@ -64,7 +64,10 @@ public class UsuarioForm {
             if(nombreUsuario.length()<3 || nombreUsuario.length() > 20){
                 errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, 3, 20));
             }
-            if(nombreUsuario.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+            if(nombreUsuario.matches("^[A-Za-z0-9+_.-]]+$")){
+                errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
+            }
+            if(Character.isDigit(nombreUsuario.charAt(0))){
                 errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
         }
@@ -84,8 +87,28 @@ public class UsuarioForm {
                 errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
 
-            if (!contrasena.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                errores.add(new ErrorDTO("contraseña", ErrorTipo.FORMATO_INVALIDO));
+            boolean mayuscula = false;
+            boolean minuscula = false;
+            boolean numero = false;
+
+            for(int i=0; i < contrasena.length(); i++){
+                char letra = contrasena.charAt(i);
+
+                if(Character.isUpperCase(letra)){
+                    mayuscula = true;
+                }
+
+                if(Character.isLowerCase(letra)){
+                    minuscula = true;
+                }
+
+                if(Character.isDigit(letra)){
+                    numero = true;
+                }
+            }
+
+            if(!mayuscula || minuscula || numero){
+                errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
 
         }
@@ -93,7 +116,7 @@ public class UsuarioForm {
         if(nombreReal == null || nombreReal.trim().isEmpty()){
             errores.add(new ErrorDTO("email", ErrorTipo.FORMATO_INVALIDO));
         }else{
-            if(nombreReal.length()>2 || nombreReal.length() > 50){
+            if(nombreReal.length()<2 || nombreReal.length() > 50){
                 errores.add(new ErrorDTO("nombreReal", ErrorTipo.LONGITUD_INVALIDA, 2, 50));
             }
         }
@@ -109,13 +132,15 @@ public class UsuarioForm {
             int anioAct = LocalDate.now().getYear();
             int anioNac = fechaNac.getYear();
 
-            if(fechaNac == null || anioAct - anioNac < 13);
+            if(fechaNac == null || anioAct - anioNac < 13)
             errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
         }
 
         if(avatar != null && avatar.length() > 100){
             errores.add(new ErrorDTO("avatar", ErrorTipo.CAMPO_LARGO, 100));
-        }else {
+        }
+
+        if(!errores.isEmpty()){
             throw new FormularioInvalidoException(errores);
         }
     }

@@ -19,7 +19,7 @@ public class UsuarioDTO {
     private Double saldoCartera;
     private EstadoCuenta estadoCuenta;
 
-    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, double saldoCartera, EstadoCuenta estadoCuenta) {
+    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, Double saldoCartera, EstadoCuenta estadoCuenta) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -31,6 +31,10 @@ public class UsuarioDTO {
         this.saldoCartera = saldoCartera;
         this.estadoCuenta = estadoCuenta;
     }
+
+    public UsuarioDTO(Long id, String nombreUsuario, String email, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar) {
+    }
+
 
     public Long getId() {
         return id;
@@ -64,7 +68,7 @@ public class UsuarioDTO {
         return avatar;
     }
 
-    public double getSaldoCartera() {
+    public Double getSaldoCartera() {
         return saldoCartera;
     }
 

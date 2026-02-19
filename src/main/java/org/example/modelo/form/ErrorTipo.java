@@ -10,10 +10,14 @@ public enum ErrorTipo {
     LONGITUD_INVALIDA("el campo debe tener entre %d y &d caracteres"),
     CONTRASENA_VALIDA("La contraseña debe ter al menos 8 caracteres"),
     CAMPO_LARGO("El campo no puede superar los % caracteres"),
+    MAX_DECIMALES("Maximo % decimales permitidos"),
     CAMPO_ENTRE("El campo debe estar entre %d y %d"),
     PRECIO_DECIMALES("El precio base no puede tener más de 2 decimales"),
     FECHA_FUTURA("futura no válida"),
     FECHA_OBLIGATORIA("es obligatoria"),
+    EXISTENTE("ya existe en el sistema"),
+    REGISTRADO("ya está registrado en el sistema"),
+    NO_ACTIVO("el elemento está activo"),
     DUPLICADO("El elemento está duplicado");
 
 

@@ -14,7 +14,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     private static Long idCount = 1L;
     @Override
     public Optional<JuegoEntidad> crear(JuegoForm form) {
-        var juego = new JuegoEntidad(idCount++, form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), form.getDescuentoActual(), form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
+        var juego = new JuegoEntidad(idCount++, form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), 0, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
         juegos.add(juego);
         return Optional.of(juego);
     }
@@ -37,7 +37,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         if(juegoOpc.isEmpty()){
             throw new IllegalArgumentException("Juego no encontrado");
         }
-        var juegoActualizado = new JuegoEntidad(id,form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), form.getDescuentoActual(), form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
+        var juegoActualizado = new JuegoEntidad(id,form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), 0, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
         juegos.removeIf(j -> j.getId().equals(id));
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);

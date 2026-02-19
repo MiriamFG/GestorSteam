@@ -77,4 +77,12 @@ public class JuegoEntidad {
     public EstadoJuego getEstadoJuego() {
         return estadoJuego;
     }
+
+    public void setDescuentoActual(Integer descuentoActual) {
+        this.descuentoActual = descuentoActual;
+    }
+
+    public void setEstadoJuego(EstadoJuego estadoJuego) {
+        this.estadoJuego = estadoJuego;
+    }
 }

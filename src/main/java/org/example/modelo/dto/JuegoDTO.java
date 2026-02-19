@@ -1,5 +1,6 @@
 package org.example.modelo.dto;
 
+import org.example.modelo.entidad.JuegoEntidad;
 import org.example.modelo.enums.ClasificacionEdad;
 import org.example.modelo.enums.EstadoJuego;
 
@@ -32,6 +33,12 @@ public class JuegoDTO {
         this.clasificacionEdad = clasificacionEdad;
         this.idiomasDisponibles = idiomasDisponibles;
         this.estadoJuego = estadoJuego;
+    }
+
+    public JuegoDTO(Long id, String titulo, String descipcion, String categoria, String desarrollador, Double precioBase, LocalDate fechaLanz) {
+    }
+
+    public JuegoDTO(JuegoEntidad juego) {
     }
 
     public Long getId() {
