@@ -87,9 +87,7 @@ public class JuegoControlador {
         JuegoEntidad juego = juegoRepo.obtenerPorId(id)
                 .orElseThrow(()-> new IllegalArgumentException("Juego no econtrado"));
 
-        juego.setDescuentoActual(descuento);
-        return new JuegoDTO(juego);
-
+        //pdte no con setters
     }
 
     public JuegoDTO cambiarEstadp(Long id, EstadoJuego nuevoEstado){

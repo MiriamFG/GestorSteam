@@ -32,12 +32,17 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     }
 
     @Override
-    public Optional<JuegoEntidad> actualizar(Long id, JuegoForm form) {
-        var juegoOpc = obtenerPorId(id);
-        if(juegoOpc.isEmpty()){
-            throw new IllegalArgumentException("Juego no encontrado");
-        }
-        var juegoActualizado = new JuegoEntidad(id,form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), 0, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
+    public Optional<JuegoEntidad> actualizar(Long aLong, JuegoForm dto) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<JuegoEntidad> actualizar(Long id, JuegoForm form, Optional<Integer> descuento) {
+        var juegoOpc = obtenerPorId(id).orElseThrow(()->new IllegalArgumentException("Juego no encontrado"));
+
+        var descuentoNuevo = descuento.orElse(juegoOpc.getDescuentoActual());
+
+        var juegoActualizado = new JuegoEntidad(id,form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), descuentoNuevo, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
         juegos.removeIf(j -> j.getId().equals(id));
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);

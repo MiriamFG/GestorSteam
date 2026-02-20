@@ -1,15 +1,13 @@
 package org.example.modelo.entidad;
 
-import org.example.modelo.dto.JuegoDTO;
-import org.example.modelo.dto.UsuarioDTO;
 import org.example.modelo.enums.EstadoResena;
 
 import java.time.LocalDate;
 
 public class ResenaEntidad {
     private Long id;
-    private Long usuarioDTO;
-    private Long juegoDTO;
+    private Long usuarioId;
+    private Long juegoId;
     private Boolean recomendado;
     private String textoResena;
     private Double horasJuegoResena;
@@ -17,10 +15,10 @@ public class ResenaEntidad {
     private LocalDate fechaUltimaEdicion;
     private EstadoResena estadoResena;
 
-    public ResenaEntidad(Long id, Long usuarioDTO, Long juegoDTO, Boolean recomendado, String textoResena, Double horasJuegoResena, LocalDate fechaPubli, LocalDate fechaUltimaEdicion, EstadoResena estadoResena) {
+    public ResenaEntidad(Long id, Long usuarioId, Long juegoId, Boolean recomendado, String textoResena, Double horasJuegoResena, LocalDate fechaPubli, LocalDate fechaUltimaEdicion, EstadoResena estadoResena) {
         this.id = id;
-        this.usuarioDTO = usuarioDTO;
-        this.juegoDTO = juegoDTO;
+        this.usuarioId = usuarioId;
+        this.juegoId = juegoId;
         this.recomendado = recomendado;
         this.textoResena = textoResena;
         this.horasJuegoResena = horasJuegoResena;
@@ -36,12 +34,12 @@ public class ResenaEntidad {
         return id;
     }
 
-    public Long getUsuarioDTO() {
-        return usuarioDTO;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public Long getJuegoDTO() {
-        return juegoDTO;
+    public Long getJuegoId() {
+        return juegoId;
     }
 
     public Boolean getRecomendado() {

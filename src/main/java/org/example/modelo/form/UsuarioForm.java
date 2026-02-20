@@ -54,7 +54,38 @@ public class UsuarioForm {
         return avatar;
     }
 
-
+    /**
+     * Valida los datos del formulario de usuario
+     *
+     * verifica:
+     *  Que el nombre del usuario no sea nulo o esté vacío
+     *  Que el nombre del usuario tenga una longitud entre 3 y 20 caraceres
+     *  Que el nombre del usuario solo tenga alfanumericos, guiones y guiones bajos
+     *  Que el nombre del usuario no empiece con un número
+     *
+     *  Que el email no sea nulo o esté vacío
+     *  Que el formato del email sea válido
+     *
+     *  Que la contraseña no sea nulo o esté vacía
+     *  Que la longitud sea máximo de 8 caracteres
+     *  Que el formato de la contraseña incluya una mayuscula, una minuscula y un número
+     *
+     *  Que el nombre real del usuario no sea nulo o esté vacío
+     *  Que la longitud del nombre esté entre los 2 y 50 caracteres
+     *
+     *  Que el país no sea nulo o esté vacío
+     *
+     *  Que la fecha de nacimiento no sea nula
+     *  Que la edad del usuario sea mayor de 13 años
+     *
+     *  Que el avatar tenga máximo 100 caracteres
+     *
+     *
+     * Si algún campo no cumple las condiciones, se recopilan los errores en una lista
+     * y se lanza {@link FormularioInvalidoException}.
+     *
+     * @throws FormularioInvalidoException
+     */
     public void validarForumulario() throws FormularioInvalidoException {
         List<ErrorDTO> errores = new ArrayList<>();
 
@@ -64,7 +95,7 @@ public class UsuarioForm {
             if(nombreUsuario.length()<3 || nombreUsuario.length() > 20){
                 errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, 3, 20));
             }
-            if(nombreUsuario.matches("^[A-Za-z0-9+_.-]]+$")){
+            if(nombreUsuario.matches("^[A-Za-z0-9+_.-]+$")){
                 errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
             if(Character.isDigit(nombreUsuario.charAt(0))){
@@ -110,7 +141,6 @@ public class UsuarioForm {
             if(!mayuscula || minuscula || numero){
                 errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
-
         }
 
         if(nombreReal == null || nombreReal.trim().isEmpty()){
@@ -141,7 +171,7 @@ public class UsuarioForm {
         }
 
         if(!errores.isEmpty()){
-            throw new FormularioInvalidoException(errores);
+            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
     }
 }

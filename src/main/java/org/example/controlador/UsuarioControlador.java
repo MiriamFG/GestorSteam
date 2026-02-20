@@ -19,7 +19,6 @@ public class UsuarioControlador {
     private final IUsuarioRepo usuarioRepo;
     PaisesRepoInMemory paisRepo = new PaisesRepoInMemory();
 
-
     public UsuarioControlador(IUsuarioRepo usuarioRepo){
         this.usuarioRepo = usuarioRepo;
     }
@@ -58,7 +57,6 @@ public class UsuarioControlador {
             return UsuarioMapper.paraDTO(nuevoUsuario);
     }
 
-
     public UsuarioEntidad consultarPerfilPorNombre(String nombreUsuario){
         for(UsuarioEntidad usuario : usuarioRepo.obtenerTodos()){
             if(usuario.getNombreUsuario().equalsIgnoreCase(nombreUsuario)){
@@ -95,7 +93,6 @@ public class UsuarioControlador {
         }
 
         Double nuevoSaldo = usuario.getSaldoCartera() + cantidad;
-        usuario.setSaldoCartera(nuevoSaldo);
 
         return nuevoSaldo;
     }
@@ -105,6 +102,8 @@ public class UsuarioControlador {
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         return String.format("%.2f €", usuario.getSaldoCartera());
+
+
     }
 
 }

@@ -6,7 +6,6 @@ import org.example.modelo.enums.EstadoInstalacion;
 import org.example.modelo.form.BibliotecaForm;
 import org.example.modelo.form.ErrorDTO;
 import org.example.modelo.form.ErrorTipo;
-import org.example.repositorio.implementacion.BibliotecaRepoInMemory;
 import org.example.repositorio.interfaces.IBibliotecaRepo;
 import org.example.repositorio.interfaces.ICompraRepo;
 import org.example.repositorio.interfaces.IJuegoRepo;
@@ -44,27 +43,33 @@ public class BibliotecaControlador {
         }
 
         if(!errores.isEmpty()){
-            throw new FormularioInvalidoException(errores);
+            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
 
         var usuario = usuarioOpt.get();
         var juego = juegoOpt.get();
 
-        boolean yaExiste = bibliotecaRepo.obtenerTodos().stream()
+        boolean yaExisteUsuario = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b ->
-                        b.getUsuarioDTO().equals(idUsuario)) &&
-                        b.getJuegoDTO().equals(idJuego));
+                        b.getUsuarioId().equals(idUsuario));
 
-        if(yaExiste){
+        boolean yaExisteJuego = bibliotecaRepo.obtenerTodos().stream()
+                .anyMatch(b ->
+                        b.getJuegoId().equals(idJuego));
+
+        if(yaExisteUsuario && yaExisteJuego){
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
         }
 
-        boolean compraExiste = compraRepo.obtenerTodos().stream()
+        boolean compraExisteUsuario = compraRepo.obtenerTodos().stream()
                 .anyMatch(c ->
-                        c.getUsuarioDTO().equals(idUsuario)) &&
-                        c.getJuegoDTO().equals(idJuego));
+                        c.getUsuarioId().equals(idUsuario));
 
-        if(!compraExiste){
+        boolean compraExisteJuego = compraRepo.obtenerTodos().stream()
+                .anyMatch(c ->
+                        c.getJuegoId().equals(idJuego));
+
+        if(!(compraExisteUsuario && compraExisteJuego)){
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
         }
 
@@ -75,7 +80,7 @@ public class BibliotecaControlador {
         }
 
         if(!errores.isEmpty()){
-            throw new FormularioInvalidoException(errores);
+            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
 
         var form = new BibliotecaForm(
@@ -88,20 +93,24 @@ public class BibliotecaControlador {
         );
 
         var entidad = bibliotecaRepo.crear(form)
-                .orElseThrow(()-> new RuntimeException("No se pudo crear la biblitoeca"));
+                .orElseThrow(()-> new RuntimeException("No se pudo crear la biblioteca"));
     }
 
     public void eliminarJuego(Long idUsuario, long idJuego){
-        var biblioOpt = bibliotecaRepo.obtenerTodos().stream()
-                .filter(b -> b.getUsuarioDTO().equals(idUsuario)) && b.getJuegoDTO().equals(idJuego))
+        var biblioOptUsuario = bibliotecaRepo.obtenerTodos().stream()
+                .filter(b -> b.getUsuarioId().equals(idUsuario))
                 .findFirst();
 
-        if(biblioOpt.isEmpty()){
-            throw new RuntimeException("El juego no está en la biblioteca");
+        var biblioOptJuego = bibliotecaRepo.obtenerTodos().stream()
+                .filter(b -> b.getJuegoId().equals(idJuego))
+                .findFirst();
+
+        if(biblioOptUsuario.isEmpty()) {
+            throw new RuntimeException("El usuario no está en la biblioteca");
         }
 
-        bibliotecaRepo.eliminar(biblioOpt.get().getId());
-
+        if(biblioOptJuego.isEmpty()){
+            throw new RuntimeException("El juego no está en la biblioteca");
+        }
     }
-
 }

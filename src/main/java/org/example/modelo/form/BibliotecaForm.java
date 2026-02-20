@@ -91,7 +91,5 @@ public class BibliotecaForm {
                 estadoInstalacion = EstadoInstalacion.NO_INSTALADO;
             }
         }
-
     }
-
 }

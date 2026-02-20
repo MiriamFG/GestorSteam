@@ -32,8 +32,6 @@ public class UsuarioDTO {
         this.estadoCuenta = estadoCuenta;
     }
 
-    public UsuarioDTO(Long id, String nombreUsuario, String email, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar) {
-    }
 
 
     public Long getId() {

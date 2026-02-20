@@ -77,8 +77,6 @@ public class UsuarioEntidad {
         return estadoCuenta;
     }
 
-    public void setSaldoCartera(Double saldoCartera) {
-        this.saldoCartera = saldoCartera;
-    }
 }
+
 

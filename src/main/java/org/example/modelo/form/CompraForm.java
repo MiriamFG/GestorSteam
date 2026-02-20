@@ -82,7 +82,7 @@ public class CompraForm {
         }
 
         if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
+            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
 
     }

@@ -5,7 +5,6 @@ import org.example.modelo.enums.EstadoCuenta;
 import org.example.modelo.form.UsuarioForm;
 import org.example.repositorio.interfaces.IUsuarioRepo;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +34,17 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     @Override
-    public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form) {
-        var usuarioOpt = obtenerPorId(id);
-        if(usuarioOpt.isEmpty()){
-            throw new IllegalArgumentException("Usuario no encontrado");
-        }
-        var usuarioActualizado = new UsuarioEntidad(id,form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), 0d, EstadoCuenta.ACTIVA);
+    public Optional<UsuarioEntidad> actualizar(Long aLong, UsuarioForm dto) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form, Optional<Double> saldo) {
+        var usuarioOpt = obtenerPorId(id).orElseThrow(()-> new IllegalArgumentException("Usuario no encontrado"));
+
+        var saldoNuevo = saldo.orElse(usuarioOpt.getSaldoCartera());
+
+        var usuarioActualizado = new UsuarioEntidad(id,form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), saldoNuevo, EstadoCuenta.ACTIVA);
         usuarios.removeIf(usuario -> usuario.getId().equals(id));
         usuarios.add(usuarioActualizado);
         return Optional.of(usuarioActualizado);

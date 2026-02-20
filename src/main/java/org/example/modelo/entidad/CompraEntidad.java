@@ -1,7 +1,5 @@
 package org.example.modelo.entidad;
 
-import org.example.modelo.dto.JuegoDTO;
-import org.example.modelo.dto.UsuarioDTO;
 import org.example.modelo.enums.EstadoCompra;
 import org.example.modelo.enums.MetodoPago;
 
@@ -10,18 +8,18 @@ import java.time.LocalDate;
 public class CompraEntidad {
 
     private Long id;
-    private Long usuarioDTO;
-    private Long juegoDTO;
+    private Long usuarioId;
+    private Long juegoId;
     private LocalDate fechaCompra;
     private MetodoPago metodoPago;
     private Double precioSinDescuento;
     private Integer descuentoAplicado;
     private EstadoCompra estadoCompra;
 
-    public CompraEntidad(Long id, Long usuarioDTO, Long juegoDTO, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, EstadoCompra estadoCompra) {
+    public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, EstadoCompra estadoCompra) {
         this.id = id;
-        this.usuarioDTO = usuarioDTO;
-        this.juegoDTO = juegoDTO;
+        this.usuarioId = usuarioId;
+        this.juegoId = juegoId;
         this.fechaCompra = fechaCompra;
         this.metodoPago = metodoPago;
         this.precioSinDescuento = precioSinDescuento;
@@ -33,12 +31,12 @@ public class CompraEntidad {
         return id;
     }
 
-    public Long getUsuarioDTO() {
-        return usuarioDTO;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public Long getJuegoDTO() {
-        return juegoDTO;
+    public Long getJuegoId() {
+        return juegoId;
     }
 
     public LocalDate getFechaCompra() {

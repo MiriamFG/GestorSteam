@@ -38,8 +38,8 @@ public class ResenaForm {
 
     /**
      * Valida los datos del formulario de una reseña.
-     * <p>
-     * Esta función verifica:
+     *
+     * verifica:
      *   Que el ID de usuario no sea nulo.
      *   Que el ID de juego no sea nulo.
      *   Que el campo 'recomendado' no sea nulo.
@@ -72,7 +72,7 @@ public class ResenaForm {
         }
 
         if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
+            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
     }
 

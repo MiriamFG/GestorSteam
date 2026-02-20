@@ -13,7 +13,9 @@ public class UsuarioMapper {
                 usuario.getPais(),
                 usuario.getFechaNac(),
                 usuario.getFechaReg(),
-                usuario.getAvatar()
+                usuario.getAvatar(),
+                usuario.getSaldoCartera(),
+                usuario.getEstadoCuenta()
         );
     }
 }
