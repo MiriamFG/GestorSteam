@@ -15,6 +15,7 @@ public enum ErrorTipo {
     PRECIO_DECIMALES("El precio base no puede tener más de 2 decimales"),
     FECHA_FUTURA("futura no válida"),
     FECHA_OBLIGATORIA("es obligatoria"),
+    FECHA_INVALIDA("es invalida"),
     EXISTENTE("ya existe en el sistema"),
     REGISTRADO("ya está registrado en el sistema"),
     NO_ACTIVO("el elemento está activo"),
