@@ -92,7 +92,6 @@ public class BibliotecaControlador {
     }
 
     public void eliminarJuego(Long idUsuario, long idJuego){
-
         var biblioOpt = bibliotecaRepo.obtenerTodos().stream()
                 .filter(b -> b.getUsuarioDTO().equals(idUsuario)) && b.getJuegoDTO().equals(idJuego))
                 .findFirst();
