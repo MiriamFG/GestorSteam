@@ -5,6 +5,8 @@ import org.example.modelo.enums.EstadoInstalacion;
 import org.example.modelo.form.BibliotecaForm;
 import org.example.repositorio.interfaces.IBibliotecaRepo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +18,7 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
 
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
-        var biblioteca = new BibliotecaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());
+        var biblioteca = new BibliotecaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), LocalDate.now(), form.getEstadoInstalacion());
         bibliotecas.add(biblioteca);
         return Optional.of(biblioteca);
     }

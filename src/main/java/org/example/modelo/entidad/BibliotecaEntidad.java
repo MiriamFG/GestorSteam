@@ -25,31 +25,31 @@ public class BibliotecaEntidad {
         this.estadoInstalacion = estadoInstalacion;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public Long getJuegoId() {
-        return juegoId;
-    }
-
-    public LocalDateTime getFechaAdquisicion() {
-        return fechaAdquisicion;
-    }
-
-    public Integer getNumHorasTotal() {
-        return numHorasTotal;
+    public EstadoInstalacion getEstadoInstalacion() {
+        return estadoInstalacion;
     }
 
     public LocalDate getUltimaFechaJuego() {
         return ultimaFechaJuego;
     }
 
-    public EstadoInstalacion getEstadoInstalacion() {
-        return estadoInstalacion;
+    public Integer getNumHorasTotal() {
+        return numHorasTotal;
+    }
+
+    public LocalDateTime getFechaAdquisicion() {
+        return fechaAdquisicion;
+    }
+
+    public Long getJuegoId() {
+        return juegoId;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
