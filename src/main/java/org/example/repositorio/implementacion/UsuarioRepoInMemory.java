@@ -51,7 +51,19 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     @Override
+    public void actualizarSoloSaldo(Long id, Double nuevoSaldo) {
+        obtenerPorId(id).ifPresent(u -> u.setSaldoCartera(nuevoSaldo));
+    }
+
+    @Override
     public boolean eliminar(Long id) {
         return usuarios.removeIf(usuario -> usuario.getId().equals(id));
+    }
+
+    @Override
+    public Optional<UsuarioEntidad> obtenerPorNombre(String nombre){
+        return usuarios.stream()
+                .filter(u -> u.getNombreUsuario().equalsIgnoreCase(nombre))
+                .findFirst();
     }
 }

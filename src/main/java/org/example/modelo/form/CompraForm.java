@@ -46,14 +46,22 @@ public class CompraForm {
         return precioSinDescuento;
     }
 
-
-
     public EstadoCompra getEstadoCompra() {
         return estadoCompra;
     }
-
+    /**
+     * Valida los datos del formulario de compra antes de procesar la operación
+     *
+     * Valida:
+     *  idusuario: obligatorio
+     *  idjuego: obligatorio
+     *  metodoPago: obligatorio
+     *  precioSinDescuento: obligatorio, no menor que 0 y debe tener maximo 2 decimales
+     *
+     * @throws FormularioInvalidoException si uno o más campos no cumplen las reglas de validación
+     */
     public void validarForumulario() throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         if (idusuario == null) {
             errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
@@ -82,7 +90,7 @@ public class CompraForm {
         }
 
         if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+            throw new FormularioInvalidoException(errores);
         }
 
     }

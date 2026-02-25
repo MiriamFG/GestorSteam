@@ -3,7 +3,8 @@ package org.example.controlador;
 import org.example.excepciones.FormularioInvalidoException;
 import org.example.mapper.BibliotecaMapper;
 import org.example.modelo.dto.BibliotecaDTO;
-import org.example.modelo.dto.JuegoDTO;
+import org.example.modelo.dto.EstadisticasBiblioDTO;
+import org.example.modelo.dto.SesionInfoDTO;
 import org.example.modelo.entidad.BibliotecaEntidad;
 import org.example.modelo.enums.EstadoInstalacion;
 import org.example.modelo.form.BibliotecaForm;
@@ -13,10 +14,10 @@ import org.example.repositorio.interfaces.IBibliotecaRepo;
 import org.example.repositorio.interfaces.ICompraRepo;
 import org.example.repositorio.interfaces.IJuegoRepo;
 import org.example.repositorio.interfaces.IUsuarioRepo;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BibliotecaControlador {
@@ -34,14 +35,29 @@ public class BibliotecaControlador {
     }
 
 
+    /**
+     * Recupera y organiza el catálogo de juegos adquiridos por un usuario
+     *
+     * Criterios de orden
+     *  alfabetico: Ordena por el título del juego (A-Z)
+     *  tiempo: Ordena de menor a mayor cantidad de horas jugadas
+     *  ultimasesion: Ordena cronológicamente según la última vez que se ejecutó el juego
+     *  fechaadquisicion: Ordena según el momento en que se realizó la compra.
+     *
+     * @param idUsuario Identificador único del usuario cuya biblioteca se desea consultar
+     * @param orden Criterio de ordenación (alfabetico, tiempo, ultimasesion, fechaadquisicion)
+     * @return una List de BibliotecaDTO ordenada según el criterio solicitado
+     * @throws FormularioInvalidoException Si el identificador del usuario no corresponde a ninguna cuenta activa
+     */
     public List<BibliotecaDTO> verBibliotecaPersonal(Long idUsuario, String orden) throws FormularioInvalidoException{
         ArrayList<ErrorDTO> errores = new ArrayList<>();
-
 
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
         if(usuarioOpt.isEmpty()){
             errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
         }
+
+        if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
         List<BibliotecaDTO> bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
                 .filter(b -> b.getUsuarioId().equals(idUsuario))
@@ -55,8 +71,7 @@ public class BibliotecaControlador {
                             .compareToIgnoreCase(b2.getJuegoDTO().getTitulo()));
                     break;
                 case "tiempo":
-                    bibliotecaUsuario.sort((b1, b2) -> b1.getNumHorasTotal()
-                            .compareTo(b2.getNumHorasTotal()));
+                    bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getNumHorasTotal));
                     break;
                 case "ultimasesion":
                     bibliotecaUsuario.sort((b1, b2) -> {
@@ -66,16 +81,29 @@ public class BibliotecaControlador {
                     });
                     break;
                 case "fechaadquisicion":
-                    bibliotecaUsuario.sort((b1, b2) -> b1.getFechaAdquisicion()
-                            .compareTo(b2.getFechaAdquisicion()));
+                    bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getFechaAdquisicion));
                     break;
             }
         }
-
         return bibliotecaUsuario;
-
     }
 
+    /**
+     * Vincula un juego al usuario tras la compra válda
+     *
+     * Validaciones
+     *  Existencia: confirma que el usuario y el juego existen en sistema
+     *  Propiedad: verifica que existe un registro de compra
+     *  Unucudad: evita la duplicidad de licencias en la biblioteca
+     *
+     * Tras las validaciones, inicializa el registro con 0 horas de juego y estado 'NO_INSTALADO'.
+     *
+     * @param idUsuario Identificador del usuario que recibe el juego
+     * @param idJuego Identificador del juego a añadir
+     * @return un BibliotecaDTO que representa la nueva entrada en la colección del usuario
+     * @throws FormularioInvalidoException Si no se encuentra la compra, el juego ya existe
+     * en la biblioteca o hay inconsistencias en las fechas
+     */
     public BibliotecaDTO aniadirJuegosBiblioteca(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
@@ -145,6 +173,19 @@ public class BibliotecaControlador {
 
     }
 
+    /**
+     * Elimina de forma definitiva un videojuego de la biblioteca personal de un usuario
+     *
+     * Acciones
+     *  Localiza el registro por ID
+     *  Si el usuario no posee el juego, lanza una excepción controlada
+     *  Solicita al repositorio la eliminación del registro
+     *  Verifica que la operación de haya completado correctamente
+     * @param idUsuario Identificador del propietario de la biblioteca
+     * @param idJuego Identificador del juego que se desea remover
+     * @throws FormularioInvalidoException Si el juego no existe en la biblioteca del usuario
+     * @throws RuntimeException Si ocurre un error inesperado durante la persistencia en el repositorio
+     */
     public void eliminarJuego(Long idUsuario, long idJuego) throws FormularioInvalidoException{
         List<ErrorDTO> errores = new ArrayList<>();
 
@@ -170,6 +211,21 @@ public class BibliotecaControlador {
         }
     }
 
+    /**
+     * Registra una sesión de juego, incrementando el tiempo total y actualizando la fecha
+     *
+     * Verifica la existencia del usuario, del juego y de la licencia en la biblioteca
+     * Asegura que el incremento de tiempo sea un valor positivo
+     * Suma las nuevas horas al contador acumulado y actualiza ultimaFechaJuego al dia actual
+     *
+     * @param idUsuario Identificador del jugador
+     * @param idJuego Identificador del título ejecutado
+     * @param horasASumar Cantidad de horas a añadir al contador global
+     * @return un BibliotecaDTO con las estadísticas de tiempo y fecha de sesión actualizadas
+     * @throws FormularioInvalidoException Si los IDs no son válidos, si el usuario no posee el juego
+     * o si la cantidad de horas es igual o menor a cero
+     * @throws RuntimeException Si ocurre un fallo técnico durante la actualización en el repositorio
+     */
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
         List<ErrorDTO> errores = new ArrayList<>();
 
@@ -188,7 +244,7 @@ public class BibliotecaControlador {
         boolean buscarRegistro = false;
         for(var b : bibliotecaRepo.obtenerTodos()){
             if(b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)){
-                buscarRegistro = true;
+                registroBiblio = b;
                 break;
             }
         }
@@ -220,7 +276,19 @@ public class BibliotecaControlador {
         return BibliotecaMapper.paraDTO(actualizado);
     }
 
-    public String consultarUltimaSesion(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
+    /**
+     * Recupera la información sobre la última vez que el usuario ejecutó un juego
+     *
+     * Confima que el usuario tenga el titulo del juego en su biblioteca
+     * Detremina el numero de dias que han pasado desde la ultima sesión hasta la fecha actual
+     * Devuelve el objeto SesionInfoDTO para que la capa de la vista gestione formato, idioma y estilo del mensaje.
+     *
+     * @param idUsuario Identificador único del usuario
+     * @param idJuego Identificador único del juego
+     * @return objeto SesionInfoDTO que encapsula fecham dias que han pasado y si el titulo ha sido iniciado alguna vez
+     * @throws FormularioInvalidoException si no existe un registro
+     */
+    public SesionInfoDTO consultarUltimaSesion(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
         List<ErrorDTO> errores = new ArrayList<>();
 
         BibliotecaEntidad registro = null;
@@ -232,19 +300,77 @@ public class BibliotecaControlador {
         }
 
         if (registro == null) {
-            errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+            throw new FormularioInvalidoException(new ArrayList<>(List.of(
+                    new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO))));
+        }
+
+        if (registro.getUltimaFechaJuego() == null) {
+            return new SesionInfoDTO(null, null, true);
         }
 
         LocalDate ultimaSesion = registro.getUltimaFechaJuego();
-        if (ultimaSesion == null) {
-            return "Última sesión: Nunca jugado";
-        }
+        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, LocalDate.now());
 
-        LocalDate hoy = LocalDate.now();
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, hoy);
-        String fechaFormateada = ultimaSesion.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-        return String.format("Última sesión: hace %d días (%s)", dias, fechaFormateada);
+        return new SesionInfoDTO(ultimaSesion, dias, false);
     }
 
+    /**
+     * Genera informe con las estadisticas
+     *
+     *El metodo junga datos de varias fuentes para caluclar
+     *  la cantidad total de titulos y juegos que tiene instalados el usuario
+     *  el total de horas jugadas y el titulo de juego más usado
+     *  valor total de inversion según los precios base del catálogo
+     *  que juegos se han comprado pero nunca se han abierto
+     *
+     * @param idUsuario Identificador del usuario para el cual se generan las estadísticas
+     * @return EstadisticasBiblioDTO con el resumen ejecutivo de la biblioteca
+     */
+    public EstadisticasBiblioDTO consultarEstadisticas(Long idUsuario){
+        int totalJuegos = 0;
+        int horasTotales = 0;
+        int juegosInstalados = 0;
+        double valorTotalBiblioteca= 0.0;
+        int juegosNuncaJugados= 0;
+        int maxHoras = -1;
+        String juegoMasJuegado = "Ninguno";
+
+        for(BibliotecaEntidad registro : bibliotecaRepo.obtenerTodos()){
+            if(registro.getUsuarioId().equals(idUsuario)){
+                totalJuegos++;
+                horasTotales += registro.getNumHorasTotal();
+
+                if(registro.getEstadoInstalacion() ==EstadoInstalacion.INSTALADO){
+                    juegosInstalados++;
+                }
+
+                if(registro.getNumHorasTotal() == 0){
+                    juegosNuncaJugados++;
+                }
+
+                if(registro.getNumHorasTotal() > maxHoras){
+                    maxHoras = registro.getNumHorasTotal();
+
+                    var juego = juegoRepo.obtenerPorId(registro.getJuegoId());
+                    if(juego.isPresent()){
+                        juegoMasJuegado = juego.get().getTitulo();
+                    }
+                }
+
+                var juegoParaPrecio = juegoRepo.obtenerPorId(registro.getJuegoId());
+                if(juegoParaPrecio.isPresent()){
+                    valorTotalBiblioteca += juegoParaPrecio.get().getPrecioBase();
+                }
+            }
+        }
+        return new EstadisticasBiblioDTO(
+                totalJuegos,
+                horasTotales,
+                juegosInstalados,
+                juegoMasJuegado,
+                valorTotalBiblioteca,
+                juegosNuncaJugados
+        );
+
+    }
 }

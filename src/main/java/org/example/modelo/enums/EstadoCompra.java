@@ -1,5 +1,5 @@
 package org.example.modelo.enums;
 
 public enum EstadoCompra {
-    COMPLETADA, REEMBOLSADA
+    COMPLETADA, REEMBOLSADA, PENDIENTE
 }

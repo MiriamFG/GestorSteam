@@ -52,8 +52,22 @@ public class BibliotecaForm {
         return estadoInstalacion;
     }
 
+    /**
+     * Valida los datos del formulario de adquisición o registro de juego por parte de un usuario
+     *
+     *Valida:
+     *  idUsuario: obligatorio
+     *  idJuego: obligatorio
+     *  fechaAdquisicion: obligatorio, no puede ser fecha futura
+     *  numHorasTotal: no menor que 0 y debe tener máximo 1 decimal
+     *  ultimaFechaJuego: no peude ser fecha futura, no puede ser anterior a la fechaAdquisicion
+     *  estadoInstalacion: si es null y existe ultimaFechaJuego, se establece por defecto NO_INSTALADO
+     *
+     *
+     * @throws FormularioInvalidoException si los datos del formulario no cumplen las reglas de validación
+     */
     public void validarForumulario() throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         if(idUsuario == null){
             errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
@@ -90,6 +104,9 @@ public class BibliotecaForm {
             if (estadoInstalacion == null) {
                 estadoInstalacion = EstadoInstalacion.NO_INSTALADO;
             }
+        }
+        if (!errores.isEmpty()) {
+            throw new FormularioInvalidoException(errores);
         }
     }
 }

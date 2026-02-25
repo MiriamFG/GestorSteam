@@ -2,10 +2,8 @@ package org.example.modelo.dto;
 
 import org.example.modelo.enums.EstadoCuenta;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class UsuarioDTO {
     private Long id;
@@ -19,7 +17,7 @@ public class UsuarioDTO {
     private Double saldoCartera;
     private EstadoCuenta estadoCuenta;
 
-    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, Double saldoCartera, EstadoCuenta estadoCuenta) {
+    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, Double saldoCartera, EstadoCuenta estadoCuenta) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;

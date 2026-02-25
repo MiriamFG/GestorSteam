@@ -3,7 +3,6 @@ package org.example.modelo.form;
 import org.example.excepciones.FormularioInvalidoException;
 import org.example.modelo.enums.EstadoResena;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +11,17 @@ public class ResenaForm {
     private Long idJuego;
     private Boolean recomendado;
     private String textoResena;
+    private Double horasJuegoResena;
+    private EstadoResena estado;
 
-    public ResenaForm(Long idUsuario, Long idJuego, Boolean recomendado, String textoResena) {
+
+    public ResenaForm(Long idUsuario, Long idJuego, Boolean recomendado, String textoResena, Double horas) {
         this.idUsuario = idUsuario;
         this.idJuego = idJuego;
         this.recomendado = recomendado;
         this.textoResena = textoResena;
+        this.horasJuegoResena = horas;
+        this.estado = EstadoResena.PUBLICADA;
     }
 
     public Long getIdUsuario() {
@@ -35,6 +39,21 @@ public class ResenaForm {
     public String getTextoResena() {
         return textoResena;
     }
+
+    public Double getHorasJuegoResena(){
+        return horasJuegoResena;
+    }
+
+    //constructor 6 parámetros para formOcultar
+    public ResenaForm(Long idUsuario, Long idJuego, Boolean recomendado, String texto, Double horas, EstadoResena estado) {
+        this.idUsuario = idUsuario;
+        this.idJuego = idJuego;
+        this.recomendado = recomendado;
+        this.textoResena = texto;
+        this.horasJuegoResena = horas;
+        this.estado = estado;
+    }
+
 
     /**
      * Valida los datos del formulario de una reseña.

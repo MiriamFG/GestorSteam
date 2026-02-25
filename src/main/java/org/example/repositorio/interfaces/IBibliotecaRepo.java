@@ -4,4 +4,5 @@ import org.example.modelo.entidad.BibliotecaEntidad;
 import org.example.modelo.form.BibliotecaForm;
 
 public interface IBibliotecaRepo extends ICrud<BibliotecaEntidad, BibliotecaForm, Long>{
+    void eliminarJuegoUsuario(Long usuarioId, Long juegoId);
 }

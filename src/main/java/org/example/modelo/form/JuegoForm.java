@@ -74,71 +74,90 @@ public class JuegoForm {
         return estadoJuego;
     }
 
+    /**
+     *Valida los datos del formulario de juego
+     *
+     * Valida:
+     *  titulo: oblitatorio y longitud entere 1 y 100 caracteres
+     *  descripcion: opcional y máximo 200 caracteres
+     *  desarrollador: obligaotrio y longitud entre 2 y 100 caractgeres
+     *  fechaLanzamiento: obligatorio
+     *  precioBase: obligatorio, debe estar entre 0.00 y 000.000, maximo dos decimales
+     *  descuentoActual: opcional(si es null se establece 0), debe estar entre 0 y 100
+     *  clasificacionEdad: obligatoria
+     *  idiomasDisponibles: obligatorio, cada idioma no puede superar 200 caracteres
+     *  estadoJuego: si es null se establece por defecto DISPONIBLE
+     *
+     * @throws FormularioInvalidoException si uno o más campos no cumplen las reglas de validación
+     */
     public void validarForumulario() throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        if(titulo == null || titulo.trim().isEmpty()){
+        if (titulo == null || titulo.trim().isEmpty()) {
             errores.add(new ErrorDTO("titulo", ErrorTipo.REQUERIDO));
-        }else{
-            if(titulo.length() < 1 || titulo.length() > 100){
+        } else {
+            if (titulo.length() < 1 || titulo.length() > 100) {
                 errores.add(new ErrorDTO("titulo", ErrorTipo.LONGITUD_INVALIDA, 1, 100));
             }
         }
 
-        if(descipcion != null && descipcion.length() > 200){
+        if (descipcion != null && descipcion.length() > 200) {
             errores.add(new ErrorDTO("descripcion", ErrorTipo.CAMPO_LARGO, 200));
         }
 
-        if(desarrollador == null || desarrollador.trim().isEmpty()){
+        if (desarrollador == null || desarrollador.trim().isEmpty()) {
             errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.REQUERIDO));
-        }else{
-            if(desarrollador.length() < 2 || desarrollador.length() > 100){
+        } else {
+            if (desarrollador.length() < 2 || desarrollador.length() > 100) {
                 errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.LONGITUD_INVALIDA, 2, 100));
             }
         }
 
-        if(fechaLanz == null){
+        if (fechaLanz == null) {
             errores.add(new ErrorDTO("fechaLanzamiento", ErrorTipo.REQUERIDO));
-        }else{
+        } else {
 
         }
 
-        if(precioBase == null){
+        if (precioBase == null) {
             errores.add(new ErrorDTO("precioBase", ErrorTipo.REQUERIDO));
-        }else if(precioBase <0 || precioBase > 999.99){
+        } else if (precioBase < 0 || precioBase > 999.99) {
             errores.add(new ErrorDTO("precioBase", ErrorTipo.CAMPO_ENTRE, 0.00, 999.99));
-        }else{
-            if(Math.round(precioBase *100)/ 100 != precioBase){
+        } else {
+            if (Math.round(precioBase * 100) / 100 != precioBase) {
                 errores.add(new ErrorDTO("precioBase", ErrorTipo.PRECIO_DECIMALES));
             }
         }
 
-        if(descuentoActual == null){
+        if (descuentoActual == null) {
             descuentoActual = 0;
-        }else{
-            if(descuentoActual < 0 || descuentoActual > 100){
+        } else {
+            if (descuentoActual < 0 || descuentoActual > 100) {
                 errores.add(new ErrorDTO("descuento", ErrorTipo.LONGITUD_INVALIDA, 0, 100));
             }
         }
 
-        if(clasificacionEdad == null)
+        if (clasificacionEdad == null)
             errores.add(new ErrorDTO("clasificacionEdad", ErrorTipo.REQUERIDO));
 
-        if(idiomasDisponibles != null || idiomasDisponibles.isEmpty()){
-                errores.add(new ErrorDTO("idioma", ErrorTipo.REQUERIDO));
+        if (idiomasDisponibles == null || idiomasDisponibles.isEmpty()) {
+            errores.add(new ErrorDTO("idioma", ErrorTipo.REQUERIDO));
+        }
+        for (String idioma : idiomasDisponibles) {
+            if (idioma.length() > 200) {
+                errores.add(new ErrorDTO("idioma", ErrorTipo.CAMPO_LARGO, 200));
             }
-            for (String idioma : idiomasDisponibles){
-                if(idioma.length() > 200){
-                    errores.add(new ErrorDTO("idioma", ErrorTipo.CAMPO_LARGO, 200));
-                }
-            }
-
-        if(estadoJuego == null){
-            estadoJuego = EstadoJuego.DISPONIBLE;
-        }else {
-            throw new FormularioInvalidoException(errores);
         }
 
+        if (estadoJuego == null) {
+            estadoJuego = EstadoJuego.DISPONIBLE;
+
+
+            if (!errores.isEmpty()) {
+                throw new FormularioInvalidoException(errores);
+            }
+
+        }
     }
 
 }

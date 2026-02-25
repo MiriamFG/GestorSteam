@@ -11,6 +11,7 @@ public enum ErrorTipo {
     CONTRASENA_VALIDA("La contraseña debe ter al menos 8 caracteres"),
     CAMPO_LARGO("El campo no puede superar los % caracteres"),
     MAX_DECIMALES("Maximo % decimales permitidos"),
+    SALDO_INSUFICIENTE("el saldo es insuficiente"),
     CAMPO_ENTRE("El campo debe estar entre %d y %d"),
     PRECIO_DECIMALES("El precio base no puede tener más de 2 decimales"),
     FECHA_FUTURA("futura no válida"),
@@ -19,6 +20,7 @@ public enum ErrorTipo {
     EXISTENTE("ya existe en el sistema"),
     REGISTRADO("ya está registrado en el sistema"),
     NO_ACTIVO("el elemento está activo"),
+    NO_PROPIETARIO("no tienes este juego"),
     DUPLICADO("El elemento está duplicado");
 
 

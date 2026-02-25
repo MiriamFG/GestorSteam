@@ -57,7 +57,7 @@ public class UsuarioForm {
     /**
      * Valida los datos del formulario de usuario
      *
-     * verifica:
+     * Valida:
      *  Que el nombre del usuario no sea nulo o esté vacío
      *  Que el nombre del usuario tenga una longitud entre 3 y 20 caraceres
      *  Que el nombre del usuario solo tenga alfanumericos, guiones y guiones bajos
@@ -87,7 +87,7 @@ public class UsuarioForm {
      * @throws FormularioInvalidoException
      */
     public void validarForumulario() throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
             errores.add(new ErrorDTO("nombre", ErrorTipo.REQUERIDO));
@@ -95,7 +95,7 @@ public class UsuarioForm {
             if(nombreUsuario.length()<3 || nombreUsuario.length() > 20){
                 errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, 3, 20));
             }
-            if(nombreUsuario.matches("^[A-Za-z0-9+_.-]+$")){
+            if(!nombreUsuario.matches("^[A-Za-z0-9+_.-]+$")){
                 errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
             if(Character.isDigit(nombreUsuario.charAt(0))){
@@ -138,13 +138,13 @@ public class UsuarioForm {
                 }
             }
 
-            if(!mayuscula || minuscula || numero){
+            if(!mayuscula || !minuscula || !numero){
                 errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
         }
 
         if(nombreReal == null || nombreReal.trim().isEmpty()){
-            errores.add(new ErrorDTO("email", ErrorTipo.FORMATO_INVALIDO));
+            errores.add(new ErrorDTO("nombreReal", ErrorTipo.FORMATO_INVALIDO));
         }else{
             if(nombreReal.length()<2 || nombreReal.length() > 50){
                 errores.add(new ErrorDTO("nombreReal", ErrorTipo.LONGITUD_INVALIDA, 2, 50));
@@ -171,7 +171,7 @@ public class UsuarioForm {
         }
 
         if(!errores.isEmpty()){
-            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+            throw new FormularioInvalidoException(errores);
         }
     }
 }

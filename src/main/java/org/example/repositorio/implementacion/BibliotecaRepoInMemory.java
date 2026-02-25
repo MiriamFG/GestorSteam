@@ -16,6 +16,7 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     private static Long idCount = 1L;
 
 
+
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
         var biblioteca = new BibliotecaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), LocalDate.now(), form.getEstadoInstalacion());
@@ -52,4 +53,8 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
         return bibliotecas.removeIf(b -> b.getId().equals(id));
     }
 
+    @Override
+    public void eliminarJuegoUsuario(Long idUsuario, Long idJuego) {
+        bibliotecas.removeIf(b -> b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego));
+    }
 }
