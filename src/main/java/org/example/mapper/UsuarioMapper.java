@@ -5,7 +5,7 @@ import org.example.modelo.entidad.UsuarioEntidad;
 
 public class UsuarioMapper {
 
-    public static UsuarioDTO paraDTO(UsuarioEntidad usuario){
+    public static UsuarioDTO paraDTO(UsuarioEntidad usuario) {
         return new UsuarioDTO(
                 usuario.getId(),
                 usuario.getNombreUsuario(),

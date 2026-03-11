@@ -11,26 +11,26 @@ import java.util.List;
 import java.util.Optional;
 
 public class UsuarioRepoInMemory implements IUsuarioRepo {
-    private static final List<UsuarioEntidad> usuarios = new ArrayList<>();
+    private static final List<UsuarioEntidad> USUARIOS = new ArrayList<>();
     private static Long idCount = 1L;
 
     @Override
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
-         var usuario = new UsuarioEntidad(idCount++, form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), 0d, EstadoCuenta.ACTIVA);
-        usuarios.add(usuario);
-         return Optional.of(usuario);
+        var usuario = new UsuarioEntidad(idCount++, form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), 0d, EstadoCuenta.ACTIVA);
+        USUARIOS.add(usuario);
+        return Optional.of(usuario);
     }
 
     @Override
     public Optional<UsuarioEntidad> obtenerPorId(Long id) {
-        return usuarios.stream()
+        return USUARIOS.stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
 
     @Override
     public List<UsuarioEntidad> obtenerTodos() {
-        return new ArrayList<>(usuarios);
+        return new ArrayList<>(USUARIOS);
     }
 
     @Override
@@ -40,13 +40,13 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form, Optional<Double> saldo) {
-        var usuarioOpt = obtenerPorId(id).orElseThrow(()-> new IllegalArgumentException("Usuario no encontrado"));
+        var usuarioOpt = obtenerPorId(id).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         var saldoNuevo = saldo.orElse(usuarioOpt.getSaldoCartera());
 
-        var usuarioActualizado = new UsuarioEntidad(id,form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), saldoNuevo, EstadoCuenta.ACTIVA);
-        usuarios.removeIf(usuario -> usuario.getId().equals(id));
-        usuarios.add(usuarioActualizado);
+        var usuarioActualizado = new UsuarioEntidad(id, form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), saldoNuevo, EstadoCuenta.ACTIVA);
+        USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
+        USUARIOS.add(usuarioActualizado);
         return Optional.of(usuarioActualizado);
     }
 
@@ -57,12 +57,12 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return usuarios.removeIf(usuario -> usuario.getId().equals(id));
+        return USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
     }
 
     @Override
-    public Optional<UsuarioEntidad> obtenerPorNombre(String nombre){
-        return usuarios.stream()
+    public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
+        return USUARIOS.stream()
                 .filter(u -> u.getNombreUsuario().equalsIgnoreCase(nombre))
                 .findFirst();
     }

@@ -4,7 +4,6 @@ import org.example.excepciones.FormularioInvalidoException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class UsuarioForm {
     private String nombreUsuario;
@@ -56,65 +55,72 @@ public class UsuarioForm {
 
     /**
      * Valida los datos del formulario de usuario
-     *
+     * <p>
      * Valida:
-     *  Que el nombre del usuario no sea nulo o esté vacío
-     *  Que el nombre del usuario tenga una longitud entre 3 y 20 caraceres
-     *  Que el nombre del usuario solo tenga alfanumericos, guiones y guiones bajos
-     *  Que el nombre del usuario no empiece con un número
-     *
-     *  Que el email no sea nulo o esté vacío
-     *  Que el formato del email sea válido
-     *
-     *  Que la contraseña no sea nulo o esté vacía
-     *  Que la longitud sea máximo de 8 caracteres
-     *  Que el formato de la contraseña incluya una mayuscula, una minuscula y un número
-     *
-     *  Que el nombre real del usuario no sea nulo o esté vacío
-     *  Que la longitud del nombre esté entre los 2 y 50 caracteres
-     *
-     *  Que el país no sea nulo o esté vacío
-     *
-     *  Que la fecha de nacimiento no sea nula
-     *  Que la edad del usuario sea mayor de 13 años
-     *
-     *  Que el avatar tenga máximo 100 caracteres
-     *
-     *
+     * Que el nombre del usuario no sea nulo o esté vacío
+     * Que el nombre del usuario tenga una longitud entre 3 y 20 caraceres
+     * Que el nombre del usuario solo tenga alfanumericos, guiones y guiones bajos
+     * Que el nombre del usuario no empiece con un número
+     * <p>
+     * Que el email no sea nulo o esté vacío
+     * Que el formato del email sea válido
+     * <p>
+     * Que la contraseña no sea nulo o esté vacía
+     * Que la longitud sea máximo de 8 caracteres
+     * Que el formato de la contraseña incluya una mayuscula, una minuscula y un número
+     * <p>
+     * Que el nombre real del usuario no sea nulo o esté vacío
+     * Que la longitud del nombre esté entre los 2 y 50 caracteres
+     * <p>
+     * Que el país no sea nulo o esté vacío
+     * <p>
+     * Que la fecha de nacimiento no sea nula
+     * Que la edad del usuario sea mayor de 13 años
+     * <p>
+     * Que el avatar tenga máximo 100 caracteres
+     * <p>
+     * <p>
      * Si algún campo no cumple las condiciones, se recopilan los errores en una lista
      * y se lanza {@link FormularioInvalidoException}.
      *
      * @throws FormularioInvalidoException
      */
-    public void validarForumulario() throws FormularioInvalidoException {
+    public void validarFormulario() throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
+        final int LONGITUD_2 = 2;
+        final int LONGITUD_3 = 3;
+        final int LONGITUD_20 = 20;
+        final int LONGITUD_50 = 50;
+        final int LONGITUD_8 = 8;
+        final int ANIO_MENOR = 13;
+        final int CIEN = 100;
 
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
             errores.add(new ErrorDTO("nombre", ErrorTipo.REQUERIDO));
-        }else{
-            if(nombreUsuario.length()<3 || nombreUsuario.length() > 20){
-                errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, 3, 20));
+        } else {
+            if (nombreUsuario.length() < LONGITUD_3 || nombreUsuario.length() > LONGITUD_20) {
+                errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_3, LONGITUD_20));
             }
-            if(!nombreUsuario.matches("^[A-Za-z0-9+_.-]+$")){
+            if (!nombreUsuario.matches("^[A-Za-z0-9+_.-]+$")) {
                 errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
-            if(Character.isDigit(nombreUsuario.charAt(0))){
+            if (Character.isDigit(nombreUsuario.charAt(0))) {
                 errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
-        if(email == null || email.trim().isEmpty()){
+        if (email == null || email.trim().isEmpty()) {
             errores.add(new ErrorDTO("email", ErrorTipo.REQUERIDO));
-        }else {
+        } else {
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
                 errores.add(new ErrorDTO("email", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
-        if(contrasena == null || contrasena.isEmpty()){
+        if (contrasena == null || contrasena.isEmpty()) {
             errores.add(new ErrorDTO("contrasena", ErrorTipo.REQUERIDO));
-        }else{
-            if(contrasena.length() < 8){
+        } else {
+            if (contrasena.length() < LONGITUD_8) {
                 errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
 
@@ -122,55 +128,56 @@ public class UsuarioForm {
             boolean minuscula = false;
             boolean numero = false;
 
-            for(int i=0; i < contrasena.length(); i++){
+            for (int i = 0; i < contrasena.length(); i++) {
                 char letra = contrasena.charAt(i);
 
-                if(Character.isUpperCase(letra)){
+                if (Character.isUpperCase(letra)) {
                     mayuscula = true;
                 }
 
-                if(Character.isLowerCase(letra)){
+                if (Character.isLowerCase(letra)) {
                     minuscula = true;
                 }
 
-                if(Character.isDigit(letra)){
+                if (Character.isDigit(letra)) {
                     numero = true;
                 }
             }
 
-            if(!mayuscula || !minuscula || !numero){
+            if (!mayuscula || !minuscula || !numero) {
                 errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
         }
 
-        if(nombreReal == null || nombreReal.trim().isEmpty()){
+        if (nombreReal == null || nombreReal.trim().isEmpty()) {
             errores.add(new ErrorDTO("nombreReal", ErrorTipo.FORMATO_INVALIDO));
-        }else{
-            if(nombreReal.length()<2 || nombreReal.length() > 50){
-                errores.add(new ErrorDTO("nombreReal", ErrorTipo.LONGITUD_INVALIDA, 2, 50));
+        } else {
+            if (nombreReal.length() < LONGITUD_2 || nombreReal.length() > LONGITUD_50) {
+                errores.add(new ErrorDTO("nombreReal", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_2, LONGITUD_50));
             }
         }
 
 
-        if(pais == null || pais.trim().isEmpty()){
+        if (pais == null || pais.trim().isEmpty()) {
             errores.add(new ErrorDTO("pais", ErrorTipo.REQUERIDO));
         }
 
-        if(fechaNac == null){
+        if (fechaNac == null) {
             errores.add(new ErrorDTO("fechaNac", ErrorTipo.REQUERIDO));
-        }else{
+        } else {
             int anioAct = LocalDate.now().getYear();
             int anioNac = fechaNac.getYear();
 
-            if(fechaNac == null || anioAct - anioNac < 13)
-            errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
+            if (fechaNac == null || anioAct - anioNac < ANIO_MENOR) {
+                errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
+            }
         }
 
-        if(avatar != null && avatar.length() > 100){
-            errores.add(new ErrorDTO("avatar", ErrorTipo.CAMPO_LARGO, 100));
+        if (avatar != null && avatar.length() > CIEN) {
+            errores.add(new ErrorDTO("avatar", ErrorTipo.CAMPO_LARGO, CIEN));
         }
 
-        if(!errores.isEmpty()){
+        if (!errores.isEmpty()) {
             throw new FormularioInvalidoException(errores);
         }
     }

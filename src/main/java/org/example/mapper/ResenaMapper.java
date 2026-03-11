@@ -5,7 +5,7 @@ import org.example.modelo.entidad.ResenaEntidad;
 
 public class ResenaMapper {
 
-    public static ResenaDTO paraDTO (ResenaEntidad resena){
+    public static ResenaDTO paraDTO(ResenaEntidad resena) {
         return new ResenaDTO(
                 resena.getId(),
                 resena.getUsuarioId(),

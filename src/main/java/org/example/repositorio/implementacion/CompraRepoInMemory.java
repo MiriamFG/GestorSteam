@@ -34,7 +34,7 @@ public class CompraRepoInMemory implements ICompraRepo {
     @Override
     public Optional<CompraEntidad> actualizar(Long id, CompraForm form) {
         var compraOpc = obtenerPorId(id);
-        if(compraOpc.isEmpty()){
+        if (compraOpc.isEmpty()) {
             throw new IllegalArgumentException("Compra no encontrada");
         }
         var compraActualizada = new CompraEntidad(id, form.getUsuarioDTO(), form.getJuegoDTO(), compraOpc.get().getFechaCompra(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getEstadoCompra());

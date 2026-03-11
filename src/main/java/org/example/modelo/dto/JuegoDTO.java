@@ -44,6 +44,7 @@ public class JuegoDTO {
     public Long getId() {
         return id;
     }
+
     public String getTitulo() {
         return titulo;
     }

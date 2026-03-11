@@ -7,7 +7,8 @@ import java.util.Optional;
 
 public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
     Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form, Optional<Double> saldo);
-    Optional <UsuarioEntidad> obtenerPorNombre(String nombre);
+
+    Optional<UsuarioEntidad> obtenerPorNombre(String nombre);
 
 
     void actualizarSoloSaldo(Long id, Double nuevoSaldo);

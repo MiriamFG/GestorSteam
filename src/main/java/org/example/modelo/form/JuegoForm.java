@@ -75,18 +75,18 @@ public class JuegoForm {
     }
 
     /**
-     *Valida los datos del formulario de juego
-     *
+     * Valida los datos del formulario de juego
+     * <p>
      * Valida:
-     *  titulo: oblitatorio y longitud entere 1 y 100 caracteres
-     *  descripcion: opcional y máximo 200 caracteres
-     *  desarrollador: obligaotrio y longitud entre 2 y 100 caractgeres
-     *  fechaLanzamiento: obligatorio
-     *  precioBase: obligatorio, debe estar entre 0.00 y 000.000, maximo dos decimales
-     *  descuentoActual: opcional(si es null se establece 0), debe estar entre 0 y 100
-     *  clasificacionEdad: obligatoria
-     *  idiomasDisponibles: obligatorio, cada idioma no puede superar 200 caracteres
-     *  estadoJuego: si es null se establece por defecto DISPONIBLE
+     * titulo: oblitatorio y longitud entere 1 y 100 caracteres
+     * descripcion: opcional y máximo 200 caracteres
+     * desarrollador: obligaotrio y longitud entre 2 y 100 caractgeres
+     * fechaLanzamiento: obligatorio
+     * precioBase: obligatorio, debe estar entre 0.00 y 000.000, maximo dos decimales
+     * descuentoActual: opcional(si es null se establece 0), debe estar entre 0 y 100
+     * clasificacionEdad: obligatoria
+     * idiomasDisponibles: obligatorio, cada idioma no puede superar 200 caracteres
+     * estadoJuego: si es null se establece por defecto DISPONIBLE
      *
      * @throws FormularioInvalidoException si uno o más campos no cumplen las reglas de validación
      */
@@ -137,8 +137,9 @@ public class JuegoForm {
             }
         }
 
-        if (clasificacionEdad == null)
+        if (clasificacionEdad == null) {
             errores.add(new ErrorDTO("clasificacionEdad", ErrorTipo.REQUERIDO));
+        }
 
         if (idiomasDisponibles == null || idiomasDisponibles.isEmpty()) {
             errores.add(new ErrorDTO("idioma", ErrorTipo.REQUERIDO));

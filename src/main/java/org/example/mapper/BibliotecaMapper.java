@@ -5,7 +5,7 @@ import org.example.modelo.entidad.BibliotecaEntidad;
 
 public class BibliotecaMapper {
 
-    public static BibliotecaDTO paraDTO(BibliotecaEntidad biblioteca){
+    public static BibliotecaDTO paraDTO(BibliotecaEntidad biblioteca) {
         return new BibliotecaDTO(
                 biblioteca.getId(),
                 biblioteca.getUsuarioId(),

@@ -40,7 +40,7 @@ public class ResenaForm {
         return textoResena;
     }
 
-    public Double getHorasJuegoResena(){
+    public Double getHorasJuegoResena() {
         return horasJuegoResena;
     }
 
@@ -57,13 +57,13 @@ public class ResenaForm {
 
     /**
      * Valida los datos del formulario de una reseña.
-     *
+     * <p>
      * verifica:
-     *   Que el ID de usuario no sea nulo.
-     *   Que el ID de juego no sea nulo.
-     *   Que el campo 'recomendado' no sea nulo.
-     *   Que el texto de la reseña no sea nulo y tenga entre 50 y 8000 caracteres.</li>
-     *
+     * Que el ID de usuario no sea nulo.
+     * Que el ID de juego no sea nulo.
+     * Que el campo 'recomendado' no sea nulo.
+     * Que el texto de la reseña no sea nulo y tenga entre 50 y 8000 caracteres.</li>
+     * <p>
      * Si algún campo no cumple las condiciones, se recopilan los errores en una lista
      * y se lanza {@link FormularioInvalidoException}.
      *

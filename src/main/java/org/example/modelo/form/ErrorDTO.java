@@ -5,7 +5,7 @@ public class ErrorDTO {
     private ErrorTipo m;
     private Object[] params;
 
-    public ErrorDTO(String c, ErrorTipo m, Object...params) {
+    public ErrorDTO(String c, ErrorTipo m, Object... params) {
         this.c = c;
         this.m = m;
         this.params = params;

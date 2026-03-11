@@ -5,7 +5,7 @@ import org.example.modelo.entidad.JuegoEntidad;
 
 public class JuegoMapper {
 
-    public static JuegoDTO paraDTO(JuegoEntidad juego){
+    public static JuegoDTO paraDTO(JuegoEntidad juego) {
         return new JuegoDTO(
                 juego.getId(),
                 juego.getTitulo(),

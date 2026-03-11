@@ -31,7 +31,6 @@ public class UsuarioDTO {
     }
 
 
-
     public Long getId() {
         return id;
     }

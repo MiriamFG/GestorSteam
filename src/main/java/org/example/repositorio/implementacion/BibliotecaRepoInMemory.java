@@ -16,7 +16,6 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     private static Long idCount = 1L;
 
 
-
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
         var biblioteca = new BibliotecaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), LocalDate.now(), form.getEstadoInstalacion());
@@ -39,7 +38,7 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     @Override
     public Optional<BibliotecaEntidad> actualizar(Long id, BibliotecaForm form) {
         var biblioOpc = obtenerPorId(id);
-        if(biblioOpc.isEmpty()){
+        if (biblioOpc.isEmpty()) {
             throw new IllegalArgumentException("Biblioteca no encontrada");
         }
         var bibliotecaActualizada = new BibliotecaEntidad(id, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());

@@ -6,19 +6,18 @@ import org.example.modelo.enums.MetodoPago;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CompraForm {
-    private Long idusuario;
-    private Long idjuego;
+    private Long idUsuario;
+    private Long idJuego;
     private LocalDate fechaCompra;
     private MetodoPago metodoPago;
     private Double precioSinDescuento;
     private EstadoCompra estadoCompra;
 
-    public CompraForm(Long idusuario, Long idjuego, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Integer descuentoAplicado, EstadoCompra estadoCompra) {
-        this.idusuario = idusuario;
-        this.idjuego = idjuego;
+    public CompraForm(Long idUsuario, Long idJuego, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Integer descuentoAplicado, EstadoCompra estadoCompra) {
+        this.idUsuario = idUsuario;
+        this.idJuego = idJuego;
         this.fechaCompra = fechaCompra;
         this.metodoPago = metodoPago;
         this.precioSinDescuento = precioSinDescuento;
@@ -27,11 +26,11 @@ public class CompraForm {
 
 
     public Long getUsuarioDTO() {
-        return idusuario;
+        return idUsuario;
     }
 
     public Long getJuegoDTO() {
-        return idjuego;
+        return idJuego;
     }
 
     public LocalDate getFechaCompra() {
@@ -49,25 +48,26 @@ public class CompraForm {
     public EstadoCompra getEstadoCompra() {
         return estadoCompra;
     }
+
     /**
      * Valida los datos del formulario de compra antes de procesar la operación
-     *
+     * <p>
      * Valida:
-     *  idusuario: obligatorio
-     *  idjuego: obligatorio
-     *  metodoPago: obligatorio
-     *  precioSinDescuento: obligatorio, no menor que 0 y debe tener maximo 2 decimales
+     * idusuario: obligatorio
+     * idjuego: obligatorio
+     * metodoPago: obligatorio
+     * precioSinDescuento: obligatorio, no menor que 0 y debe tener maximo 2 decimales
      *
      * @throws FormularioInvalidoException si uno o más campos no cumplen las reglas de validación
      */
     public void validarForumulario() throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        if (idusuario == null) {
+        if (idUsuario == null) {
             errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
         }
 
-        if (idjuego == null) {
+        if (idJuego == null) {
             errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
         }
 

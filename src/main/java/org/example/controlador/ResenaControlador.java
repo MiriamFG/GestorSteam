@@ -32,45 +32,45 @@ public class ResenaControlador {
     }
 
     /**
-     * Crea y registra una nueva reseña para un juego en el sistema
+     * Crea y registra una nueva reseña para un juego en el sistema.
+     * <p>
+     * Realiza comprobaciones de reglas de negocio antes de ejecutar,
+     * verifica en la biblioteca que el usuario tenga el juego,
+     * extrae las horas de juego actuales del registro de la Biblioteca,
+     * valida que el usuario no haya escrito ya una reseña para el juego.
      *
-     * Realiza comprobaciones de reglas de negocio antes de ejecutar
-     *  verifica en la biblioteca que el usuario tenga el juego
-     *  extrae las horas de juego actuales del registro de la Biblioteca
-     *  valida que el usuario no haya escrito ya una reseña para el juego
-     *
-     * @param idUsuario Identificador del usuario que desea escribir la reseña
-     * @param idJuego Identificador del juego que se va a valorar
-     * @param recomendado Valor booleano que indica si el usuario recomienda (true) o no (false) el juego
-     * @param texto contenido de texto de la reseña
-     * @return un ResenaDTO que representa la reseña creada con exito
-     * @throws FormularioInvalidoException Si el usuario no es propietario del juego (ErrorTipo.NO_PROPIETARIO)
-     * o si ya existe una reseña previa (ErrorTipo.DUPLICADO)
-     * @throws RuntimeException Si ocurre un error inesperado al crear la reseña en el repositorio
+     * @param idUsuario   Identificador del usuario que desea escribir la reseña.
+     * @param idJuego     Identificador del juego que se va a valorar.
+     * @param recomendado Valor booleano que indica si el usuario recomienda (true) o no (false) el juego.
+     * @param texto       contenido de texto de la reseña.
+     * @return un ResenaDTO que representa la reseña creada con exito.
+     * @throws FormularioInvalidoException Si el usuario no es propietario del juego (ErrorTipo.NO_PROPIETARIO),
+     *                                     o si ya existe una reseña previa (ErrorTipo.DUPLICADO).
+     * @throws RuntimeException            Si ocurre un error inesperado al crear la reseña en el repositorio.
      */
     public ResenaDTO escribirResena(Long idUsuario, Long idJuego, Boolean recomendado, String texto) throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         BibliotecaEntidad registroBiblio = null;
-        for(BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()){
-            if(b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)){
+        for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
+            if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
                 registroBiblio = b;
                 break;
             }
         }
 
-        if(registroBiblio == null){
+        if (registroBiblio == null) {
             errores.add(new ErrorDTO("juego", ErrorTipo.NO_PROPIETARIO));
         }
 
-        for(ResenaEntidad r : resenaRepo.obtenerTodos()){
-            if(r.getUsuarioId().equals(idUsuario) && r.getJuegoId().equals(idJuego)){
+        for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
+            if (r.getUsuarioId().equals(idUsuario) && r.getJuegoId().equals(idJuego)) {
                 errores.add(new ErrorDTO("resena", ErrorTipo.DUPLICADO));
                 break;
             }
         }
 
-        if(!errores.isEmpty()) throw new FormularioInvalidoException(errores);
+        if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
         ResenaForm form = new ResenaForm(
                 idUsuario,
@@ -81,36 +81,36 @@ public class ResenaControlador {
         );
 
         ResenaEntidad nueva = resenaRepo.crear(form)
-                .orElseThrow(()-> new RuntimeException("Error al crear reseña"));
+                .orElseThrow(() -> new RuntimeException("Error al crear reseña"));
 
         return ResenaMapper.paraDTO(nueva);
     }
 
     /**
-     * Consigue la lista de reseñas publicas de un juego especifico  permitiendo filtrar por valoracion
-     *
+     * Consigue la lista de reseñas publicas de un juego especifico  permitiendo filtrar por valoracion.
+     * <p>
      * Niveles filtrado:
-     *  pertenencia al juego indicado
-     *  visibilidad publica
-     *  filtro de recomendacion
+     * pertenencia al juego indicado,
+     * visibilidad publica,
+     * filtro de recomendacion.
      *
      * @param idJuego Identificador del juego cuyas reseñas se desean consultar.
-     * @param filtro Criterio de filtrado opcional
-     * Valores aceptados: "positiva" (solo recomendados),"negativa" (solo no recomendados).
-     * Cualquier otro valor o null devolverá todas las reseñas
-     * @return una List de ResenaDTO con las reseñas que cumplen los criterios
-     * Devuelve lista vacia si no hay coincidencias
+     * @param filtro  Criterio de filtrado opcional.
+     *                Valores aceptados: "positiva" (solo recomendados),"negativa" (solo no recomendados).
+     *                Cualquier otro valor o null devolverá todas las reseñas.
+     * @return una List de ResenaDTO con las reseñas que cumplen los criterios,
+     * Devuelve lista vacia si no hay coincidencias.
      */
-    public List<ResenaDTO> verResenasJuego(Long idJuego, String filtro){
+    public List<ResenaDTO> verResenasJuego(Long idJuego, String filtro) {
         List<ResenaDTO> resultado = new ArrayList<>();
 
-        for(ResenaEntidad r : resenaRepo.obtenerTodos()){
+        for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
 
-            if(r.getJuegoId().equals(idJuego) && r.getEstadoResena() == EstadoResena.PUBLICADA){
+            if (r.getJuegoId().equals(idJuego) && r.getEstadoResena() == EstadoResena.PUBLICADA) {
 
-                if(filtro != null){
-                    if(filtro.equalsIgnoreCase("positiva")&& !r.getRecomendado()) continue;
-                    if(filtro.equalsIgnoreCase("negativa")&& r.getRecomendado()) continue;
+                if (filtro != null) {
+                    if (filtro.equalsIgnoreCase("positiva") && !r.getRecomendado()) continue;
+                    if (filtro.equalsIgnoreCase("negativa") && r.getRecomendado()) continue;
                 }
                 resultado.add(ResenaMapper.paraDTO(r));
             }
@@ -119,17 +119,17 @@ public class ResenaControlador {
     }
 
     /**
-     * Recupera el historial de reseñas publicadas o ocultas de un usuario
-     *
-     * El metodo recorre el repositorio de reseñas filtrando por el ID del autor, incluyendo las reseñas con estado OCULTA
-     *
+     * Recupera el historial de reseñas publicadas o ocultas de un usuario.
+     * <p>
+     * El metodo recorre el repositorio de reseñas filtrando por el ID del autor, incluyendo las reseñas con estado OCULTA.
+     * <p>
      * Filtrado:
-     *  se incliyen reseñas en estado PUBLICADA y OCULTA
-     *  se exluyen las ELIMINADAS
+     * se incliyen reseñas en estado PUBLICADA y OCULTA,
+     * se exluyen las ELIMINADAS.
      *
      * @param idUsuario Identificador único del usuario cuyas reseñas se desean consultar.
      * @return Una List de ResenaDTO con las reseñas del usuario.
-     * Si el usuario no tiene reseñas o han sido todas eliminadas devuelve una lista vacía
+     * Si el usuario no tiene reseñas o han sido todas eliminadas devuelve una lista vacía.
      */
     public List<ResenaDTO> verResenasUsuario(Long idUsuario) {
         List<ResenaDTO> resultado = new ArrayList<>();
@@ -147,24 +147,24 @@ public class ResenaControlador {
     }
 
     /**
-     * Cambia el estado de una reseña a OCULTA
-     *
+     * Cambia el estado de una reseña a OCULTA.
+     * <p>
      * cuando está OCULTA la reseña deja de ser visible para los usuarios pero permanece en el historial del usuario dueño.
-     *
+     * <p>
      * Validaciones:
-     *  la reseña debe existir en el repositorio
-     *  solo el dueño de la reserña puede ocultarla
+     * la reseña debe existir en el repositorio,
+     * solo el dueño de la reserña puede ocultarla.
      *
-     * @param idResena es el identificador unico de la reseña a ocultar
-     * @param idUsuario identificador del usuario que quiere ocultar la reseña
-     * @throws IllegalArgumentException si no encuentra la reeña con el ID indicado
-     * @throws RuntimeException si el usuario intenta ocultar una reseña que no es suya
+     * @param idResena  es el identificador unico de la reseña a ocultar.
+     * @param idUsuario identificador del usuario que quiere ocultar la reseña.
+     * @throws IllegalArgumentException si no encuentra la reeña con el ID indicado.
+     * @throws RuntimeException         si el usuario intenta ocultar una reseña que no es suya.
      */
-    public void ocultarResena(Long idResena, Long idUsuario){
+    public void ocultarResena(Long idResena, Long idUsuario) {
         ResenaEntidad resena = resenaRepo.obtenerPorId(idResena)
-                .orElseThrow(()-> new IllegalArgumentException("Reseña no encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
-        if(!resena.getUsuarioId().equals(idUsuario)){
+        if (!resena.getUsuarioId().equals(idUsuario)) {
             throw new RuntimeException("las reseñas que no son tuyas no pueden ocultarse");
         }
 
@@ -181,24 +181,24 @@ public class ResenaControlador {
     }
 
     /**
-     * Borra una reseña existente
-     *
-     * No elimina el registro, solo cambia el estado mediante la actualizacion
-     *
+     * Borra una reseña existente.
+     * <p>
+     * No elimina el registro, solo cambia el estado mediante la actualizacion.
+     * <p>
      * Validaciones realizadas:
-     *  verifica que la reseña con el ID de reseña exista
-     *  comprueba que el ID del usuario coincida con el autor de la reseña
+     * verifica que la reseña con el ID de reseña exista,
+     * comprueba que el ID del usuario coincida con el autor de la reseña.
      *
-     * @param idResena es el identificador unico de la reseña a eliminar
-     * @param idUsuario identificador del usuario que quiere eliminar la reseña
-     * @throws IllegalArgumentException si no encuentra la reeña con el ID indicado
-     * @throws RuntimeException si el usuario intenta eliminar una reseña que no es suya
+     * @param idResena  es el identificador unico de la reseña a eliminar.
+     * @param idUsuario identificador del usuario que quiere eliminar la reseña.
+     * @throws IllegalArgumentException si no encuentra la reeña con el ID indicado.
+     * @throws RuntimeException         si el usuario intenta eliminar una reseña que no es suya.
      */
-    public void eliminarResena(Long idResena, Long idUsuario){
+    public void eliminarResena(Long idResena, Long idUsuario) {
         ResenaEntidad resena = resenaRepo.obtenerPorId(idResena)
-                .orElseThrow(()-> new IllegalArgumentException("Reseña no encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
-        if(!resena.getUsuarioId().equals(idUsuario)){
+        if (!resena.getUsuarioId().equals(idUsuario)) {
             throw new RuntimeException("las reseñas que no son tuyas no pueden eliminarse");
         }
         ResenaForm formEliminar = new ResenaForm(
@@ -214,6 +214,4 @@ public class ResenaControlador {
     }
 
 
-
-
-    }
+}

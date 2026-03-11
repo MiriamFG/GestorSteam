@@ -35,7 +35,7 @@ public class ResenaRepoInMemory implements IResenaRepo {
     @Override
     public Optional<ResenaEntidad> actualizar(Long id, ResenaForm form) {
         var resenaOpc = obtenerPorId(id);
-        if(resenaOpc.isEmpty()){
+        if (resenaOpc.isEmpty()) {
             throw new IllegalArgumentException("Reseña no encontrada");
         }
         var resenaActualizada = new ResenaEntidad(id, form.getIdUsuario(), form.getIdJuego(), form.getRecomendado(), form.getTextoResena());
@@ -46,6 +46,6 @@ public class ResenaRepoInMemory implements IResenaRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return resenas.removeIf(r ->r.getId().equals(id));
+        return resenas.removeIf(r -> r.getId().equals(id));
     }
 }

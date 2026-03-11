@@ -12,6 +12,7 @@ public class FormularioInvalidoException extends Exception {
         super("Errores de validación en el formulario");
         this.errores = errores;
     }
+
     public List<String> getErrores() {
         return errores;
     }

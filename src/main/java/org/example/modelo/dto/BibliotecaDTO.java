@@ -3,7 +3,6 @@ package org.example.modelo.dto;
 import org.example.modelo.entidad.BibliotecaEntidad;
 import org.example.modelo.enums.EstadoInstalacion;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

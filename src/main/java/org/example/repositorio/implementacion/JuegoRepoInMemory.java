@@ -12,6 +12,7 @@ import java.util.Optional;
 public class JuegoRepoInMemory implements IJuegoRepo {
     private static List<JuegoEntidad> juegos = new ArrayList<>();
     private static Long idCount = 1L;
+
     @Override
     public Optional<JuegoEntidad> crear(JuegoForm form) {
         var juego = new JuegoEntidad(idCount++, form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), 0, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
@@ -38,11 +39,11 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 
     @Override
     public Optional<JuegoEntidad> actualizar(Long id, JuegoForm form, Optional<Integer> descuento) {
-        var juegoOpc = obtenerPorId(id).orElseThrow(()->new IllegalArgumentException("Juego no encontrado"));
+        var juegoOpc = obtenerPorId(id).orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
 
         var descuentoNuevo = descuento.orElse(juegoOpc.getDescuentoActual());
 
-        var juegoActualizado = new JuegoEntidad(id,form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), descuentoNuevo, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
+        var juegoActualizado = new JuegoEntidad(id, form.getTitulo(), form.getDescipcion(), form.getDesarrollador(), form.getFechaLanz(), form.getPrecioBase(), descuentoNuevo, form.getCategoria(), form.getClasificacionEdad(), form.getIdiomasDisponibles(), EstadoJuego.DISPONIBLE);
         juegos.removeIf(j -> j.getId().equals(id));
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);
@@ -54,7 +55,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     }
 
     @Override
-    public Optional<JuegoEntidad> obtenerPorTitulo(String titulo){
+    public Optional<JuegoEntidad> obtenerPorTitulo(String titulo) {
         return juegos.stream()
                 .filter(j -> j.getTitulo().equalsIgnoreCase(titulo))
                 .findFirst();

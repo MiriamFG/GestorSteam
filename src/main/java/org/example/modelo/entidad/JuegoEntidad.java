@@ -38,7 +38,7 @@ public class JuegoEntidad {
         return id;
     }
 
-    public String getTitulo(){
+    public String getTitulo() {
         return titulo;
     }
 
