@@ -85,15 +85,17 @@ public class UsuarioForm {
      *
      * @throws FormularioInvalidoException
      */
+
+    final int LONGITUD_2 = 2;
+    final int LONGITUD_3 = 3;
+    final int LONGITUD_20 = 20;
+    final int LONGITUD_50 = 50;
+    final int LONGITUD_8 = 8;
+    final int ANIO_MENOR = 13;
+    final int CIEN = 100;
+
     public void validarFormulario() throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
-        final int LONGITUD_2 = 2;
-        final int LONGITUD_3 = 3;
-        final int LONGITUD_20 = 20;
-        final int LONGITUD_50 = 50;
-        final int LONGITUD_8 = 8;
-        final int ANIO_MENOR = 13;
-        final int CIEN = 100;
 
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
             errores.add(new ErrorDTO("nombre", ErrorTipo.REQUERIDO));

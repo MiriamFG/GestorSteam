@@ -35,8 +35,7 @@ public class JuegoDTO {
         this.estadoJuego = estadoJuego;
     }
 
-    public JuegoDTO(Long id, String titulo, String descipcion, String categoria, String desarrollador, Double precioBase, LocalDate fechaLanz) {
-    }
+
 
     public JuegoDTO(JuegoEntidad juego) {
     }

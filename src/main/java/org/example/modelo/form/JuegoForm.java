@@ -9,6 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JuegoForm {
+    public static final int CIEN = 100;
+    public static final int LONGITUD_1 = 1;
+    public static final int LONGITUD_100 = 100;
+    public static final int LONGITUD_2000 = 2000;
+    public static final int LONGITUD_2 = 2;
+    public static final double PRECIO_MINIMO = 0.00;
+    public static final double MAX_PRECIO = 999.99;
+    public static final int MIN_DESCUENTO = 0;
+    public static final int MAX_DESCUENTO = 100;
+    public static final int LONGITUD_IDIOMAS = 200;
+    public static final int LONGITUD_0 = 0;
     private String titulo;
     private String descipcion;
     private String desarrollador;
@@ -96,20 +107,20 @@ public class JuegoForm {
         if (titulo == null || titulo.trim().isEmpty()) {
             errores.add(new ErrorDTO("titulo", ErrorTipo.REQUERIDO));
         } else {
-            if (titulo.length() < 1 || titulo.length() > 100) {
-                errores.add(new ErrorDTO("titulo", ErrorTipo.LONGITUD_INVALIDA, 1, 100));
+            if (titulo.length() < LONGITUD_1 || titulo.length() > LONGITUD_100) {
+                errores.add(new ErrorDTO("titulo", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_1, LONGITUD_100));
             }
         }
 
-        if (descipcion != null && descipcion.length() > 200) {
-            errores.add(new ErrorDTO("descripcion", ErrorTipo.CAMPO_LARGO, 200));
+        if (descipcion != null && descipcion.length() > LONGITUD_2000) {
+            errores.add(new ErrorDTO("descripcion", ErrorTipo.CAMPO_LARGO, LONGITUD_2000));
         }
 
         if (desarrollador == null || desarrollador.trim().isEmpty()) {
             errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.REQUERIDO));
         } else {
-            if (desarrollador.length() < 2 || desarrollador.length() > 100) {
-                errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.LONGITUD_INVALIDA, 2, 100));
+            if (desarrollador.length() < LONGITUD_2 || desarrollador.length() > LONGITUD_100) {
+                errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_2, JuegoForm.LONGITUD_100));
             }
         }
 
@@ -121,8 +132,8 @@ public class JuegoForm {
 
         if (precioBase == null) {
             errores.add(new ErrorDTO("precioBase", ErrorTipo.REQUERIDO));
-        } else if (precioBase < 0 || precioBase > 999.99) {
-            errores.add(new ErrorDTO("precioBase", ErrorTipo.CAMPO_ENTRE, 0.00, 999.99));
+        } else if (precioBase < PRECIO_MINIMO || precioBase > MAX_PRECIO) {
+            errores.add(new ErrorDTO("precioBase", ErrorTipo.CAMPO_ENTRE, PRECIO_MINIMO, MAX_PRECIO));
         } else {
             if (Math.round(precioBase * 100) / 100 != precioBase) {
                 errores.add(new ErrorDTO("precioBase", ErrorTipo.PRECIO_DECIMALES));
@@ -132,8 +143,8 @@ public class JuegoForm {
         if (descuentoActual == null) {
             descuentoActual = 0;
         } else {
-            if (descuentoActual < 0 || descuentoActual > 100) {
-                errores.add(new ErrorDTO("descuento", ErrorTipo.LONGITUD_INVALIDA, 0, 100));
+            if (descuentoActual < LONGITUD_0 || descuentoActual > LONGITUD_100) {
+                errores.add(new ErrorDTO("descuento", ErrorTipo.LONGITUD_INVALIDA, MIN_DESCUENTO, MAX_DESCUENTO));
             }
         }
 
@@ -145,8 +156,8 @@ public class JuegoForm {
             errores.add(new ErrorDTO("idioma", ErrorTipo.REQUERIDO));
         }
         for (String idioma : idiomasDisponibles) {
-            if (idioma.length() > 200) {
-                errores.add(new ErrorDTO("idioma", ErrorTipo.CAMPO_LARGO, 200));
+            if (idioma.length() > LONGITUD_IDIOMAS) {
+                errores.add(new ErrorDTO("idioma", ErrorTipo.CAMPO_LARGO, LONGITUD_IDIOMAS));
             }
         }
 

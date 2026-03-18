@@ -32,6 +32,8 @@ public class CompraControlador {
     private final IBibliotecaRepo bibliotecaRepo;
     private final BibliotecaControlador bibliotecaControlador;
 
+    final int DIAS_PASADOS = 14;
+    final double VALOR_CIEN = 100.00;
     public CompraControlador(ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo, BibliotecaControlador bibliotecaControlador) {
         this.compraRepo = compraRepo;
         this.usuarioRepo = usuarioRepo;
@@ -207,8 +209,7 @@ public class CompraControlador {
      *                                  ya estaba reembolsada/cancelada.
      */
     public CompraDTO solicitarReembolso(Long idCompra, String motivo) {
-        final int DIAS_PASADOS = 14;
-        final double VALOR_CIEN = 100.00;
+
 
         CompraEntidad compra = compraRepo.obtenerPorId(idCompra)
                 .orElseThrow(() -> new IllegalArgumentException("Compra no encontrada"));

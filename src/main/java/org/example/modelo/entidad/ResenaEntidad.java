@@ -27,8 +27,6 @@ public class ResenaEntidad {
         this.estadoResena = estadoResena;
     }
 
-    public ResenaEntidad(Long id, Long idUsuario, Long idJuego, Boolean recomendado, String textoResena) {
-    }
 
     public Long getId() {
         return id;

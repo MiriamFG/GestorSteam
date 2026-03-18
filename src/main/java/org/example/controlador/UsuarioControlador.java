@@ -107,13 +107,16 @@ public class UsuarioControlador {
      * @throws IllegalArgumentException Si el usuario no existe,
      *                                  el estado de la cuenta no es activo o la precisión de decimales es incorrecta.
      */
+
+    final int VALOR_ZERO = 0;
+    final int DOS_DECIMALES = 2;
+    final double VALOR_CINCO = 5.00;
+    final double VALOR_CIEN = 500.00;
+    final double VALOR_QUINIENTOS = 500.00;
+
     public Double aniadirSaldo(Long idUsuario, Double cantidad) {
         var errores = new ArrayList<ErrorDTO>();
-        final int VALOR_ZERO = 0;
-        final int DOS_DECIMALES = 2;
-        final double VALOR_CINCO = 5.00;
-        final double VALOR_CIEN = 500.00;
-        final double VALOR_QUINIENTOS = 500.00;
+
 
 
         UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)

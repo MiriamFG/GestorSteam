@@ -2,9 +2,11 @@ package org.example.repositorio.implementacion;
 
 import org.example.modelo.entidad.BibliotecaEntidad;
 import org.example.modelo.entidad.ResenaEntidad;
+import org.example.modelo.enums.EstadoResena;
 import org.example.modelo.form.ResenaForm;
 import org.example.repositorio.interfaces.IResenaRepo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,7 @@ public class ResenaRepoInMemory implements IResenaRepo {
 
     @Override
     public Optional<ResenaEntidad> crear(ResenaForm form) {
-        var resena = new ResenaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getRecomendado(), form.getTextoResena());
+        var resena = new ResenaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getRecomendado(), form.getTextoResena(), form.getHorasJuegoResena(), LocalDate.now(), LocalDate.now(), EstadoResena.PUBLICADA);
         resenas.add(resena);
         return Optional.of(resena);
     }
@@ -38,7 +40,8 @@ public class ResenaRepoInMemory implements IResenaRepo {
         if (resenaOpc.isEmpty()) {
             throw new IllegalArgumentException("Reseña no encontrada");
         }
-        var resenaActualizada = new ResenaEntidad(id, form.getIdUsuario(), form.getIdJuego(), form.getRecomendado(), form.getTextoResena());
+        var resenaActualizada = new ResenaEntidad(id, form.getIdUsuario(), form.getIdJuego(),
+                form.getRecomendado(), form.getTextoResena(), form.getHorasJuegoResena(), resenaOpc.get().getFechaPubli(), LocalDate.now(),resenaOpc.get().getEstadoResena());
         resenas.removeIf(r -> r.getId().equals(id));
         resenas.add(resenaActualizada);
         return Optional.of(resenaActualizada);
