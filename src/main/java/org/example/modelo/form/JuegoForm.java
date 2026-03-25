@@ -126,8 +126,6 @@ public class JuegoForm {
 
         if (fechaLanz == null) {
             errores.add(new ErrorDTO("fechaLanzamiento", ErrorTipo.REQUERIDO));
-        } else {
-
         }
 
         if (precioBase == null) {
@@ -163,12 +161,10 @@ public class JuegoForm {
 
         if (estadoJuego == null) {
             estadoJuego = EstadoJuego.DISPONIBLE;
+        }
 
-
-            if (!errores.isEmpty()) {
-                throw new FormularioInvalidoException(errores);
-            }
-
+        if (!errores.isEmpty()) {
+            throw new FormularioInvalidoException(errores);
         }
     }
 

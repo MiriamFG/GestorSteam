@@ -77,9 +77,6 @@ public class UsuarioEntidad {
         return estadoCuenta;
     }
 
-    public void setSaldoCartera(Double nuevoSaldo) {
-
-    }
 }
 
 

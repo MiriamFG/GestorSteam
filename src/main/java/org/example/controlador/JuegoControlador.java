@@ -195,7 +195,7 @@ public class JuegoControlador {
         );
 
         JuegoEntidad actualizado = juegoRepo.actualizar(id, form, Optional.of(juego.getDescuentoActual()))
-                .orElseThrow(() -> new RuntimeException("Error al persistir el estado"));
+                .orElseThrow(() -> new IllegalArgumentException("Error al persistir el estado"));
 
         return new JuegoDTO(actualizado);
     }

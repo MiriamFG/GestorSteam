@@ -84,6 +84,8 @@ public class BibliotecaControlador {
                 case "fechaadquisicion":
                     bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getFechaAdquisicion));
                     break;
+                default:
+                    throw new IllegalArgumentException("Opción no encontrada");
             }
         }
         return bibliotecaUsuario;
@@ -118,10 +120,6 @@ public class BibliotecaControlador {
             errores.add(new ErrorDTO("juego", ErrorTipo.NO_ENCONTRADO));
         }
 
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
-        }
-
         var usuario = usuarioOpt.get();
 
         boolean duplicadoBiblioteca = false;
@@ -136,39 +134,39 @@ public class BibliotecaControlador {
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
         }
 
+        //revisar
+        //boolean compraEncontrada = false;
+        //for (var c : compraRepo.obtenerTodos()) {
+        //    if (c.getUsuarioId().equals(idUsuario) && c.getJuegoId().equals(idJuego)) {
+        //        compraEncontrada = true;
+        //        break;
+        //    }
+        //}
+        //if (!compraEncontrada) {
+        //    errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+        //}
 
-        boolean compraEncontrada = false;
-        for (var c : compraRepo.obtenerTodos()) {
-            if (c.getUsuarioId().equals(idUsuario) && c.getJuegoId().equals(idJuego)) {
-                compraEncontrada = true;
-                break;
-            }
-        }
-        if (!compraEncontrada) {
-            errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-        }
 
-
-        var fechaAdqusicion = LocalDateTime.now();
-        if (fechaAdqusicion.isBefore(usuario.getFechaReg())) {
-            errores.add(new ErrorDTO("fechaAdquisicion", ErrorTipo.FECHA_INVALIDA));
-        }
-
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
-        }
+        //var fechaAdqusicion = LocalDateTime.now();
+        //if (fechaAdqusicion.isBefore(usuario.getFechaReg())) {
+        //    errores.add(new ErrorDTO("fechaAdquisicion", ErrorTipo.FECHA_INVALIDA));
+        //}
+//
+        //if (!errores.isEmpty()) {
+        //    throw new FormularioInvalidoException(errores);
+        //}
 
         var form = new BibliotecaForm(
                 idUsuario,
                 idJuego,
-                fechaAdqusicion,
+                LocalDateTime.now(),
                 0,
                 null,
                 EstadoInstalacion.NO_INSTALADO
         );
 
         var entidad = bibliotecaRepo.crear(form)
-                .orElseThrow(() -> new RuntimeException("No se pudo crear la biblioteca"));
+                .orElseThrow(() -> new IllegalArgumentException("No se pudo crear la biblioteca"));
 
         return BibliotecaMapper.paraDTO(entidad);
 
@@ -209,7 +207,7 @@ public class BibliotecaControlador {
 
         boolean eliminado = bibliotecaRepo.eliminar(registro.getId());
         if (!eliminado) {
-            throw new RuntimeException("No se pudo eliminar el juego de la biblioteca");
+            throw new IllegalArgumentException("No se pudo eliminar el juego de la biblioteca");
         }
     }
 
@@ -231,19 +229,8 @@ public class BibliotecaControlador {
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
         List<ErrorDTO> errores = new ArrayList<>();
 
-        var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
-        if (usuarioOpt.isEmpty()) {
-            errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
-        }
-
-        var juegoOpt = juegoRepo.obtenerPorId(idJuego);
-        if (juegoOpt.isEmpty()) {
-            errores.add(new ErrorDTO("juego", ErrorTipo.NO_ENCONTRADO));
-        }
-
         BibliotecaEntidad registroBiblio = null;
 
-        boolean buscarRegistro = false;
         for (var b : bibliotecaRepo.obtenerTodos()) {
             if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
                 registroBiblio = b;
@@ -273,7 +260,7 @@ public class BibliotecaControlador {
         );
 
         var actualizado = bibliotecaRepo.actualizar(registroBiblio.getId(), formActualizado)
-                .orElseThrow(() -> new RuntimeException("No se ha podido actualizar la biblioteca"));
+                .orElseThrow(() -> new IllegalArgumentException("No se ha podido actualizar la biblioteca"));
 
         return BibliotecaMapper.paraDTO(actualizado);
     }

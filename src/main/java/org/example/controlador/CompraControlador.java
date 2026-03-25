@@ -79,7 +79,7 @@ public class CompraControlador {
             }
         }
 
-        double descuentoEuros = (juego.getPrecioBase() * juego.getDescuentoActual());
+        double descuentoEuros = juego.getPrecioBase() * juego.getDescuentoActual();
         double precioFinal = juego.getPrecioBase() - descuentoEuros;
 
         if (metodo == MetodoPago.CARTERA_STEAM && usuario.getSaldoCartera() < precioFinal) {
@@ -141,7 +141,7 @@ public class CompraControlador {
         );
 
         CompraEntidad compraActualizada = compraRepo.actualizar(compra.getId(), formActualizado)
-                .orElseThrow(() -> new RuntimeException("Error al actualizar el estado de la compra"));
+                .orElseThrow(() -> new IllegalArgumentException("Error al actualizar el estado de la compra"));
 
         bibliotecaControlador.aniadirJuegosBiblioteca(compra.getUsuarioId(), compra.getJuegoId());
 
@@ -239,7 +239,7 @@ public class CompraControlador {
                 EstadoCompra.REEMBOLSADA);
 
         CompraEntidad actualizada = compraRepo.actualizar(idCompra, formReembolso)
-                .orElseThrow(() -> new RuntimeException("Error al actualizar registro"));
+                .orElseThrow(() -> new IllegalArgumentException("Error al actualizar registro"));
 
         return CompraMapper.paraDTO(actualizada);
     }

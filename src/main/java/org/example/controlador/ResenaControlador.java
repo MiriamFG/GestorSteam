@@ -81,7 +81,7 @@ public class ResenaControlador {
         );
 
         ResenaEntidad nueva = resenaRepo.crear(form)
-                .orElseThrow(() -> new RuntimeException("Error al crear reseña"));
+                .orElseThrow(() -> new IllegalArgumentException("Error al crear reseña"));
 
         return ResenaMapper.paraDTO(nueva);
     }
@@ -109,8 +109,12 @@ public class ResenaControlador {
             if (r.getJuegoId().equals(idJuego) && r.getEstadoResena() == EstadoResena.PUBLICADA) {
 
                 if (filtro != null) {
-                    if (filtro.equalsIgnoreCase("positiva") && !r.getRecomendado()) continue;
-                    if (filtro.equalsIgnoreCase("negativa") && r.getRecomendado()) continue;
+                    if (filtro.equalsIgnoreCase("positiva") && !r.getRecomendado()){
+                        continue;
+                    }
+                    if (filtro.equalsIgnoreCase("negativa") && r.getRecomendado()){
+                        continue;
+                    }
                 }
                 resultado.add(ResenaMapper.paraDTO(r));
             }
@@ -165,7 +169,7 @@ public class ResenaControlador {
                 .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
         if (!resena.getUsuarioId().equals(idUsuario)) {
-            throw new RuntimeException("las reseñas que no son tuyas no pueden ocultarse");
+            throw new IllegalArgumentException("las reseñas que no son tuyas no pueden ocultarse");
         }
 
         ResenaForm formOcultar = new ResenaForm(
@@ -199,7 +203,7 @@ public class ResenaControlador {
                 .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
         if (!resena.getUsuarioId().equals(idUsuario)) {
-            throw new RuntimeException("las reseñas que no son tuyas no pueden eliminarse");
+            throw new IllegalArgumentException("las reseñas que no son tuyas no pueden eliminarse");
         }
         ResenaForm formEliminar = new ResenaForm(
                 resena.getUsuarioId(),

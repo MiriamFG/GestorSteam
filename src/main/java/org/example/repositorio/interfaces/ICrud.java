@@ -4,6 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICrud<E, F, ID> {
+
+    /**
+     * Crea una nueva entidad a partir de un DTO
+     *
+     * @param form Objeto de transferencia de datos con la información a persisitir.
+     * @return La entidad creada.
+     */
     Optional<E> crear(F form);
 
     /**

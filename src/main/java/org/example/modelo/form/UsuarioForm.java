@@ -170,7 +170,7 @@ public class UsuarioForm {
             int anioAct = LocalDate.now().getYear();
             int anioNac = fechaNac.getYear();
 
-            if (fechaNac == null || anioAct - anioNac < ANIO_MENOR) {
+            if (anioAct - anioNac < ANIO_MENOR) {
                 errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
             }
         }
