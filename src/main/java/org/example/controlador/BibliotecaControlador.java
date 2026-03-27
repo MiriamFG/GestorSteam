@@ -2,9 +2,9 @@ package org.example.controlador;
 
 import org.example.excepciones.FormularioInvalidoException;
 import org.example.mapper.BibliotecaMapper;
-import org.example.modelo.dto.BibliotecaDTO;
-import org.example.modelo.dto.EstadisticasBiblioDTO;
-import org.example.modelo.dto.SesionInfoDTO;
+import org.example.mapper.JuegoMapper;
+import org.example.mapper.UsuarioMapper;
+import org.example.modelo.dto.*;
 import org.example.modelo.entidad.BibliotecaEntidad;
 import org.example.modelo.enums.EstadoInstalacion;
 import org.example.modelo.form.BibliotecaForm;
@@ -28,7 +28,9 @@ public class BibliotecaControlador {
     private final IBibliotecaRepo bibliotecaRepo;
     private final ICompraRepo compraRepo;
 
-    public BibliotecaControlador(IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo, ICompraRepo compraRepo) {
+    public BibliotecaControlador(IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo,
+                                 IBibliotecaRepo bibliotecaRepo, ICompraRepo compraRepo) {
+
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
         this.bibliotecaRepo = bibliotecaRepo;
@@ -62,7 +64,21 @@ public class BibliotecaControlador {
 
         List<BibliotecaDTO> bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
                 .filter(b -> b.getUsuarioId().equals(idUsuario))
-                .map(BibliotecaDTO::new)
+                .map(entidad -> {
+                    UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
+                    JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
+                    return new BibliotecaDTO(
+                            entidad.getId(),
+                            u,
+                            entidad.getUsuarioId(),
+                            j,
+                            entidad.getJuegoId(),
+                            entidad.getFechaAdquisicion(),
+                            entidad.getNumHorasTotal(),
+                            entidad.getUltimaFechaJuego(),
+                            entidad.getEstadoInstalacion()
+                    );
+                })
                 .toList();
 
         if (orden != null) {
@@ -95,15 +111,15 @@ public class BibliotecaControlador {
      * Vincula un juego al usuario tras la compra válda.
      * <p>
      * Validaciones:
-         * Existencia: confirma que el usuario y el juego existen en sistema.
-         * Propiedad: verifica que existe un registro de compra.
-         * Unucudad: evita la duplicidad de licencias en la biblioteca.
+     * Existencia: confirma que el usuario y el juego existen en sistema.
+     * Propiedad: verifica que existe un registro de compra.
+     * Unucudad: evita la duplicidad de licencias en la biblioteca.
      * <p>
      * Tras las validaciones, inicializa el registro con 0 horas de juego y estado 'NO_INSTALADO'.
      *
      * @param idUsuario Identificador del usuario que recibe el juego.
      * @param idJuego   Identificador del juego a añadir.
-     * @return un BibliotecaDTO que representa la nueva entrada en la colección del usuario.
+     * @return BibliotecaDTO que representa la nueva entrada en la colección del usuario.
      * @throws FormularioInvalidoException Si no se encuentra la compra, el juego ya existe
      *                                     en la biblioteca o hay inconsistencias en las fechas.
      */
@@ -133,28 +149,6 @@ public class BibliotecaControlador {
         if (duplicadoBiblioteca) {
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
         }
-
-        //revisar
-        //boolean compraEncontrada = false;
-        //for (var c : compraRepo.obtenerTodos()) {
-        //    if (c.getUsuarioId().equals(idUsuario) && c.getJuegoId().equals(idJuego)) {
-        //        compraEncontrada = true;
-        //        break;
-        //    }
-        //}
-        //if (!compraEncontrada) {
-        //    errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-        //}
-
-
-        //var fechaAdqusicion = LocalDateTime.now();
-        //if (fechaAdqusicion.isBefore(usuario.getFechaReg())) {
-        //    errores.add(new ErrorDTO("fechaAdquisicion", ErrorTipo.FECHA_INVALIDA));
-        //}
-//
-        //if (!errores.isEmpty()) {
-        //    throw new FormularioInvalidoException(errores);
-        //}
 
         var form = new BibliotecaForm(
                 idUsuario,
@@ -221,7 +215,7 @@ public class BibliotecaControlador {
      * @param idUsuario   Identificador del jugador.
      * @param idJuego     Identificador del título ejecutado.
      * @param horasASumar Cantidad de horas a añadir al contador global.
-     * @return un BibliotecaDTO con las estadísticas de tiempo y fecha de sesión actualizadas.
+     * @return BibliotecaDTO con las estadísticas de tiempo y fecha de sesión actualizadas.
      * @throws FormularioInvalidoException Si los IDs no son válidos, si el usuario no posee el juego
      *                                     o si la cantidad de horas es igual o menor a cero.
      * @throws RuntimeException            Si ocurre un fallo técnico durante la actualización en el repositorio.

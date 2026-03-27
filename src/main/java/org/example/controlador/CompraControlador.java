@@ -67,7 +67,7 @@ public class CompraControlador {
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         JuegoEntidad juego = juegoRepo.obtenerPorId(idJuego)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
 
         if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVA) {
             errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ACTIVO));
@@ -88,9 +88,10 @@ public class CompraControlador {
 
         if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
-        CompraForm form = new CompraForm(idUsuario, idJuego, LocalDate.now(), metodo, juego.getPrecioBase(), juego.getDescuentoActual(), EstadoCompra.PENDIENTE);
+        CompraForm form = new CompraForm(idUsuario, idJuego, LocalDate.now(), metodo, juego.getPrecioBase(), juego.getDescuentoActual(), EstadoCompra.COMPLETADA);
         CompraEntidad nuevaCompra = compraRepo.crear(form)
-                .orElseThrow(() -> new RuntimeException("Error al registar compra"));
+                .orElseThrow(() -> new IllegalArgumentException("Error al registar compra"));
+        bibliotecaControlador.aniadirJuegosBiblioteca(idUsuario, idJuego);
 
         return nuevaCompra.getId();
 

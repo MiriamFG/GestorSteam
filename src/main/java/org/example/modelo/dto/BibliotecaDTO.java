@@ -32,9 +32,6 @@ public class BibliotecaDTO {
     public BibliotecaDTO(Long id, Long usuarioId, Long juegoId, LocalDateTime fechaAdquisicion, Integer numHorasTotal, LocalDate ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
     }
 
-    public BibliotecaDTO(BibliotecaEntidad bibliotecaEntidad) {
-    }
-
     public Long getId() {
         return id;
     }

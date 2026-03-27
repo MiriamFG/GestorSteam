@@ -28,9 +28,6 @@ public class ResenaDTO {
         this.estadoResena = estadoResena;
     }
 
-    public ResenaDTO(Long id, Long usuarioId, Long juegoId, Boolean recomendado, String textoResena, Double horasJuegoResena, LocalDate fechaPubli, LocalDate fechaUltimaEdicion, EstadoResena estadoResena) {
-    }
-
     public Long getId() {
         return id;
     }

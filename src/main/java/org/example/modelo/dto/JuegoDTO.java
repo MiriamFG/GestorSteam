@@ -35,11 +35,6 @@ public class JuegoDTO {
         this.estadoJuego = estadoJuego;
     }
 
-
-
-    public JuegoDTO(JuegoEntidad juego) {
-    }
-
     public Long getId() {
         return id;
     }

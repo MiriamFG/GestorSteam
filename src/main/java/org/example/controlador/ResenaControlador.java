@@ -1,8 +1,12 @@
 package org.example.controlador;
 
 import org.example.excepciones.FormularioInvalidoException;
+import org.example.mapper.JuegoMapper;
 import org.example.mapper.ResenaMapper;
+import org.example.mapper.UsuarioMapper;
+import org.example.modelo.dto.JuegoDTO;
 import org.example.modelo.dto.ResenaDTO;
+import org.example.modelo.dto.UsuarioDTO;
 import org.example.modelo.entidad.BibliotecaEntidad;
 import org.example.modelo.entidad.ResenaEntidad;
 import org.example.modelo.enums.EstadoResena;
@@ -83,7 +87,12 @@ public class ResenaControlador {
         ResenaEntidad nueva = resenaRepo.crear(form)
                 .orElseThrow(() -> new IllegalArgumentException("Error al crear reseña"));
 
-        return ResenaMapper.paraDTO(nueva);
+        UsuarioDTO userDTO = usuarioRepo.obtenerPorId(idUsuario)
+                .map(UsuarioMapper::paraDTO).orElse(null);
+        JuegoDTO juegoDTO = juegoRepo.obtenerPorId(idJuego)
+                .map(JuegoMapper::paraDTO).orElse(null);
+
+        return ResenaMapper.paraDTO(nueva, userDTO, juegoDTO);
     }
 
     /**
@@ -104,6 +113,10 @@ public class ResenaControlador {
     public List<ResenaDTO> verResenasJuego(Long idJuego, String filtro) {
         List<ResenaDTO> resultado = new ArrayList<>();
 
+        JuegoDTO juegoDTO = juegoRepo.obtenerPorId(idJuego)
+                .map(JuegoMapper::paraDTO)
+                .orElse(null);
+
         for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
 
             if (r.getJuegoId().equals(idJuego) && r.getEstadoResena() == EstadoResena.PUBLICADA) {
@@ -116,7 +129,11 @@ public class ResenaControlador {
                         continue;
                     }
                 }
-                resultado.add(ResenaMapper.paraDTO(r));
+
+                UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(r.getUsuarioId())
+                        .map(UsuarioMapper::paraDTO)
+                        .orElse(null);
+                resultado.add(ResenaMapper.paraDTO(r, usuarioDTO, juegoDTO));
             }
         }
         return resultado;
@@ -138,12 +155,19 @@ public class ResenaControlador {
     public List<ResenaDTO> verResenasUsuario(Long idUsuario) {
         List<ResenaDTO> resultado = new ArrayList<>();
 
+        UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(idUsuario)
+                .map(UsuarioMapper::paraDTO)
+                .orElse(null);
+
         for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
 
             if (r.getUsuarioId().equals(idUsuario)) {
 
                 if (r.getEstadoResena() != EstadoResena.ELIMINADA) {
-                    resultado.add(ResenaMapper.paraDTO(r));
+                    JuegoDTO juegoDTO = juegoRepo.obtenerPorId(r.getJuegoId())
+                            .map(JuegoMapper::paraDTO)
+                            .orElse(null);
+                    resultado.add(ResenaMapper.paraDTO(r, usuarioDTO, juegoDTO));
                 }
             }
         }
