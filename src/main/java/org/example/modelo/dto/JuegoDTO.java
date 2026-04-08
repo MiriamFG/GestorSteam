@@ -35,6 +35,8 @@ public class JuegoDTO {
         this.estadoJuego = estadoJuego;
     }
 
+
+
     public Long getId() {
         return id;
     }

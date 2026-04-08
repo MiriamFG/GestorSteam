@@ -1,6 +1,7 @@
 package org.example.controlador;
 
 import org.example.excepciones.FormularioInvalidoException;
+import org.example.mapper.JuegoMapper;
 import org.example.modelo.dto.JuegoDTO;
 import org.example.modelo.entidad.JuegoEntidad;
 import org.example.modelo.enums.ClasificacionEdad;
@@ -52,7 +53,7 @@ public class JuegoControlador {
         JuegoEntidad juego = juegoRepo.crear(form)
                 .orElseThrow(() -> new IllegalStateException("No se pudo crear el juego"));
 
-        return new JuegoDTO(juego);
+        return JuegoMapper.paraDTO(juego);
     }
 
     /**
@@ -97,7 +98,7 @@ public class JuegoControlador {
      */
     public List<JuegoDTO> consultarCatalogo(String orden) {
         var juegos = juegoRepo.obtenerTodos().stream()
-                .map(JuegoDTO::new)
+                .map(JuegoDTO)
                 .toList();
 
         if ("alfabetico".equalsIgnoreCase(orden)) {
@@ -142,7 +143,7 @@ public class JuegoControlador {
         final int CIEN = 100;
 
         JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Juego no econtrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
 
         if (descuento == null || descuento < CERO || descuento > CIEN) {
             List<ErrorDTO> errores = List.of(new ErrorDTO("descuento", ErrorTipo.VALOR_DEMASIADO_ALTO));
