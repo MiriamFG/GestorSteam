@@ -92,8 +92,8 @@ public class BibliotecaControlador {
                     break;
                 case "ultimasesion":
                     bibliotecaUsuario.sort((b1, b2) -> {
-                        LocalDate f1 = b1.getUltimaFechaJuego() != null ? b1.getUltimaFechaJuego() : LocalDate.MIN;
-                        LocalDate f2 = b2.getUltimaFechaJuego() != null ? b2.getUltimaFechaJuego() : LocalDate.MIN;
+                        LocalDateTime f1 = b1.getUltimaFechaJuego() != null ? b1.getUltimaFechaJuego() : LocalDateTime.MIN;
+                        LocalDateTime f2 = b2.getUltimaFechaJuego() != null ? b2.getUltimaFechaJuego() : LocalDateTime.MIN;
                         return f1.compareTo(f2);
                     });
                     break;
@@ -126,6 +126,16 @@ public class BibliotecaControlador {
     public BibliotecaDTO aniadirJuegosBiblioteca(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
+        if (idUsuario == null || idJuego == null) {
+            if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+            if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+            throw new FormularioInvalidoException(errores);
+        }
+
+        if (!errores.isEmpty()) {
+            throw new FormularioInvalidoException(errores);
+        }
+
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
             errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
@@ -136,7 +146,9 @@ public class BibliotecaControlador {
             errores.add(new ErrorDTO("juego", ErrorTipo.NO_ENCONTRADO));
         }
 
-        var usuario = usuarioOpt.get();
+        if (!errores.isEmpty()) {
+            throw new FormularioInvalidoException(errores);
+        }
 
         boolean duplicadoBiblioteca = false;
         for (var b : bibliotecaRepo.obtenerTodos()) {
@@ -148,13 +160,14 @@ public class BibliotecaControlador {
 
         if (duplicadoBiblioteca) {
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
+            throw new FormularioInvalidoException(errores);
         }
 
         var form = new BibliotecaForm(
                 idUsuario,
                 idJuego,
                 LocalDateTime.now(),
-                0,
+                0.0,
                 null,
                 EstadoInstalacion.NO_INSTALADO
         );
@@ -181,7 +194,7 @@ public class BibliotecaControlador {
      * @throws RuntimeException            Si ocurre un error inesperado durante la persistencia en el repositorio.
      */
     public void eliminarJuego(Long idUsuario, long idJuego) throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         BibliotecaEntidad registro = null;
         for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
@@ -193,10 +206,7 @@ public class BibliotecaControlador {
 
         if (registro == null) {
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-        }
-
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+            throw new FormularioInvalidoException(errores);
         }
 
         boolean eliminado = bibliotecaRepo.eliminar(registro.getId());
@@ -221,7 +231,7 @@ public class BibliotecaControlador {
      * @throws RuntimeException            Si ocurre un fallo técnico durante la actualización en el repositorio.
      */
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         BibliotecaEntidad registroBiblio = null;
 
@@ -234,9 +244,10 @@ public class BibliotecaControlador {
 
         if (registroBiblio == null) {
             errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+            throw new FormularioInvalidoException(errores);
         }
 
-        if (horasASumar <= 0) {
+        if (horasASumar < 0) {
             errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
         }
 
@@ -248,8 +259,8 @@ public class BibliotecaControlador {
                 registroBiblio.getUsuarioId(),
                 registroBiblio.getJuegoId(),
                 registroBiblio.getFechaAdquisicion(),
-                registroBiblio.getNumHorasTotal() + horasASumar,
-                LocalDate.now(),
+                (double) (registroBiblio.getNumHorasTotal() + horasASumar),
+                LocalDateTime.now(),
                 registroBiblio.getEstadoInstalacion()
         );
 
@@ -272,7 +283,7 @@ public class BibliotecaControlador {
      * @throws FormularioInvalidoException si no existe un registro.
      */
     public SesionInfoDTO consultarUltimaSesion(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         BibliotecaEntidad registro = null;
         for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
@@ -283,18 +294,19 @@ public class BibliotecaControlador {
         }
 
         if (registro == null) {
-            throw new FormularioInvalidoException(new ArrayList<>(List.of(
-                    new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO))));
+            errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+            throw new FormularioInvalidoException(errores);
         }
 
         if (registro.getUltimaFechaJuego() == null) {
             return new SesionInfoDTO(null, null, true);
         }
 
-        LocalDate ultimaSesion = registro.getUltimaFechaJuego();
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, LocalDate.now());
+        LocalDateTime ultimaSesion = registro.getUltimaFechaJuego();
+        LocalDateTime ahora = LocalDateTime.now();
+        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, ahora);
 
-        return new SesionInfoDTO(ultimaSesion, dias, false);
+        return new SesionInfoDTO(ultimaSesion.toLocalDate(), dias, false);
     }
 
     /**

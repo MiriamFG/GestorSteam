@@ -12,10 +12,10 @@ public class BibliotecaEntidad {
     private Long juegoId;
     private LocalDateTime fechaAdquisicion;
     private Integer numHorasTotal;
-    private LocalDate ultimaFechaJuego;
+    private LocalDateTime ultimaFechaJuego;
     private EstadoInstalacion estadoInstalacion;
 
-    public BibliotecaEntidad(Long id, Long usuarioId, Long juegoId, LocalDateTime fechaAdquisicion, Integer numHorasTotal, LocalDate ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
+    public BibliotecaEntidad(Long id, Long usuarioId, Long juegoId, LocalDateTime fechaAdquisicion, Integer numHorasTotal, LocalDateTime ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
@@ -29,7 +29,7 @@ public class BibliotecaEntidad {
         return estadoInstalacion;
     }
 
-    public LocalDate getUltimaFechaJuego() {
+    public LocalDateTime getUltimaFechaJuego() {
         return ultimaFechaJuego;
     }
 

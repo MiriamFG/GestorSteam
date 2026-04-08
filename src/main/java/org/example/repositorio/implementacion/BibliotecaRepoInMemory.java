@@ -18,9 +18,14 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
 
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
-        var biblioteca = new BibliotecaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), LocalDate.now(), form.getEstadoInstalacion());
+        var biblioteca = new BibliotecaEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());
         bibliotecas.add(biblioteca);
         return Optional.of(biblioteca);
+    }
+
+    public void clear() {
+        bibliotecas.clear();
+        idCount = 1L;
     }
 
     @Override

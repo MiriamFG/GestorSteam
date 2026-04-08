@@ -14,10 +14,10 @@ public class BibliotecaDTO {
     private Long juegoId;
     private LocalDateTime fechaAdquisicion;
     private Integer numHorasTotal;
-    private LocalDate ultimaFechaJuego;
+    private LocalDateTime ultimaFechaJuego;
     private EstadoInstalacion estadoInstalacion;
 
-    public BibliotecaDTO(Long id, UsuarioDTO usuarioDTO, Long usuarioId, JuegoDTO juegoDTO, Long juegoId, LocalDateTime fechaAdquisicion, Integer numHorasTotal, LocalDate ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
+    public BibliotecaDTO(Long id, UsuarioDTO usuarioDTO, Long usuarioId, JuegoDTO juegoDTO, Long juegoId, LocalDateTime fechaAdquisicion, Integer numHorasTotal, LocalDateTime ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
         this.id = id;
         this.usuarioDTO = usuarioDTO;
         this.usuarioId = usuarioId;
@@ -60,7 +60,7 @@ public class BibliotecaDTO {
         return numHorasTotal;
     }
 
-    public LocalDate getUltimaFechaJuego() {
+    public LocalDateTime getUltimaFechaJuego() {
         return ultimaFechaJuego;
     }
 

@@ -1,6 +1,7 @@
 package org.example.modelo.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class SesionInfoDTO {
     private LocalDate fecha;
