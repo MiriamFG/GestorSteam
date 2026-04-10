@@ -78,7 +78,7 @@ public class JuegoControlador {
                 .filter(mx -> precioMax == null || mx.getPrecioBase() <= precioMax)
                 .filter(cl -> clasificacion == null || cl.getClasificacionEdad() == clasificacion)
                 .filter(e -> estado == null || e.getEstadoJuego() == estado)
-                .map(JuegoDTO::new)
+                .map(JuegoMapper::paraDTO)
                 .toList();
     }
 
@@ -98,8 +98,8 @@ public class JuegoControlador {
      */
     public List<JuegoDTO> consultarCatalogo(String orden) {
         var juegos = juegoRepo.obtenerTodos().stream()
-                .map(JuegoDTO)
-                .toList();
+                .map(JuegoMapper::paraDTO);
+                //.toList();
 
         if ("alfabetico".equalsIgnoreCase(orden)) {
             juegos.stream().sorted(Comparator.comparing(JuegoDTO::getTitulo, String.CASE_INSENSITIVE_ORDER));
@@ -123,7 +123,7 @@ public class JuegoControlador {
         JuegoEntidad juego = juegoRepo.obtenerPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
 
-        return new JuegoDTO(juego);
+        return JuegoMapper.paraDTO(juego);
     }
 
     /**
