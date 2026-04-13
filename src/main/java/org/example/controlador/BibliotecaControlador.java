@@ -173,7 +173,10 @@ public class BibliotecaControlador {
         );
 
         var entidad = bibliotecaRepo.crear(form)
-                .orElseThrow(() -> new IllegalArgumentException("No se pudo crear la biblioteca"));
+                .orElseThrow(() -> {
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         return BibliotecaMapper.paraDTO(entidad);
 
@@ -193,10 +196,17 @@ public class BibliotecaControlador {
      * @throws FormularioInvalidoException Si el juego no existe en la biblioteca del usuario.
      * @throws RuntimeException            Si ocurre un error inesperado durante la persistencia en el repositorio.
      */
-    public void eliminarJuego(Long idUsuario, long idJuego) throws FormularioInvalidoException {
+    public void eliminarJuego(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
+        if (idUsuario == null || idJuego == null) {
+            if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+            if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+            throw new FormularioInvalidoException(errores);
+        }
+
         BibliotecaEntidad registro = null;
+
         for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
             if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
                 registro = b;
@@ -211,7 +221,7 @@ public class BibliotecaControlador {
 
         boolean eliminado = bibliotecaRepo.eliminar(registro.getId());
         if (!eliminado) {
-            throw new IllegalArgumentException("No se pudo eliminar el juego de la biblioteca");
+            throw new FormularioInvalidoException(errores);
         }
     }
 
@@ -265,7 +275,10 @@ public class BibliotecaControlador {
         );
 
         var actualizado = bibliotecaRepo.actualizar(registroBiblio.getId(), formActualizado)
-                .orElseThrow(() -> new IllegalArgumentException("No se ha podido actualizar la biblioteca"));
+                .orElseThrow(() -> {
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         return BibliotecaMapper.paraDTO(actualizado);
     }

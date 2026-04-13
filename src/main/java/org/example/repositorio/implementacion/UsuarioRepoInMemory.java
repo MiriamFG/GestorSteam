@@ -33,26 +33,50 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         return new ArrayList<>(USUARIOS);
     }
 
-    @Override
-    public Optional<UsuarioEntidad> actualizar(Long aLong, UsuarioForm dto) {
-        return Optional.empty();
-    }
 
     @Override
-    public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form, Optional<Double> saldo) {
-        var usuarioOpt = obtenerPorId(id).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        var saldoNuevo = saldo.orElse(usuarioOpt.getSaldoCartera());
-
-        var usuarioActualizado = new UsuarioEntidad(id, form.getNombreUsuario(), form.getEmail(), form.getContrasena(), form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), saldoNuevo, EstadoCuenta.ACTIVA);
-        USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
-        USUARIOS.add(usuarioActualizado);
-        return Optional.of(usuarioActualizado);
+    public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form) {
+        return obtenerPorId(id).map(u -> {
+            UsuarioEntidad actualizado = new UsuarioEntidad(
+                    id,
+                    form.getNombreUsuario(),
+                    form.getEmail(),
+                    form.getContrasena(),
+                    form.getNombreReal(),
+                    form.getPais(),
+                    form.getFechaNac(),
+                    u.getFechaReg(),
+                    form.getAvatar(),
+                    u.getSaldoCartera(), // Mantenemos el saldo que ya tenía
+                    u.getEstadoCuenta()
+            );
+            USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
+            USUARIOS.add(actualizado);
+            return actualizado;
+        });
     }
 
     @Override
     public void actualizarSoloSaldo(Long id, Double nuevoSaldo) {
-        obtenerPorId(id).ifPresent(u -> u.setSaldoCartera(nuevoSaldo));
+        obtenerPorId(id).ifPresent(u -> {
+            // Creamos un nuevo objeto con los mismos datos pero el nuevo saldo
+            UsuarioEntidad actualizado = new UsuarioEntidad(
+                    u.getId(),
+                    u.getNombreUsuario(),
+                    u.getEmail(),
+                    u.getContrasena(),
+                    u.getNombreReal(),
+                    u.getPais(),
+                    u.getFechaNac(),
+                    u.getFechaReg(),
+                    u.getAvatar(),
+                    nuevoSaldo,
+                    u.getEstadoCuenta()
+            );
+
+            USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
+            USUARIOS.add(actualizado);
+        });
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.example.modelo.form.UsuarioForm;
 import java.util.Optional;
 
 public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
-    Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm form, Optional<Double> saldo);
 
     Optional<UsuarioEntidad> obtenerPorNombre(String nombre);
 

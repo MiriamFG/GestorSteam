@@ -21,7 +21,8 @@ public enum ErrorTipo {
     REGISTRADO("ya está registrado en el sistema"),
     NO_ACTIVO("el elemento está activo"),
     NO_PROPIETARIO("no tienes este juego"),
-    DUPLICADO("El elemento está duplicado");
+    DUPLICADO("El elemento está duplicado"),
+    PROHIBIDO("el usuario no tiene acceso");
 
 
     private final String mensaje;

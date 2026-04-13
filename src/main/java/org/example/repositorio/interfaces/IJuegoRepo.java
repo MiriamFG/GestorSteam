@@ -6,7 +6,5 @@ import org.example.modelo.form.JuegoForm;
 import java.util.Optional;
 
 public interface IJuegoRepo extends ICrud<JuegoEntidad, JuegoForm, Long> {
-    Optional<JuegoEntidad> actualizar(Long id, JuegoForm form, Optional<Integer> descuento);
-
     Optional<JuegoEntidad> obtenerPorTitulo(String titulo);
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class JuegoControlador {
 
@@ -98,17 +99,18 @@ public class JuegoControlador {
      */
     public List<JuegoDTO> consultarCatalogo(String orden) {
         var juegos = juegoRepo.obtenerTodos().stream()
-                .map(JuegoMapper::paraDTO);
-                //.toList();
+                .map(JuegoMapper::paraDTO)
+                .collect(Collectors.toList());
+
 
         if ("alfabetico".equalsIgnoreCase(orden)) {
             juegos.stream().sorted(Comparator.comparing(JuegoDTO::getTitulo, String.CASE_INSENSITIVE_ORDER));
         } else if ("precio".equalsIgnoreCase(orden)) {
             juegos.stream().sorted(Comparator.comparingDouble(JuegoDTO::getPrecioBase));
         } else if ("fecha".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getFechaLanz));
+            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getFechaLanz, Comparator.nullsLast(Comparator.naturalOrder())));
         }
-        return juegos.stream().toList();
+        return juegos;
 
     }
 
@@ -162,8 +164,8 @@ public class JuegoControlador {
                 juego.getEstadoJuego()
         );
 
-        JuegoEntidad actualizado = juegoRepo.actualizar(id, form, Optional.of(descuento)).orElseThrow();
-        return new JuegoDTO(actualizado);
+        JuegoEntidad actualizado = juegoRepo.actualizar(id, form).orElseThrow(() -> new IllegalArgumentException("Error al actualizar"));
+        return JuegoMapper.paraDTO(actualizado);
     }
 
     /**
@@ -195,10 +197,10 @@ public class JuegoControlador {
                 nuevoEstado
         );
 
-        JuegoEntidad actualizado = juegoRepo.actualizar(id, form, Optional.of(juego.getDescuentoActual()))
+        JuegoEntidad actualizado = juegoRepo.actualizar(id, form)
                 .orElseThrow(() -> new IllegalArgumentException("Error al persistir el estado"));
 
-        return new JuegoDTO(actualizado);
+        return JuegoMapper.paraDTO(actualizado);
     }
 
 }

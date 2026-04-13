@@ -12,6 +12,7 @@ import org.example.modelo.entidad.JuegoEntidad;
 import org.example.modelo.entidad.UsuarioEntidad;
 import org.example.modelo.enums.EstadoCompra;
 import org.example.modelo.enums.EstadoCuenta;
+import org.example.modelo.enums.EstadoJuego;
 import org.example.modelo.enums.MetodoPago;
 import org.example.modelo.form.CompraForm;
 import org.example.modelo.form.ErrorDTO;
@@ -63,24 +64,48 @@ public class CompraControlador {
     public Long realizarCompra(Long idUsuario, Long idJuego, MetodoPago metodo) throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
+        if (metodo == null) {
+            errores.add(new ErrorDTO("metodoPago", ErrorTipo.REQUERIDO));
+        }
+
         UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                .orElseThrow(() -> {
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         JuegoEntidad juego = juegoRepo.obtenerPorId(idJuego)
-                .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
+                .orElseThrow(() -> {
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
+
+        if (juego.getDescuentoActual() > 100 || juego.getDescuentoActual() < 0) {
+            errores.add(new ErrorDTO("descuento", ErrorTipo.FORMATO_INVALIDO));
+        }
+
+        if (juego.getPrecioBase() < 0) {
+            errores.add(new ErrorDTO("precio", ErrorTipo.FORMATO_INVALIDO));
+        }
+
+        if (juego.getEstadoJuego() == EstadoJuego.NO_DISPONIBLE) {
+            errores.add(new ErrorDTO("juego", ErrorTipo.NO_ACTIVO));
+        }
 
         if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVA) {
             errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ACTIVO));
         }
 
-        for (CompraEntidad c : compraRepo.obtenerTodos()) {
-            if (c.getUsuarioId().equals(idUsuario) && c.getJuegoId().equals(idJuego) && c.getEstadoCompra() == EstadoCompra.COMPLETADA) {
-                errores.add(new ErrorDTO("juego", ErrorTipo.EXISTENTE));
-            }
+        boolean yaLoTiene = compraRepo.obtenerTodos().stream()
+                .anyMatch(c -> java.util.Objects.equals(c.getUsuarioId(), idUsuario)
+                        && java.util.Objects.equals(c.getJuegoId(), idJuego)
+                        && c.getEstadoCompra() == EstadoCompra.COMPLETADA);
+
+        if (yaLoTiene) {
+            errores.add(new ErrorDTO("juego", ErrorTipo.EXISTENTE));
         }
 
-        double descuentoEuros = juego.getPrecioBase() * juego.getDescuentoActual();
-        double precioFinal = juego.getPrecioBase() - descuentoEuros;
+        double precioFinal = juego.getPrecioBase() * (1 - (juego.getDescuentoActual() / 100.0));
 
         if (metodo == MetodoPago.CARTERA_STEAM && usuario.getSaldoCartera() < precioFinal) {
             errores.add(new ErrorDTO("saldo", ErrorTipo.SALDO_INSUFICIENTE));
@@ -88,9 +113,12 @@ public class CompraControlador {
 
         if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
-        CompraForm form = new CompraForm(idUsuario, idJuego, LocalDate.now(), metodo, juego.getPrecioBase(), juego.getDescuentoActual(), EstadoCompra.COMPLETADA);
+        CompraForm form = new CompraForm(idUsuario, idJuego, LocalDate.now(), metodo, juego.getPrecioBase(), juego.getDescuentoActual(), EstadoCompra.PENDIENTE);
         CompraEntidad nuevaCompra = compraRepo.crear(form)
-                .orElseThrow(() -> new IllegalArgumentException("Error al registar compra"));
+                .orElseThrow(() -> {
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
         bibliotecaControlador.aniadirJuegosBiblioteca(idUsuario, idJuego);
 
         return nuevaCompra.getId();
@@ -117,7 +145,11 @@ public class CompraControlador {
     public CompraDTO procesarPago(Long idCompra) throws FormularioInvalidoException {
 
         CompraEntidad compra = compraRepo.obtenerPorId(idCompra)
-                .orElseThrow(() -> new IllegalArgumentException("Compra no encontrada"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         if (compra.getEstadoCompra() != EstadoCompra.PENDIENTE) {
             throw new IllegalStateException("La compra ya ha sido procesada o cancelada");
@@ -125,7 +157,12 @@ public class CompraControlador {
 
         if (compra.getMetodoPago() == MetodoPago.CARTERA_STEAM) {
             UsuarioEntidad usuario = usuarioRepo.obtenerPorId(compra.getUsuarioId())
-                    .orElseThrow(() -> new IllegalArgumentException("Uusario no encontrado"));
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDTO> errores = new ArrayList<>();
+                        errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(errores);
+                    });
+
             double precioConDescuento = compra.getPrecioSinDescuento() * (1 - (compra.getDescuentoAplicado() / 100.0));
 
             usuarioRepo.actualizarSoloSaldo(usuario.getId(), usuario.getSaldoCartera() - precioConDescuento);
@@ -142,7 +179,11 @@ public class CompraControlador {
         );
 
         CompraEntidad compraActualizada = compraRepo.actualizar(compra.getId(), formActualizado)
-                .orElseThrow(() -> new IllegalArgumentException("Error al actualizar el estado de la compra"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         bibliotecaControlador.aniadirJuegosBiblioteca(compra.getUsuarioId(), compra.getJuegoId());
 
@@ -164,19 +205,33 @@ public class CompraControlador {
      *                                  se han eliminado, o si el usuario no tiene permisos para ver esta compra.
      *
      */
-    public CompraDTO consultarDetallesCompra(Long idCompra, Long idUsuario) {
+    public CompraDTO consultarDetallesCompra(Long idCompra, Long idUsuario) throws FormularioInvalidoException {
         CompraEntidad compra = compraRepo.obtenerPorId(idCompra)
-                .orElseThrow(() -> new IllegalArgumentException("Compra no encontrada"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });;
 
         if (!compra.getUsuarioId().equals(idUsuario)) {
-            throw new IllegalArgumentException("No tienes permiso para ver esta compra");
+            ArrayList<ErrorDTO> errores = new ArrayList<>();
+            errores.add(new ErrorDTO("usuario", ErrorTipo.PROHIBIDO));
+            throw new FormularioInvalidoException(errores);
         }
 
         JuegoEntidad juego = juegoRepo.obtenerPorId(compra.getJuegoId())
-                .orElseThrow(() -> new IllegalArgumentException("El juego ya no existe en el catálogo"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });;
 
         UsuarioEntidad usuario = usuarioRepo.obtenerPorId(compra.getUsuarioId())
-                .orElseThrow(() -> new IllegalArgumentException("El usuario ya no existe"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });;
 
         UsuarioDTO usuarioDTO = UsuarioMapper.paraDTO(usuario);
         JuegoDTO juegoDTO = JuegoMapper.paraDTO(juego);
@@ -209,11 +264,15 @@ public class CompraControlador {
      * @throws IllegalStateException    Si el plazo de reembolso ha expirado o la compra
      *                                  ya estaba reembolsada/cancelada.
      */
-    public CompraDTO solicitarReembolso(Long idCompra, String motivo) {
+    public CompraDTO solicitarReembolso(Long idCompra, String motivo) throws FormularioInvalidoException {
 
 
         CompraEntidad compra = compraRepo.obtenerPorId(idCompra)
-                .orElseThrow(() -> new IllegalArgumentException("Compra no encontrada"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         long diasPasados = ChronoUnit.DAYS.between(compra.getFechaCompra(), LocalDate.now());
         if (diasPasados > DIAS_PASADOS) {
@@ -222,7 +281,11 @@ public class CompraControlador {
 
         if (compra.getMetodoPago() == MetodoPago.CARTERA_STEAM) {
             UsuarioEntidad usuario = usuarioRepo.obtenerPorId(compra.getUsuarioId())
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDTO> errores = new ArrayList<>();
+                        errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(errores);
+                    });;
 
             double aDevolver = compra.getPrecioSinDescuento() * (1 - (compra.getDescuentoAplicado() / VALOR_CIEN));
             usuarioRepo.actualizarSoloSaldo(usuario.getId(), usuario.getSaldoCartera() + aDevolver);
@@ -240,7 +303,11 @@ public class CompraControlador {
                 EstadoCompra.REEMBOLSADA);
 
         CompraEntidad actualizada = compraRepo.actualizar(idCompra, formReembolso)
-                .orElseThrow(() -> new IllegalArgumentException("Error al actualizar registro"));
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         return CompraMapper.paraDTO(actualizada);
     }
