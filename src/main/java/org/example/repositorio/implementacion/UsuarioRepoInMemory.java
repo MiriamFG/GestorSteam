@@ -47,7 +47,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                     form.getFechaNac(),
                     u.getFechaReg(),
                     form.getAvatar(),
-                    u.getSaldoCartera(), // Mantenemos el saldo que ya tenía
+                    u.getSaldoCartera(),
                     u.getEstadoCuenta()
             );
             USUARIOS.removeIf(usuario -> usuario.getId().equals(id));

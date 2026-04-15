@@ -98,7 +98,7 @@ public class UsuarioControlador {
      * <p>
      * Reglas de negocio:
      * la cuenta del usuario debe estar en estado ACTIVA,
-     * la cantiuidad debe ser positica y estar entre 5.00€ y 500.00€,
+     * la cantiuidad debe ser positiva y estar entre 5.00€ y 500.00€,
      * no se permiten más de 2 decimales,
      *
      * @param idUsuario Identificador único del usuario que recibe la recarga.
@@ -111,7 +111,7 @@ public class UsuarioControlador {
     final int VALOR_ZERO = 0;
     final int DOS_DECIMALES = 2;
     final double VALOR_CINCO = 5.00;
-    final double VALOR_CIEN = 500.00;
+    final double VALOR_CIEN = 100.00;
     final double VALOR_QUINIENTOS = 500.00;
 
     public Double aniadirSaldo(Long idUsuario, Double cantidad) {
@@ -152,7 +152,7 @@ public class UsuarioControlador {
                 usuario.getAvatar()
         );
 
-        usuarioRepo.actualizar(idUsuario, formFicticio, saldoOp);
+        usuarioRepo.actualizar(idUsuario, formFicticio);
 
         return nuevoSaldo;
     }

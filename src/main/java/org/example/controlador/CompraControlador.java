@@ -111,8 +111,6 @@ public class CompraControlador {
             errores.add(new ErrorDTO("saldo", ErrorTipo.SALDO_INSUFICIENTE));
         }
 
-        if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
-
         CompraForm form = new CompraForm(idUsuario, idJuego, LocalDate.now(), metodo, juego.getPrecioBase(), juego.getDescuentoActual(), EstadoCompra.PENDIENTE);
         CompraEntidad nuevaCompra = compraRepo.crear(form)
                 .orElseThrow(() -> {
@@ -120,6 +118,8 @@ public class CompraControlador {
                     return new FormularioInvalidoException(errores);
                 });
         bibliotecaControlador.aniadirJuegosBiblioteca(idUsuario, idJuego);
+
+        if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
         return nuevaCompra.getId();
 
