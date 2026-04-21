@@ -1,0 +1,65 @@
+package org.miriam.modelo.dto;
+
+import org.miriam.modelo.enums.EstadoInstalacion;
+
+import java.time.LocalDateTime;
+
+public class BibliotecaDTO {
+    private Long id;
+    private UsuarioDTO usuarioDTO;
+    private Long usuarioId;
+    private JuegoDTO juegoDTO;
+    private Long juegoId;
+    private LocalDateTime fechaAdquisicion;
+    private Double numHorasTotal;
+    private LocalDateTime ultimaFechaJuego;
+    private EstadoInstalacion estadoInstalacion;
+
+    public BibliotecaDTO(Long id, UsuarioDTO usuarioDTO, Long usuarioId, JuegoDTO juegoDTO, Long juegoId, LocalDateTime fechaAdquisicion, Double numHorasTotal, LocalDateTime ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
+        this.id = id;
+        this.usuarioDTO = usuarioDTO;
+        this.usuarioId = usuarioId;
+        this.juegoDTO = juegoDTO;
+        this.juegoId = juegoId;
+        this.fechaAdquisicion = fechaAdquisicion;
+        this.numHorasTotal = numHorasTotal;
+        this.ultimaFechaJuego = ultimaFechaJuego;
+        this.estadoInstalacion = estadoInstalacion;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public UsuarioDTO getUsuarioDTO() {
+        return usuarioDTO;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public JuegoDTO getJuegoDTO() {
+        return juegoDTO;
+    }
+
+    public Long getJuegoId() {
+        return juegoId;
+    }
+
+    public LocalDateTime getFechaAdquisicion() {
+        return fechaAdquisicion;
+    }
+
+    public Double getNumHorasTotal() {
+        return numHorasTotal;
+    }
+
+    public LocalDateTime getUltimaFechaJuego() {
+        return ultimaFechaJuego;
+    }
+
+    public EstadoInstalacion getEstadoInstalacion() {
+        return estadoInstalacion;
+    }
+}

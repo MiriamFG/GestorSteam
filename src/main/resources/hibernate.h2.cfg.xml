@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Conexión (datos de docker-compose.yml) -->
+        <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        <property name="hibernate.connection.url">jdbc:h2:file:./data/steamdb;AUTO_SERVER=TRUE</property>
+        <property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.connection.password"></property>
+
+        <!-- Dialecto -->
+        <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
+
+        <!-- El esquema ya existe (creado por schema.sql); sólo se valida -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- SQL en consola (útil para depurar) -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Entidades mapeadas -->
+        <mapping class="org.miriam.modelo.entidad.JuegoEntidad"/>
+    </session-factory>
+</hibernate-configuration>
