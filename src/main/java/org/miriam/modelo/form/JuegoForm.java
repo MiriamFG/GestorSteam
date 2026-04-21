@@ -4,6 +4,7 @@ import org.miriam.excepciones.FormularioInvalidoException;
 import org.miriam.modelo.enums.ClasificacionEdad;
 import org.miriam.modelo.enums.EstadoJuego;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,11 +133,12 @@ public class JuegoForm {
             errores.add(new ErrorDTO("precioBase", ErrorTipo.REQUERIDO));
         } else if (precioBase < PRECIO_MINIMO || precioBase > MAX_PRECIO) {
             errores.add(new ErrorDTO("precioBase", ErrorTipo.CAMPO_ENTRE, PRECIO_MINIMO, MAX_PRECIO));
-        } else {
-            if (Math.round(precioBase * 100) / 100 != precioBase) {
-                errores.add(new ErrorDTO("precioBase", ErrorTipo.PRECIO_DECIMALES));
-            }
         }
+
+        var value =  new BigDecimal(String.valueOf(precioBase));
+        if(value.stripTrailingZeros().scale() > LONGITUD_2)
+            errores.add(new ErrorDTO("Precio Base", ErrorTipo.MAX_DECIMALES));
+
 
         if (descuentoActual == null) {
             descuentoActual = 0;

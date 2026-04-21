@@ -1,6 +1,7 @@
 package org.miriam.controlador;
 
 import org.miriam.excepciones.FormularioInvalidoException;
+import org.miriam.mapper.BibliotecaMapper;
 import org.miriam.mapper.CompraMapper;
 import org.miriam.mapper.JuegoMapper;
 import org.miriam.mapper.UsuarioMapper;
@@ -10,37 +11,35 @@ import org.miriam.modelo.dto.UsuarioDTO;
 import org.miriam.modelo.entidad.CompraEntidad;
 import org.miriam.modelo.entidad.JuegoEntidad;
 import org.miriam.modelo.entidad.UsuarioEntidad;
-import org.miriam.modelo.enums.EstadoCompra;
-import org.miriam.modelo.enums.EstadoCuenta;
-import org.miriam.modelo.enums.EstadoJuego;
-import org.miriam.modelo.enums.MetodoPago;
+import org.miriam.modelo.enums.*;
 import org.miriam.modelo.form.CompraForm;
 import org.miriam.modelo.form.ErrorDTO;
 import org.miriam.modelo.form.ErrorTipo;
+import org.miriam.repositorio.implementacion.*;
 import org.miriam.repositorio.interfaces.IBibliotecaRepo;
 import org.miriam.repositorio.interfaces.ICompraRepo;
 import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CompraControlador {
     private final ICompraRepo compraRepo;
     private final IUsuarioRepo usuarioRepo;
     private final IJuegoRepo juegoRepo;
     private final IBibliotecaRepo bibliotecaRepo;
-    private final BibliotecaControlador bibliotecaControlador;
 
     final int DIAS_PASADOS = 14;
     final double VALOR_CIEN = 100.00;
-    public CompraControlador(ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo, BibliotecaControlador bibliotecaControlador) {
+    public CompraControlador(ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo) {
         this.compraRepo = compraRepo;
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
         this.bibliotecaRepo = bibliotecaRepo;
-        this.bibliotecaControlador = bibliotecaControlador;
     }
 
 
@@ -61,7 +60,7 @@ public class CompraControlador {
      *                                     del usuario o el saldo es insuficiente.
      * @throws IllegalArgumentException    Si el usuario o el juego no existen.
      */
-    public Long realizarCompra(Long idUsuario, Long idJuego, MetodoPago metodo) throws FormularioInvalidoException {
+    public CompraDTO realizarCompra(Long idUsuario, Long idJuego, MetodoPago metodo) throws FormularioInvalidoException {
         ArrayList<ErrorDTO> errores = new ArrayList<>();
 
         if (metodo == null) {
@@ -80,7 +79,7 @@ public class CompraControlador {
                     return new FormularioInvalidoException(errores);
                 });
 
-        if (juego.getDescuentoActual() > 100 || juego.getDescuentoActual() < 0) {
+        if (juego.getDescuentoActual() < 0) {
             errores.add(new ErrorDTO("descuento", ErrorTipo.FORMATO_INVALIDO));
         }
 
@@ -105,25 +104,20 @@ public class CompraControlador {
             errores.add(new ErrorDTO("juego", ErrorTipo.EXISTENTE));
         }
 
-        double precioFinal = juego.getPrecioBase() * (1 - (juego.getDescuentoActual() / 100.0));
-
-        if (metodo == MetodoPago.CARTERA_STEAM && usuario.getSaldoCartera() < precioFinal) {
-            errores.add(new ErrorDTO("saldo", ErrorTipo.SALDO_INSUFICIENTE));
-        }
-
         CompraForm form = new CompraForm(idUsuario, idJuego, LocalDate.now(), metodo, juego.getPrecioBase(), juego.getDescuentoActual(), EstadoCompra.PENDIENTE);
         CompraEntidad nuevaCompra = compraRepo.crear(form)
                 .orElseThrow(() -> {
                     errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
                     return new FormularioInvalidoException(errores);
                 });
-        bibliotecaControlador.aniadirJuegosBiblioteca(idUsuario, idJuego);
 
         if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
-        return nuevaCompra.getId();
+        return CompraMapper.paraDTO(nuevaCompra);
 
     }
+
+
 
 
     /**
@@ -185,7 +179,7 @@ public class CompraControlador {
                     return new FormularioInvalidoException(errores);
                 });
 
-        bibliotecaControlador.aniadirJuegosBiblioteca(compra.getUsuarioId(), compra.getJuegoId());
+       // bibliotecaControlador.aniadirJuegosBiblioteca(compra.getUsuarioId(), compra.getJuegoId());
 
         return CompraMapper.paraDTO(compraActualizada);
 
