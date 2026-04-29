@@ -1,18 +1,31 @@
 package org.miriam.modelo.entidad;
 
+import jakarta.persistence.*;
 import org.miriam.modelo.enums.EstadoResena;
 
 import java.time.LocalDate;
+@Table(name = "resena")
+@Entity
 
 public class ResenaEntidad {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "usuario_id")
     private Long usuarioId;
+    @Column(name = "juego_id")
     private Long juegoId;
+    @Column(name = "recomendado")
     private Boolean recomendado;
+    @Column(name = "texto_resena")
     private String textoResena;
+    @Column(name = "horas_juego_resena")
     private Double horasJuegoResena;
+    @Column(name = "fecha_publi")
     private LocalDate fechaPubli;
+    @Column(name = "ultima_edicion")
     private LocalDate fechaUltimaEdicion;
+    @Column(name = "estado_resena")
     private EstadoResena estadoResena;
 
     public ResenaEntidad(Long id, Long usuarioId, Long juegoId, Boolean recomendado, String textoResena, Double horasJuegoResena, LocalDate fechaPubli, LocalDate fechaUltimaEdicion, EstadoResena estadoResena) {

@@ -1,19 +1,30 @@
 package org.miriam.modelo.entidad;
 
+import jakarta.persistence.*;
 import org.miriam.modelo.enums.EstadoCompra;
 import org.miriam.modelo.enums.MetodoPago;
 
 import java.time.LocalDate;
+@Table(name = "compra")
+@Entity
 
 public class CompraEntidad {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "usuario_id")
     private Long usuarioId;
+    @Column(name = "juegi_id")
     private Long juegoId;
+    @Column(name = "fecha_compra")
     private LocalDate fechaCompra;
+    @Column(name = "metodo_pago")
     private MetodoPago metodoPago;
+    @Column(name = "precio_sin_descuento")
     private Double precioSinDescuento;
+    @Column(name = "descuento_aplicado")
     private Integer descuentoAplicado;
+    @Column(name = "estado_compra")
     private EstadoCompra estadoCompra;
 
     public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, EstadoCompra estadoCompra) {

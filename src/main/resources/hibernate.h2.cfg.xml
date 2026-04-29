@@ -22,5 +22,10 @@
 
         <!-- Entidades mapeadas -->
         <mapping class="org.miriam.modelo.entidad.JuegoEntidad"/>
+        <mapping class="org.miriam.modelo.entidad.BibliotecaEntidad"/>
+        <mapping class="org.miriam.modelo.entidad.CompraEntidad"/>
+        <mapping class="org.miriam.modelo.entidad.ResenaEntidad"/>
+        <mapping class="org.miriam.modelo.entidad.UsuarioEntidad"/>
+
     </session-factory>
 </hibernate-configuration>
