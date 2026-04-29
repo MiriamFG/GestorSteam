@@ -33,6 +33,10 @@ public class UsuarioEntidad {
     @Column(name = "estado_cuenta")
     private EstadoCuenta estadoCuenta;
 
+    public UsuarioEntidad() {
+
+    }
+
     public UsuarioEntidad(Long id, String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, Double saldoCartera, EstadoCuenta estadoCuenta) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;

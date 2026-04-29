@@ -28,6 +28,10 @@ public class ResenaEntidad {
     @Column(name = "estado_resena")
     private EstadoResena estadoResena;
 
+    public ResenaEntidad() {
+
+    }
+
     public ResenaEntidad(Long id, Long usuarioId, Long juegoId, Boolean recomendado, String textoResena, Double horasJuegoResena, LocalDate fechaPubli, LocalDate fechaUltimaEdicion, EstadoResena estadoResena) {
         this.id = id;
         this.usuarioId = usuarioId;

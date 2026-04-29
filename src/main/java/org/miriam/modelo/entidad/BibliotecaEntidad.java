@@ -24,6 +24,10 @@ public class BibliotecaEntidad {
     @Column(name = "estado_intalacion")
     private EstadoInstalacion estadoInstalacion;
 
+    public BibliotecaEntidad() {
+
+    }
+
     public BibliotecaEntidad(Long id, Long usuarioId, Long juegoId, LocalDateTime fechaAdquisicion, Double numHorasTotal, LocalDateTime ultimaFechaJuego, EstadoInstalacion estadoInstalacion) {
         this.id = id;
         this.usuarioId = usuarioId;

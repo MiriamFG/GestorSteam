@@ -27,6 +27,10 @@ public class CompraEntidad {
     @Column(name = "estado_compra")
     private EstadoCompra estadoCompra;
 
+    public CompraEntidad() {
+
+    }
+
     public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, EstadoCompra estadoCompra) {
         this.id = id;
         this.usuarioId = usuarioId;
