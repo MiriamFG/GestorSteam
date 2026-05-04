@@ -14,7 +14,7 @@ public class CompraEntidad {
     private Long id;
     @Column(name = "usuario_id")
     private Long usuarioId;
-    @Column(name = "juegi_id")
+    @Column(name = "juego_id")
     private Long juegoId;
     @Column(name = "fecha_compra")
     private LocalDate fechaCompra;
@@ -31,7 +31,7 @@ public class CompraEntidad {
 
     }
 
-    public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, EstadoCompra estadoCompra) {
+    public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Integer descuentoAplicado, EstadoCompra estadoCompra) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
@@ -41,6 +41,8 @@ public class CompraEntidad {
         this.descuentoAplicado = 0;
         this.estadoCompra = estadoCompra;
     }
+
+
 
     public Long getId() {
         return id;

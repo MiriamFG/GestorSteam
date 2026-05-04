@@ -10,6 +10,7 @@ import org.miriam.modelo.form.ErrorTipo;
 import org.miriam.modelo.form.UsuarioForm;
 import org.miriam.repositorio.implementacion.PaisesRepoInMemory;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
+import org.miriam.transaction.ITransactionManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,9 +21,12 @@ public class UsuarioControlador {
     private final IUsuarioRepo usuarioRepo;
     private PaisesRepoInMemory paisRepo = new PaisesRepoInMemory();
 
+    public ITransactionManager tm;
 
-    public UsuarioControlador(IUsuarioRepo usuarioRepo, PaisesRepoInMemory paisRepo) {
+
+    public UsuarioControlador(IUsuarioRepo usuarioRepo, PaisesRepoInMemory paisRepo, ITransactionManager tm) {
         this.usuarioRepo = usuarioRepo;
+        this.tm = tm;
     }
 
 
@@ -60,23 +64,22 @@ public class UsuarioControlador {
             errores.add(new ErrorDTO("fechaNac", ErrorTipo.FECHA_FUTURA));
         }
 
-        for (UsuarioEntidad usuario : usuarioRepo.obtenerTodos()) {
-
-            if (usuario.getNombreUsuario().equalsIgnoreCase(form.getNombreUsuario())) {
+        UsuarioEntidad nuevoUsuario = tm.inTransaction(() -> {
+            if (usuarioRepo.obtenerPorNombre(form.getNombreUsuario()).isPresent()) {
                 errores.add(new ErrorDTO("usuario", ErrorTipo.EXISTENTE));
             }
 
-            if (usuario.getEmail().equalsIgnoreCase(form.getEmail())) {
+            if (usuarioRepo.obtenerPorEmail(form.getEmail()).isPresent()) {
                 errores.add(new ErrorDTO("email", ErrorTipo.REGISTRADO));
             }
+            return usuarioRepo.crear(form)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no creado"));
 
-            if (!errores.isEmpty()) {
-                throw new FormularioInvalidoException(errores);
-            }
+        });
+
+        if (!errores.isEmpty()) {
+            throw new FormularioInvalidoException(errores);
         }
-
-        UsuarioEntidad nuevoUsuario = usuarioRepo.crear(form)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no creado"));
 
         return UsuarioMapper.paraDTO(nuevoUsuario);
     }
@@ -105,7 +108,7 @@ public class UsuarioControlador {
      * @param cantidad  cantidad  Importe a añadir a la cuenta (tipo Double).
      * @return El nuevo saldo total.
      * @throws IllegalArgumentException Si el usuario no existe,
-     *                                  el estado de la cuenta no es activo o la precisión de decimales es incorrecta.
+     * el estado de la cuenta no es activo o la precisión de decimales es incorrecta.
      */
 
     final int VALOR_ZERO = 0;
@@ -114,9 +117,8 @@ public class UsuarioControlador {
     final double VALOR_CIEN = 100.00;
     final double VALOR_QUINIENTOS = 500.00;
 
-    public Double aniadirSaldo(Long idUsuario, Double cantidad) {
+    public Double aniadirSaldo(Long idUsuario, Double cantidad) throws FormularioInvalidoException {
         var errores = new ArrayList<ErrorDTO>();
-
 
 
         UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
@@ -138,21 +140,16 @@ public class UsuarioControlador {
             errores.add(new ErrorDTO("saldo", ErrorTipo.MAX_DECIMALES, DOS_DECIMALES));
         }
 
+        if (!errores.isEmpty()) {
+            throw new FormularioInvalidoException(errores);
+        }
+
         Double nuevoSaldo = usuario.getSaldoCartera() + cantidad;
 
-        Optional<Double> saldoOp = Optional.of(nuevoSaldo);
-
-        UsuarioForm formFicticio = new UsuarioForm(
-                usuario.getNombreUsuario(),
-                usuario.getEmail(),
-                usuario.getContrasena(),
-                usuario.getNombreReal(),
-                usuario.getPais(),
-                usuario.getFechaNac(),
-                usuario.getAvatar()
-        );
-
-        usuarioRepo.actualizar(idUsuario, formFicticio);
+        tm.inTransaction(() -> {
+            usuarioRepo.actualizarSoloSaldo(idUsuario, nuevoSaldo);
+            return null;
+        });
 
         return nuevoSaldo;
     }
@@ -169,6 +166,12 @@ public class UsuarioControlador {
         UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
+        Double saldo = usuario.getSaldoCartera();
+        if (saldo == null) {
+            saldo = 0.0;
+        }
+
         return String.format("%.2f €", usuario.getSaldoCartera());
     }
+
 }

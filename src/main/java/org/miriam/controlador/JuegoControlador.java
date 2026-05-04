@@ -10,6 +10,7 @@ import org.miriam.modelo.form.ErrorDTO;
 import org.miriam.modelo.form.ErrorTipo;
 import org.miriam.modelo.form.JuegoForm;
 import org.miriam.repositorio.interfaces.IJuegoRepo;
+import org.miriam.transaction.ITransactionManager;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,8 +21,11 @@ public class JuegoControlador {
 
     private final IJuegoRepo juegoRepo;
 
-    public JuegoControlador(IJuegoRepo juegoRepo) {
+    public ITransactionManager tm;
+
+    public JuegoControlador(IJuegoRepo juegoRepo, ITransactionManager tm) {
         this.juegoRepo = juegoRepo;
+        this.tm = tm;
     }
 
 
@@ -38,20 +42,25 @@ public class JuegoControlador {
      * @throws IllegalStateException       Si ocurre un error inesperado en el repositorio durante la creación.
      */
     public JuegoDTO aniadirJuego(JuegoForm form) throws FormularioInvalidoException {
+
         form.validarForumulario();
+
         List<ErrorDTO> errores = new ArrayList<>();
 
+        JuegoEntidad juego = tm.inTransaction(()->{
 
-        if (juegoRepo.obtenerPorTitulo(form.getTitulo()).isPresent()) {
-            errores.add(new ErrorDTO("titulo", ErrorTipo.EXISTENTE));
-        }
+            if (juegoRepo.obtenerPorTitulo(form.getTitulo()).isPresent()) {
+                errores.add(new ErrorDTO("titulo", ErrorTipo.EXISTENTE));
+            }
+
+            return juegoRepo.crear(form)
+                    .orElseThrow(() -> new IllegalStateException("No se pudo crear el juego"));
+
+        });
 
         if (!errores.isEmpty()) {
             throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
-
-        JuegoEntidad juego = juegoRepo.crear(form)
-                .orElseThrow(() -> new IllegalStateException("No se pudo crear el juego"));
 
         return JuegoMapper.paraDTO(juego);
     }
@@ -103,11 +112,14 @@ public class JuegoControlador {
 
 
         if ("alfabetico".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getTitulo, String.CASE_INSENSITIVE_ORDER));
+            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getTitulo, String.CASE_INSENSITIVE_ORDER))
+                    .toList();;
         } else if ("precio".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparingDouble(JuegoDTO::getPrecioBase));
+            juegos.stream().sorted(Comparator.comparingDouble(JuegoDTO::getPrecioBase))
+                    .toList();;
         } else if ("fecha".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getFechaLanz, Comparator.nullsLast(Comparator.naturalOrder())));
+            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getFechaLanz, Comparator.nullsLast(Comparator.naturalOrder())))
+                    .toList();
         }
         return juegos;
 
@@ -144,7 +156,7 @@ public class JuegoControlador {
         final int CIEN = 100;
 
         JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Juego con ID " + id + " no encontrado"));
 
         if (descuento == null || descuento < CERO || descuento > CIEN) {
             List<ErrorDTO> errores = List.of(new ErrorDTO("descuento", ErrorTipo.VALOR_DEMASIADO_ALTO));
@@ -163,7 +175,11 @@ public class JuegoControlador {
                 juego.getEstadoJuego()
         );
 
-        JuegoEntidad actualizado = juegoRepo.actualizar(id, form).orElseThrow(() -> new IllegalArgumentException("Error al actualizar"));
+        JuegoEntidad actualizado = tm.inTransaction(()-> {
+            return juegoRepo.actualizar(id, form)
+                    .orElseThrow(() -> new IllegalArgumentException("Error al actualizar"));
+        });
+
         return JuegoMapper.paraDTO(actualizado);
     }
 
@@ -196,8 +212,10 @@ public class JuegoControlador {
                 nuevoEstado
         );
 
-        JuegoEntidad actualizado = juegoRepo.actualizar(id, form)
-                .orElseThrow(() -> new IllegalArgumentException("Error al persistir el estado"));
+        JuegoEntidad actualizado = tm.inTransaction(()->{
+            return juegoRepo.actualizar(id, form)
+                    .orElseThrow(() -> new IllegalArgumentException("Error al persistir el estado"));
+        });
 
         return JuegoMapper.paraDTO(actualizado);
     }

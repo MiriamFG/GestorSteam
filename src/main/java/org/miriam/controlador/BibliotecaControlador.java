@@ -14,6 +14,7 @@ import org.miriam.repositorio.interfaces.IBibliotecaRepo;
 import org.miriam.repositorio.interfaces.ICompraRepo;
 import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
+import org.miriam.transaction.ITransactionManager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,15 +26,18 @@ public class BibliotecaControlador {
     private final IUsuarioRepo usuarioRepo;
     private final IJuegoRepo juegoRepo;
     private final IBibliotecaRepo bibliotecaRepo;
-    private final ICompraRepo compraRepo;
+
+    public ITransactionManager tm;
+
+
 
     public BibliotecaControlador(IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo,
-                                 IBibliotecaRepo bibliotecaRepo, ICompraRepo compraRepo) {
+                                 IBibliotecaRepo bibliotecaRepo, ITransactionManager tm) {
 
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
         this.bibliotecaRepo = bibliotecaRepo;
-        this.compraRepo = compraRepo;
+        this.tm = tm;
     }
 
 
@@ -52,14 +56,14 @@ public class BibliotecaControlador {
      * @throws FormularioInvalidoException Si el identificador del usuario no corresponde a ninguna cuenta activa.
      */
     public List<BibliotecaDTO> verBibliotecaPersonal(Long idUsuario, String orden) throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+
 
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
+            ArrayList<ErrorDTO> errores = new ArrayList<>();
             errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+            throw new FormularioInvalidoException(errores);
         }
-
-        if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
         List<BibliotecaDTO> bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
                 .filter(b -> b.getUsuarioId().equals(idUsuario))
@@ -131,10 +135,6 @@ public class BibliotecaControlador {
             throw new FormularioInvalidoException(errores);
         }
 
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
-        }
-
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
             errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
@@ -162,20 +162,24 @@ public class BibliotecaControlador {
             throw new FormularioInvalidoException(errores);
         }
 
-        var form = new BibliotecaForm(
-                idUsuario,
-                idJuego,
-                LocalDateTime.now(),
-                0.0,
-                null,
-                EstadoInstalacion.NO_INSTALADO
-        );
+        BibliotecaEntidad entidad = tm.inTransaction(()-> {
 
-        var entidad = bibliotecaRepo.crear(form)
-                .orElseThrow(() -> {
-                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
-                    return new FormularioInvalidoException(errores);
-                });
+            var form = new BibliotecaForm(
+                    idUsuario,
+                    idJuego,
+                    LocalDateTime.now(),
+                    0.0,
+                    null,
+                    EstadoInstalacion.NO_INSTALADO
+            );
+
+            return bibliotecaRepo.crear(form)
+                    .orElseThrow(() -> {
+                        errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new IllegalArgumentException("Error al crear en biblioteca");
+                    });
+        });
+
         UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
         JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
 
@@ -220,10 +224,18 @@ public class BibliotecaControlador {
             throw new FormularioInvalidoException(errores);
         }
 
-        boolean eliminado = bibliotecaRepo.eliminar(registro.getId());
-        if (!eliminado) {
-            throw new FormularioInvalidoException(errores);
-        }
+        final Long registroId = registro.getId();
+
+        tm.inTransaction(()-> {
+            boolean eliminado = bibliotecaRepo.eliminar(registroId);
+
+            if (!eliminado) {
+                throw new IllegalArgumentException("Error al eliminar el juego de la biblioteca");
+            }
+            return null;
+
+        });
+
     }
 
     /**
@@ -266,20 +278,26 @@ public class BibliotecaControlador {
             throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
 
-        var formActualizado = new BibliotecaForm(
-                registroBiblio.getUsuarioId(),
-                registroBiblio.getJuegoId(),
-                registroBiblio.getFechaAdquisicion(),
-                (double) (registroBiblio.getNumHorasTotal() + horasASumar),
-                LocalDateTime.now(),
-                registroBiblio.getEstadoInstalacion()
-        );
+        final BibliotecaEntidad registroFinal = registroBiblio;
 
-        var actualizado = bibliotecaRepo.actualizar(registroBiblio.getId(), formActualizado)
-                .orElseThrow(() -> {
-                    errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
-                    return new FormularioInvalidoException(errores);
-                });
+        BibliotecaEntidad actualizado = tm.inTransaction(()->{
+            var formActualizado = new BibliotecaForm(
+                    registroFinal.getUsuarioId(),
+                    registroFinal.getJuegoId(),
+                    registroFinal.getFechaAdquisicion(),
+                    (double) (registroFinal.getNumHorasTotal() + horasASumar),
+                    LocalDateTime.now(),
+                    registroFinal.getEstadoInstalacion()
+            );
+
+            return bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
+                    .orElseThrow(() -> {
+                        errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new IllegalArgumentException("Error al actualizar la biblioteca");
+                    });
+
+        });
+
         UsuarioDTO u = usuarioRepo.obtenerPorId(actualizado.getUsuarioId())
                 .map(UsuarioMapper::paraDTO).orElse(null);
         JuegoDTO j = juegoRepo.obtenerPorId(actualizado.getJuegoId())
@@ -302,28 +320,23 @@ public class BibliotecaControlador {
      * @throws FormularioInvalidoException si no existe un registro.
      */
     public SesionInfoDTO consultarUltimaSesion(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        BibliotecaEntidad registro = null;
-        for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
-            if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
-                registro = b;
-                break;
-            }
-        }
-
-        if (registro == null) {
-            errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-            throw new FormularioInvalidoException(errores);
-        }
+        BibliotecaEntidad registro = bibliotecaRepo.obtenerTodos().stream()
+                .filter(b -> b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego))
+                .findFirst()
+                .orElseThrow(() -> {
+                    ArrayList<ErrorDTO> errores = new ArrayList<>();
+                    errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                    return new FormularioInvalidoException(errores);
+                });
 
         if (registro.getUltimaFechaJuego() == null) {
             return new SesionInfoDTO(null, null, true);
         }
 
         LocalDateTime ultimaSesion = registro.getUltimaFechaJuego();
-        LocalDateTime ahora = LocalDateTime.now();
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, ahora);
+
+        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, LocalDateTime.now());
 
         return new SesionInfoDTO(ultimaSesion.toLocalDate(), dias, false);
     }
@@ -342,7 +355,7 @@ public class BibliotecaControlador {
      */
     public EstadisticasBiblioDTO consultarEstadisticas(Long idUsuario) {
         int totalJuegos = 0;
-        int horasTotales = 0;
+        double horasTotales = 0.0;
         int juegosInstalados = 0;
         double valorTotalBiblioteca = 0.0;
         int juegosNuncaJugados = 0;
@@ -379,7 +392,7 @@ public class BibliotecaControlador {
         }
         return new EstadisticasBiblioDTO(
                 totalJuegos,
-                horasTotales,
+                (int)horasTotales,
                 juegosInstalados,
                 juegoMasJuegado,
                 valorTotalBiblioteca,

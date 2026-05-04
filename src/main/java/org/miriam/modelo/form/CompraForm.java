@@ -27,11 +27,11 @@ public class CompraForm {
     }
 
 
-    public Long getUsuarioDTO() {
+    public Long getIdUsuario() {
         return idUsuario;
     }
 
-    public Long getJuegoDTO() {
+    public Long getIdJuego() {
         return idJuego;
     }
 

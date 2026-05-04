@@ -43,15 +43,8 @@ public class ResenaForm {
     public Double getHorasJuegoResena() {
         return horasJuegoResena;
     }
-
-    //constructor 6 parámetros para formOcultar
-    public ResenaForm(Long idUsuario, Long idJuego, Boolean recomendado, String texto, Double horas, EstadoResena estado) {
-        this.idUsuario = idUsuario;
-        this.idJuego = idJuego;
-        this.recomendado = recomendado;
-        this.textoResena = texto;
-        this.horasJuegoResena = horas;
-        this.estado = estado;
+    public EstadoResena getEstado() {
+        return estado;
     }
 
 

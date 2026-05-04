@@ -9,6 +9,8 @@ public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
 
     Optional<UsuarioEntidad> obtenerPorNombre(String nombre);
 
+    Optional<UsuarioEntidad> obtenerPorEmail(String email);
+
 
     void actualizarSoloSaldo(Long id, Double nuevoSaldo);
 }
