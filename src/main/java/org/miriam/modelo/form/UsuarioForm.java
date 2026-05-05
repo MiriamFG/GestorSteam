@@ -173,7 +173,14 @@ public class UsuarioForm {
             if (anioAct - anioNac < ANIO_MENOR) {
                 errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
             }
+
+            if (fechaNac.isAfter(LocalDate.now())) {
+                errores.add(new ErrorDTO("fechaNac", ErrorTipo.FECHA_FUTURA));
+            }
+
         }
+
+
 
         if (avatar != null && avatar.length() > CIEN) {
             errores.add(new ErrorDTO("avatar", ErrorTipo.CAMPO_LARGO, CIEN));

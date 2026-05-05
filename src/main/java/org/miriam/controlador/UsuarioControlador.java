@@ -60,10 +60,6 @@ public class UsuarioControlador {
             errores.add(new ErrorDTO("pais", ErrorTipo.NO_ENCONTRADO));
         }
 
-        if (form.getFechaNac().isAfter(LocalDate.now())) {
-            errores.add(new ErrorDTO("fechaNac", ErrorTipo.FECHA_FUTURA));
-        }
-
         UsuarioEntidad nuevoUsuario = tm.inTransaction(() -> {
             if (usuarioRepo.obtenerPorNombre(form.getNombreUsuario()).isPresent()) {
                 errores.add(new ErrorDTO("usuario", ErrorTipo.EXISTENTE));
@@ -72,14 +68,13 @@ public class UsuarioControlador {
             if (usuarioRepo.obtenerPorEmail(form.getEmail()).isPresent()) {
                 errores.add(new ErrorDTO("email", ErrorTipo.REGISTRADO));
             }
-            return usuarioRepo.crear(form)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no creado"));
+            if (!errores.isEmpty()) {
+                throw new FormularioInvalidoException(errores);
+            }
+
+            return usuarioRepo.crear(form);
 
         });
-
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
-        }
 
         return UsuarioMapper.paraDTO(nuevoUsuario);
     }

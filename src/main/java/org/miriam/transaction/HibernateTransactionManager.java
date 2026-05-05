@@ -21,19 +21,24 @@ public class HibernateTransactionManager implements ITransactionManager, ISesion
         Transaction tx = null;
         try (Session s = HibernateUtil.getSessionFactory().openSession()) {
             session = s;
-            tx = s.beginTransaction();
-            T result = work.get();
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw e;
+            try {
+                tx = s.beginTransaction();
+                T result = work.get();
+                tx.commit();
+                return result;
+            } catch (Exception e) {
+                if (tx != null)
+                    tx.rollback();
+                throw e;
+            }
         } finally {
             session = null;
         }
     }
 
-    /** Devuelve la sesión activa dentro de un bloque {@link #inTransaction}. */
+    /**
+     * Devuelve la sesión activa dentro de un bloque {@link #inTransaction}.
+     */
     public Session getSession() {
         return session;
     }
