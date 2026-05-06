@@ -33,7 +33,7 @@ public class BibliotecaRepoHibernate implements IBibliotecaRepo {
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
         var session = sesionManager.getSession();
-        var biblio = new BibliotecaEntidad(-1L, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());
+        var biblio = new BibliotecaEntidad(0L, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());
         session.persist(biblio);
         return Optional.of(biblio);
     }

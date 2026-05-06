@@ -24,15 +24,15 @@ public class ResenaControlador {
     private final IUsuarioRepo usuarioRepo;
     private final IJuegoRepo juegoRepo;
     private final IBibliotecaRepo bibliotecaRepo;
-    private final BibliotecaControlador bibliotecaControlador;
 
-    public ResenaControlador(IResenaRepo resenaRepo, ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo, BibliotecaControlador bibliotecaControlador) {
+
+    public ResenaControlador(IResenaRepo resenaRepo, ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo) {
         this.resenaRepo = resenaRepo;
         this.compraRepo = compraRepo;
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
         this.bibliotecaRepo = bibliotecaRepo;
-        this.bibliotecaControlador = bibliotecaControlador;
+
     }
 
     /**

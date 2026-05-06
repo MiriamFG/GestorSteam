@@ -38,22 +38,29 @@ public class UsuarioRepoHibernate implements IUsuarioRepo {
     }
 
     @Override
-    public void actualizarSoloSaldo(Long id, Double nuevoSaldo) {
+    public boolean actualizarSoloSaldo(Long id, Double nuevoSaldo) {
         var session = sesionManager.getSession();
 
         String hql = "UPDATE UsuarioEntidad u SET u.saldoCartera = :nuevoSaldo WHERE u.id = :id";
 
-        session.createMutationQuery(hql)
+        int n = session.createMutationQuery(hql)
                 .setParameter("nuevoSaldo", nuevoSaldo)
                 .setParameter("id", id)
                 .executeUpdate();
+        boolean actualizado;
 
+        if (n == 1){
+            actualizado = true;
+        }else{
+            actualizado = false;
+        }
+        return actualizado;
     }
 
     @Override
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
         var session = sesionManager.getSession();
-        var user = new UsuarioEntidad(-1L, form.getNombreUsuario(), form.getEmail(), form.getContrasena(),
+        var user = new UsuarioEntidad(0L, form.getNombreUsuario(), form.getEmail(), form.getContrasena(),
                 form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), 0.0, EstadoCuenta.ACTIVA);
         session.persist(user);
         return Optional.of(user);

@@ -12,5 +12,5 @@ public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
     Optional<UsuarioEntidad> obtenerPorEmail(String email);
 
 
-    void actualizarSoloSaldo(Long id, Double nuevoSaldo);
+    boolean actualizarSoloSaldo(Long id, Double nuevoSaldo);
 }

@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 public class JuegoControlador {
 
     private final IJuegoRepo juegoRepo;
+    final int CERO = 0;
+    final int CIEN = 100;
 
     public ITransactionManager tm;
 
@@ -53,14 +55,16 @@ public class JuegoControlador {
                 errores.add(new ErrorDTO("titulo", ErrorTipo.EXISTENTE));
             }
 
+            if (!errores.isEmpty()) {
+                throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+            }
+
             return juegoRepo.crear(form)
-                    .orElseThrow(() -> new IllegalStateException("No se pudo crear el juego"));
+                    .orElseThrow((()-> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION)))));
 
         });
 
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
-        }
+
 
         return JuegoMapper.paraDTO(juego);
     }
@@ -132,11 +136,17 @@ public class JuegoControlador {
      * @return un JuegoDTO con la información completa del juego.
      * @throws IllegalArgumentException Si no se encuentra ningún juego con el ID proporcionado.
      */
-    public JuegoDTO consultarJuego(Long id) {
-        JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
+    public JuegoDTO consultarJuego(Long id) throws FormularioInvalidoException {
 
-        return JuegoMapper.paraDTO(juego);
+        return tm.inTransaction(()->{
+
+            JuegoEntidad juego = juegoRepo.obtenerPorId(id)
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+
+            return JuegoMapper.paraDTO(juego);
+
+        });
+
     }
 
     /**
@@ -152,32 +162,32 @@ public class JuegoControlador {
      */
     public JuegoDTO aplicarDescuento(Long id, Integer descuento) throws FormularioInvalidoException {
 
-        final int CERO = 0;
-        final int CIEN = 100;
-
-        JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Juego con ID " + id + " no encontrado"));
-
         if (descuento == null || descuento < CERO || descuento > CIEN) {
             List<ErrorDTO> errores = List.of(new ErrorDTO("descuento", ErrorTipo.VALOR_DEMASIADO_ALTO));
             throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
-        JuegoForm form = new JuegoForm(
-                juego.getTitulo(),
-                juego.getDescipcion(),
-                juego.getDesarrollador(),
-                juego.getFechaLanz(),
-                juego.getPrecioBase(),
-                descuento,
-                juego.getCategoria(),
-                juego.getClasificacionEdad(),
-                juego.getIdiomasDisponibles(),
-                juego.getEstadoJuego()
-        );
+
 
         JuegoEntidad actualizado = tm.inTransaction(()-> {
+
+            JuegoEntidad juego = juegoRepo.obtenerPorId(id)
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+
+            JuegoForm form = new JuegoForm(
+                    juego.getTitulo(),
+                    juego.getDescipcion(),
+                    juego.getDesarrollador(),
+                    juego.getFechaLanz(),
+                    juego.getPrecioBase(),
+                    descuento,
+                    juego.getCategoria(),
+                    juego.getClasificacionEdad(),
+                    juego.getIdiomasDisponibles(),
+                    juego.getEstadoJuego()
+            );
+
             return juegoRepo.actualizar(id, form)
-                    .orElseThrow(() -> new IllegalArgumentException("Error al actualizar"));
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
         });
 
         return JuegoMapper.paraDTO(actualizado);
@@ -191,30 +201,33 @@ public class JuegoControlador {
      * @return El DTO con el estado ya modificado.
      * @throws IllegalArgumentException Si el estado es nulo o el juego no existe.
      */
-    public JuegoDTO cambiarEstado(Long id, EstadoJuego nuevoEstado) {
+    public JuegoDTO cambiarEstado(Long id, EstadoJuego nuevoEstado) throws FormularioInvalidoException {
         if (nuevoEstado == null) {
             throw new IllegalArgumentException("Estado inválido");
         }
 
-        JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Juego no encontrado"));
-
-        JuegoForm form = new JuegoForm(
-                juego.getTitulo(),
-                juego.getDescipcion(),
-                juego.getDesarrollador(),
-                juego.getFechaLanz(),
-                juego.getPrecioBase(),
-                juego.getDescuentoActual(),
-                juego.getCategoria(),
-                juego.getClasificacionEdad(),
-                juego.getIdiomasDisponibles(),
-                nuevoEstado
-        );
 
         JuegoEntidad actualizado = tm.inTransaction(()->{
+
+
+            JuegoEntidad juego = juegoRepo.obtenerPorId(id)
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+
+            JuegoForm form = new JuegoForm(
+                    juego.getTitulo(),
+                    juego.getDescipcion(),
+                    juego.getDesarrollador(),
+                    juego.getFechaLanz(),
+                    juego.getPrecioBase(),
+                    juego.getDescuentoActual(),
+                    juego.getCategoria(),
+                    juego.getClasificacionEdad(),
+                    juego.getIdiomasDisponibles(),
+                    nuevoEstado
+            );
+
             return juegoRepo.actualizar(id, form)
-                    .orElseThrow(() -> new IllegalArgumentException("Error al persistir el estado"));
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
         });
 
         return JuegoMapper.paraDTO(actualizado);

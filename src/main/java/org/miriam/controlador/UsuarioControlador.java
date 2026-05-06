@@ -14,6 +14,7 @@ import org.miriam.transaction.ITransactionManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UsuarioControlador {
@@ -72,7 +73,7 @@ public class UsuarioControlador {
                 throw new FormularioInvalidoException(errores);
             }
 
-            return usuarioRepo.crear(form);
+            return usuarioRepo.crear(form).orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
 
         });
 
@@ -86,9 +87,17 @@ public class UsuarioControlador {
      * @return el UsuarioEntidad correspondiente al nombre indicado.
      * @throws IllegalArgumentException si no existe ningun usuario con ese nombre en el repositorio.
      */
-    public UsuarioEntidad consultarPerfilPorNombre(String nombreUsuario) {
-        return usuarioRepo.obtenerPorNombre(nombreUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    public UsuarioDTO consultarPerfilPorNombre(String nombreUsuario) throws FormularioInvalidoException {
+
+        UsuarioEntidad usuario = tm.inTransaction(()-> {
+            var usuarioEncontrado = usuarioRepo.obtenerPorNombre(nombreUsuario)
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+
+            return usuarioEncontrado;
+        });
+
+        return UsuarioMapper.paraDTO(usuario);
+
     }
 
     /**
@@ -112,16 +121,8 @@ public class UsuarioControlador {
     final double VALOR_CIEN = 100.00;
     final double VALOR_QUINIENTOS = 500.00;
 
-    public Double aniadirSaldo(Long idUsuario, Double cantidad) throws FormularioInvalidoException {
+    public boolean aniadirSaldo(Long idUsuario, Double cantidad) throws FormularioInvalidoException {
         var errores = new ArrayList<ErrorDTO>();
-
-
-        UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVA) {
-            errores.add(new ErrorDTO("cuenta", ErrorTipo.NO_ACTIVO));
-        }
 
         if (cantidad <= VALOR_ZERO) {
             errores.add(new ErrorDTO("saldo", ErrorTipo.VALOR_DEMASIADO_BAJO));
@@ -139,14 +140,21 @@ public class UsuarioControlador {
             throw new FormularioInvalidoException(errores);
         }
 
-        Double nuevoSaldo = usuario.getSaldoCartera() + cantidad;
+        return tm.inTransaction(() -> {
 
-        tm.inTransaction(() -> {
-            usuarioRepo.actualizarSoloSaldo(idUsuario, nuevoSaldo);
-            return null;
+            UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVA) {
+                errores.add(new ErrorDTO("cuenta", ErrorTipo.NO_ACTIVO));
+            }
+
+            Double nuevoSaldo = usuario.getSaldoCartera() + cantidad;
+
+            boolean usuarioActualizado = usuarioRepo.actualizarSoloSaldo(idUsuario, nuevoSaldo);
+
+            return usuarioActualizado;
         });
-
-        return nuevoSaldo;
     }
 
     /**
@@ -157,16 +165,15 @@ public class UsuarioControlador {
      * @return Una String que representa el saldo formateado.
      * @throws IllegalArgumentException Si el ID proporcionado no corresponde a ningún usuario existente.
      */
-    public String consultarSaldo(Long idUsuario) {
-        UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    public UsuarioDTO consultarSaldo(Long idUsuario) throws FormularioInvalidoException {
 
-        Double saldo = usuario.getSaldoCartera();
-        if (saldo == null) {
-            saldo = 0.0;
-        }
+        UsuarioEntidad usuario = tm.inTransaction(()->
+             usuarioRepo.obtenerPorId(idUsuario)
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))))
 
-        return String.format("%.2f €", usuario.getSaldoCartera());
+        );
+
+        return UsuarioMapper.paraDTO(usuario);
     }
 
 }

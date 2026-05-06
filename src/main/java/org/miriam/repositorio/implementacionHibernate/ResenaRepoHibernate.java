@@ -29,7 +29,7 @@ public class ResenaRepoHibernate implements IResenaRepo {
     @Override
     public Optional<ResenaEntidad> crear(ResenaForm form) {
         var session = sesionManager.getSession();
-        var resena = new ResenaEntidad(-1L, form.getIdUsuario(), form.getIdJuego(), form.getRecomendado(), form.getTextoResena(), form.getHorasJuegoResena(), LocalDate.now(), LocalDate.now(), form.getEstado());
+        var resena = new ResenaEntidad(0L, form.getIdUsuario(), form.getIdJuego(), form.getRecomendado(), form.getTextoResena(), form.getHorasJuegoResena(), LocalDate.now(), LocalDate.now(), form.getEstado());
         session.persist(resena);
         return Optional.of(resena);
     }
