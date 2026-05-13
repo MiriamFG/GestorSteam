@@ -15,13 +15,13 @@ public class ResenaForm {
     private EstadoResena estado;
 
 
-    public ResenaForm(Long idUsuario, Long idJuego, Boolean recomendado, String textoResena, Double horas) {
+    public ResenaForm(Long idUsuario, Long idJuego, Boolean recomendado, String textoResena, Double horas, EstadoResena estado) {
         this.idUsuario = idUsuario;
         this.idJuego = idJuego;
         this.recomendado = recomendado;
         this.textoResena = textoResena;
         this.horasJuegoResena = horas;
-        this.estado = EstadoResena.PUBLICADA;
+        this.estado = estado;
     }
 
     public Long getIdUsuario() {
@@ -43,6 +43,7 @@ public class ResenaForm {
     public Double getHorasJuegoResena() {
         return horasJuegoResena;
     }
+
     public EstadoResena getEstado() {
         return estado;
     }

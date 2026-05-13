@@ -15,7 +15,7 @@ public class CompraRepoInMemory implements ICompraRepo {
 
     @Override
     public Optional<CompraEntidad> crear(CompraForm form) {
-        var compra = new CompraEntidad(idCount++, form.getUsuarioDTO(), form.getJuegoDTO(), LocalDate.now(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getEstadoCompra());
+        var compra = new CompraEntidad(idCount++, form.getIdUsuario(), form.getIdJuego(), LocalDate.now(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getDescuentoAplicado(), form.getEstadoCompra());
         compras.add(compra);
         return Optional.of(compra);
     }
@@ -38,7 +38,7 @@ public class CompraRepoInMemory implements ICompraRepo {
         if (compraOpc.isEmpty()) {
             throw new IllegalArgumentException("Compra no encontrada");
         }
-        var compraActualizada = new CompraEntidad(id, form.getUsuarioDTO(), form.getJuegoDTO(), compraOpc.get().getFechaCompra(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getEstadoCompra());
+        var compraActualizada = new CompraEntidad(id, form.getIdUsuario(), form.getIdJuego(), compraOpc.get().getFechaCompra(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getDescuentoAplicado(), form.getEstadoCompra());
         compras.removeIf(c -> c.getId().equals(id));
         compras.add(compraActualizada);
         return Optional.of(compraActualizada);

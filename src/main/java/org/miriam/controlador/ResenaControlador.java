@@ -1,6 +1,7 @@
 package org.miriam.controlador;
 
 import org.miriam.excepciones.FormularioInvalidoException;
+import org.miriam.mapper.CompraMapper;
 import org.miriam.mapper.JuegoMapper;
 import org.miriam.mapper.ResenaMapper;
 import org.miriam.mapper.UsuarioMapper;
@@ -14,9 +15,11 @@ import org.miriam.modelo.form.ErrorDTO;
 import org.miriam.modelo.form.ErrorTipo;
 import org.miriam.modelo.form.ResenaForm;
 import org.miriam.repositorio.interfaces.*;
+import org.miriam.transaction.ITransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ResenaControlador {
     private final IResenaRepo resenaRepo;
@@ -25,13 +28,16 @@ public class ResenaControlador {
     private final IJuegoRepo juegoRepo;
     private final IBibliotecaRepo bibliotecaRepo;
 
+    public ITransactionManager tm;
 
-    public ResenaControlador(IResenaRepo resenaRepo, ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo) {
+
+    public ResenaControlador(IResenaRepo resenaRepo, ICompraRepo compraRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IBibliotecaRepo bibliotecaRepo, ITransactionManager tm) {
         this.resenaRepo = resenaRepo;
         this.compraRepo = compraRepo;
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
         this.bibliotecaRepo = bibliotecaRepo;
+        this.tm = tm;
 
     }
 
@@ -53,46 +59,49 @@ public class ResenaControlador {
      * @throws RuntimeException            Si ocurre un error inesperado al crear la reseña en el repositorio.
      */
     public ResenaDTO escribirResena(Long idUsuario, Long idJuego, Boolean recomendado, String texto) throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+        return tm.inTransaction(()->{
+            ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        BibliotecaEntidad registroBiblio = null;
-        for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
-            if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
-                registroBiblio = b;
-                break;
+            BibliotecaEntidad registroBiblio = null;
+            for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
+                if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
+                    registroBiblio = b;
+                    break;
+                }
             }
-        }
 
-        if (registroBiblio == null) {
-            errores.add(new ErrorDTO("juego", ErrorTipo.NO_PROPIETARIO));
-        }
-
-        for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
-            if (r.getUsuarioId().equals(idUsuario) && r.getJuegoId().equals(idJuego)) {
-                errores.add(new ErrorDTO("resena", ErrorTipo.DUPLICADO));
-                break;
+            if (registroBiblio == null) {
+                errores.add(new ErrorDTO("juego", ErrorTipo.NO_PROPIETARIO));
             }
-        }
 
-        if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
+            for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
+                if (r.getUsuarioId().equals(idUsuario) && r.getJuegoId().equals(idJuego)) {
+                    errores.add(new ErrorDTO("resena", ErrorTipo.DUPLICADO));
+                    break;
+                }
+            }
 
-        ResenaForm form = new ResenaForm(
-                idUsuario,
-                idJuego,
-                recomendado,
-                texto,
-                registroBiblio.getNumHorasTotal().doubleValue()
-        );
+            if (!errores.isEmpty()) throw new FormularioInvalidoException(errores);
 
-        ResenaEntidad nueva = resenaRepo.crear(form)
-                .orElseThrow(() -> new IllegalArgumentException("Error al crear reseña"));
+            ResenaForm form = new ResenaForm(
+                    idUsuario,
+                    idJuego,
+                    recomendado,
+                    texto,
+                    registroBiblio.getNumHorasTotal().doubleValue(),
+                    EstadoResena.PUBLICADA
+            );
 
-        UsuarioDTO userDTO = usuarioRepo.obtenerPorId(idUsuario)
-                .map(UsuarioMapper::paraDTO).orElse(null);
-        JuegoDTO juegoDTO = juegoRepo.obtenerPorId(idJuego)
-                .map(JuegoMapper::paraDTO).orElse(null);
+            ResenaEntidad nueva = resenaRepo.crear(form)
+                    .orElseThrow(() -> new IllegalArgumentException("Error al crear reseña"));
 
-        return ResenaMapper.paraDTO(nueva, userDTO, juegoDTO);
+            UsuarioDTO userDTO = usuarioRepo.obtenerPorId(idUsuario)
+                    .map(UsuarioMapper::paraDTO).orElse(null);
+            JuegoDTO juegoDTO = juegoRepo.obtenerPorId(idJuego)
+                    .map(JuegoMapper::paraDTO).orElse(null);
+
+            return ResenaMapper.paraDTO(nueva, userDTO, juegoDTO);
+        });
     }
 
     /**
@@ -110,33 +119,34 @@ public class ResenaControlador {
      * @return una List de ResenaDTO con las reseñas que cumplen los criterios,
      * Devuelve lista vacia si no hay coincidencias.
      */
-    public List<ResenaDTO> verResenasJuego(Long idJuego, String filtro) {
-        List<ResenaDTO> resultado = new ArrayList<>();
+    public List<ResenaDTO> verResenasJuego(Long idJuego, String filtro) throws FormularioInvalidoException {
+        return tm.inTransaction(()->{
+            List<ResenaDTO> resultado = new ArrayList<>();
 
-        JuegoDTO juegoDTO = juegoRepo.obtenerPorId(idJuego)
-                .map(JuegoMapper::paraDTO)
-                .orElse(null);
+            JuegoDTO juegoDTO = juegoRepo.obtenerPorId(idJuego)
+                    .map(JuegoMapper::paraDTO)
+                    .orElse(null);
 
-        for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
+            for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
 
-            if (r.getJuegoId().equals(idJuego) && r.getEstadoResena() == EstadoResena.PUBLICADA) {
+                if (r.getJuegoId().equals(idJuego) && r.getEstadoResena() == EstadoResena.PUBLICADA) {
 
-                if (filtro != null) {
-                    if (filtro.equalsIgnoreCase("positiva") && !r.getRecomendado()){
-                        continue;
+                    if (filtro != null) {
+                        if (filtro.equalsIgnoreCase("positiva") && !r.getRecomendado()){
+                            continue;
+                        }
+                        if (filtro.equalsIgnoreCase("negativa") && r.getRecomendado()){
+                            continue;
+                        }
                     }
-                    if (filtro.equalsIgnoreCase("negativa") && r.getRecomendado()){
-                        continue;
-                    }
+                    UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(r.getUsuarioId())
+                            .map(UsuarioMapper::paraDTO)
+                            .orElse(null);
+                    resultado.add(ResenaMapper.paraDTO(r, usuarioDTO, juegoDTO));
                 }
-
-                UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(r.getUsuarioId())
-                        .map(UsuarioMapper::paraDTO)
-                        .orElse(null);
-                resultado.add(ResenaMapper.paraDTO(r, usuarioDTO, juegoDTO));
             }
-        }
-        return resultado;
+            return resultado;
+        });
     }
 
     /**
@@ -152,26 +162,28 @@ public class ResenaControlador {
      * @return Una List de ResenaDTO con las reseñas del usuario.
      * Si el usuario no tiene reseñas o han sido todas eliminadas devuelve una lista vacía.
      */
-    public List<ResenaDTO> verResenasUsuario(Long idUsuario) {
-        List<ResenaDTO> resultado = new ArrayList<>();
+    public List<ResenaDTO> verResenasUsuario(Long idUsuario) throws FormularioInvalidoException {
+        return tm.inTransaction(()->{
+            List<ResenaDTO> resultado = new ArrayList<>();
 
-        UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(idUsuario)
-                .map(UsuarioMapper::paraDTO)
-                .orElse(null);
+            UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(idUsuario)
+                    .map(UsuarioMapper::paraDTO)
+                    .orElse(null);
 
-        for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
+            for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
 
-            if (r.getUsuarioId().equals(idUsuario)) {
+                if (r.getUsuarioId().equals(idUsuario)) {
 
-                if (r.getEstadoResena() != EstadoResena.ELIMINADA) {
-                    JuegoDTO juegoDTO = juegoRepo.obtenerPorId(r.getJuegoId())
-                            .map(JuegoMapper::paraDTO)
-                            .orElse(null);
-                    resultado.add(ResenaMapper.paraDTO(r, usuarioDTO, juegoDTO));
+                    if (r.getEstadoResena() != EstadoResena.ELIMINADA) {
+                        JuegoDTO juegoDTO = juegoRepo.obtenerPorId(r.getJuegoId())
+                                .map(JuegoMapper::paraDTO)
+                                .orElse(null);
+                        resultado.add(ResenaMapper.paraDTO(r, usuarioDTO, juegoDTO));
+                    }
                 }
             }
-        }
-        return resultado;
+            return resultado;
+        });
     }
 
     /**
@@ -188,24 +200,28 @@ public class ResenaControlador {
      * @throws IllegalArgumentException si no encuentra la reeña con el ID indicado.
      * @throws RuntimeException         si el usuario intenta ocultar una reseña que no es suya.
      */
-    public void ocultarResena(Long idResena, Long idUsuario) {
-        ResenaEntidad resena = resenaRepo.obtenerPorId(idResena)
-                .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
+    public void ocultarResena(Long idResena, Long idUsuario) throws FormularioInvalidoException {
+       tm.inTransaction(()->{
+            ResenaEntidad resena = resenaRepo.obtenerPorId(idResena)
+                    .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
-        if (!resena.getUsuarioId().equals(idUsuario)) {
-            throw new IllegalArgumentException("las reseñas que no son tuyas no pueden ocultarse");
-        }
+            if (!resena.getUsuarioId().equals(idUsuario)) {
+                throw new IllegalArgumentException("las reseñas que no son tuyas no pueden ocultarse");
+            }
 
-        ResenaForm formOcultar = new ResenaForm(
-                resena.getUsuarioId(),
-                resena.getJuegoId(),
-                resena.getRecomendado(),
-                resena.getTextoResena(),
-                resena.getHorasJuegoResena(),
-                EstadoResena.OCULTA
-        );
+            ResenaForm formOcultar = new ResenaForm(
+                    resena.getUsuarioId(),
+                    resena.getJuegoId(),
+                    resena.getRecomendado(),
+                    resena.getTextoResena(),
+                    resena.getHorasJuegoResena(),
+                    EstadoResena.OCULTA
+            );
 
-        resenaRepo.actualizar(idResena, formOcultar);
+            resenaRepo.actualizar(idResena, formOcultar);
+
+            return null;
+        });
     }
 
     /**
@@ -222,23 +238,32 @@ public class ResenaControlador {
      * @throws IllegalArgumentException si no encuentra la reeña con el ID indicado.
      * @throws RuntimeException         si el usuario intenta eliminar una reseña que no es suya.
      */
-    public void eliminarResena(Long idResena, Long idUsuario) {
-        ResenaEntidad resena = resenaRepo.obtenerPorId(idResena)
-                .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
+    public ResenaDTO eliminarResena(Long idResena, Long idUsuario) throws FormularioInvalidoException {
+        return tm.inTransaction(()->{
+            ResenaEntidad resena = resenaRepo.obtenerPorId(idResena)
+                    .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
-        if (!resena.getUsuarioId().equals(idUsuario)) {
-            throw new IllegalArgumentException("las reseñas que no son tuyas no pueden eliminarse");
-        }
-        ResenaForm formEliminar = new ResenaForm(
-                resena.getUsuarioId(),
-                resena.getJuegoId(),
-                resena.getRecomendado(),
-                resena.getTextoResena(),
-                resena.getHorasJuegoResena(),
-                EstadoResena.ELIMINADA
-        );
+            if (!resena.getUsuarioId().equals(idUsuario)) {
+                throw new IllegalArgumentException("las reseñas que no son tuyas no pueden eliminarse");
+            }
+            ResenaForm formEliminar = new ResenaForm(
+                    resena.getUsuarioId(),
+                    resena.getJuegoId(),
+                    resena.getRecomendado(),
+                    resena.getTextoResena(),
+                    resena.getHorasJuegoResena(),
+                    EstadoResena.ELIMINADA
+            );
 
-        resenaRepo.actualizar(idResena, formEliminar);
+            ResenaEntidad resenaActualizada = resenaRepo.actualizar(idResena, formEliminar).
+                    orElseThrow(()-> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("resenaNoEliminada", ErrorTipo.NO_ACTUALIZADO))));
+
+            UsuarioDTO usuarioDTO = UsuarioMapper.paraDTO(usuarioRepo.obtenerPorId(idUsuario).get());
+            JuegoDTO juegoDTO = JuegoMapper.paraDTO(juegoRepo.obtenerPorId(resena.getJuegoId()).get());
+
+            return ResenaMapper.paraDTO(resenaActualizada, usuarioDTO, juegoDTO);
+
+        });
     }
 
 

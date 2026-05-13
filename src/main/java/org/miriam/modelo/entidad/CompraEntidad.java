@@ -23,7 +23,7 @@ public class CompraEntidad {
     @Column(name = "precio_sin_descuento")
     private Double precioSinDescuento;
     @Column(name = "descuento_aplicado")
-    private Integer descuentoAplicado;
+    private Double descuentoAplicado;
     @Column(name = "estado_compra")
     private EstadoCompra estadoCompra;
 
@@ -31,14 +31,14 @@ public class CompraEntidad {
 
     }
 
-    public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Integer descuentoAplicado, EstadoCompra estadoCompra) {
+    public CompraEntidad(Long id, Long usuarioId, Long juegoId, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Double descuentoAplicado, EstadoCompra estadoCompra) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
         this.fechaCompra = fechaCompra;
         this.metodoPago = metodoPago;
         this.precioSinDescuento = precioSinDescuento;
-        this.descuentoAplicado = 0;
+        this.descuentoAplicado = 0d;
         this.estadoCompra = estadoCompra;
     }
 
@@ -68,7 +68,7 @@ public class CompraEntidad {
         return precioSinDescuento;
     }
 
-    public Integer getDescuentoAplicado() {
+    public Double getDescuentoAplicado() {
         return descuentoAplicado;
     }
 

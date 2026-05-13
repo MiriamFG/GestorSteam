@@ -8,6 +8,7 @@ import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UsuarioRepoInMemory implements IUsuarioRepo {
@@ -57,26 +58,36 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     @Override
-    public void actualizarSoloSaldo(Long id, Double nuevoSaldo) {
-        obtenerPorId(id).ifPresent(u -> {
+    public boolean actualizarSoloSaldo(Long id, Double nuevoSaldo) {
+
+        if (obtenerPorId(id).isPresent()){
+            UsuarioEntidad antiguo = obtenerPorId(id).get();
+
             // Creamos un nuevo objeto con los mismos datos pero el nuevo saldo
             UsuarioEntidad actualizado = new UsuarioEntidad(
-                    u.getId(),
-                    u.getNombreUsuario(),
-                    u.getEmail(),
-                    u.getContrasena(),
-                    u.getNombreReal(),
-                    u.getPais(),
-                    u.getFechaNac(),
-                    u.getFechaReg(),
-                    u.getAvatar(),
+                    antiguo.getId(),
+                    antiguo.getNombreUsuario(),
+                    antiguo.getEmail(),
+                    antiguo.getContrasena(),
+                    antiguo.getNombreReal(),
+                    antiguo.getPais(),
+                    antiguo.getFechaNac(),
+                    antiguo.getFechaReg(),
+                    antiguo.getAvatar(),
                     nuevoSaldo,
-                    u.getEstadoCuenta()
+                    antiguo.getEstadoCuenta()
             );
 
             USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
             USUARIOS.add(actualizado);
-        });
+
+            if(!Objects.equals(antiguo.getSaldoCartera(), actualizado.getSaldoCartera())){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -88,6 +99,13 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
         return USUARIOS.stream()
                 .filter(u -> u.getNombreUsuario().equalsIgnoreCase(nombre))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<UsuarioEntidad> obtenerPorEmail(String email) {
+        return USUARIOS.stream()
+                .filter(u -> u.getNombreUsuario().equalsIgnoreCase(email))
                 .findFirst();
     }
 }

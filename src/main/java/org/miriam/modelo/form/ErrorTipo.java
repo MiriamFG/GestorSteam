@@ -23,7 +23,9 @@ public enum ErrorTipo {
     NO_PROPIETARIO("no tienes este juego"),
     DUPLICADO("El elemento está duplicado"),
     PROHIBIDO("el usuario no tiene acceso"),
-    ERROR_CREACION("error al crear");
+    ERROR_CREACION("error al crear"),
+    ESTADO_INVALIDO("el estado no es válido"),
+    NO_ACTUALIZADO("no se ha podido actualizar");
 
 
     private final String mensaje;

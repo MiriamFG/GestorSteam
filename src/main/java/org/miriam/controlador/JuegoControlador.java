@@ -64,8 +64,6 @@ public class JuegoControlador {
 
         });
 
-
-
         return JuegoMapper.paraDTO(juego);
     }
 
@@ -139,7 +137,6 @@ public class JuegoControlador {
     public JuegoDTO consultarJuego(Long id) throws FormularioInvalidoException {
 
         return tm.inTransaction(()->{
-
             JuegoEntidad juego = juegoRepo.obtenerPorId(id)
                     .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
 
@@ -166,7 +163,6 @@ public class JuegoControlador {
             List<ErrorDTO> errores = List.of(new ErrorDTO("descuento", ErrorTipo.VALOR_DEMASIADO_ALTO));
             throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
         }
-
 
         JuegoEntidad actualizado = tm.inTransaction(()-> {
 
@@ -205,10 +201,7 @@ public class JuegoControlador {
         if (nuevoEstado == null) {
             throw new IllegalArgumentException("Estado inválido");
         }
-
-
         JuegoEntidad actualizado = tm.inTransaction(()->{
-
 
             JuegoEntidad juego = juegoRepo.obtenerPorId(id)
                     .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));

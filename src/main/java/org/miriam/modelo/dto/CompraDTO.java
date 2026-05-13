@@ -12,10 +12,10 @@ public class CompraDTO {
     private LocalDate fechaCompra;
     private MetodoPago metodoPago;
     private Double precioSinDescuento;
-    private Integer descuentoAplicado;
+    private Double descuentoAplicado;
     private EstadoCompra estadoCompra;
 
-    public CompraDTO(Long id, UsuarioDTO usuarioDTO, JuegoDTO juegoDTO, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Integer descuentoAplicado, EstadoCompra estadoCompra) {
+    public CompraDTO(Long id, UsuarioDTO usuarioDTO, JuegoDTO juegoDTO, LocalDate fechaCompra, MetodoPago metodoPago, Double precioSinDescuento, Double descuentoAplicado, EstadoCompra estadoCompra) {
         this.id = id;
         this.usuarioDTO = usuarioDTO;
         this.juegoDTO = juegoDTO;
@@ -50,7 +50,7 @@ public class CompraDTO {
         return precioSinDescuento;
     }
 
-    public Integer getDescuentoAplicado() {
+    public Double getDescuentoAplicado() {
         return descuentoAplicado;
     }
 

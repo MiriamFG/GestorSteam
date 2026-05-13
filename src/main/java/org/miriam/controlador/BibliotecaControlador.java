@@ -30,7 +30,6 @@ public class BibliotecaControlador {
     public ITransactionManager tm;
 
 
-
     public BibliotecaControlador(IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo,
                                  IBibliotecaRepo bibliotecaRepo, ITransactionManager tm) {
 
@@ -57,57 +56,58 @@ public class BibliotecaControlador {
      */
     public List<BibliotecaDTO> verBibliotecaPersonal(Long idUsuario, String orden) throws FormularioInvalidoException {
 
-
-        var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
-        if (usuarioOpt.isEmpty()) {
-            ArrayList<ErrorDTO> errores = new ArrayList<>();
-            errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
-            throw new FormularioInvalidoException(errores);
-        }
-
-        List<BibliotecaDTO> bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
-                .filter(b -> b.getUsuarioId().equals(idUsuario))
-                .map(entidad -> {
-                    UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
-                    JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
-                    return new BibliotecaDTO(
-                            entidad.getId(),
-                            u,
-                            entidad.getUsuarioId(),
-                            j,
-                            entidad.getJuegoId(),
-                            entidad.getFechaAdquisicion(),
-                            entidad.getNumHorasTotal(),
-                            entidad.getUltimaFechaJuego(),
-                            entidad.getEstadoInstalacion()
-                    );
-                })
-                .toList();
-
-        if (orden != null) {
-            switch (orden.toLowerCase()) {
-                case "alfabetico":
-                    bibliotecaUsuario.sort((b1, b2) -> b1.getJuegoDTO().getTitulo()
-                            .compareToIgnoreCase(b2.getJuegoDTO().getTitulo()));
-                    break;
-                case "tiempo":
-                    bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getNumHorasTotal));
-                    break;
-                case "ultimasesion":
-                    bibliotecaUsuario.sort((b1, b2) -> {
-                        LocalDateTime f1 = b1.getUltimaFechaJuego() != null ? b1.getUltimaFechaJuego() : LocalDateTime.MIN;
-                        LocalDateTime f2 = b2.getUltimaFechaJuego() != null ? b2.getUltimaFechaJuego() : LocalDateTime.MIN;
-                        return f1.compareTo(f2);
-                    });
-                    break;
-                case "fechaadquisicion":
-                    bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getFechaAdquisicion));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Opción no encontrada");
+        return tm.inTransaction(() -> {
+            var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
+            if (usuarioOpt.isEmpty()) {
+                ArrayList<ErrorDTO> errores = new ArrayList<>();
+                errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                throw new FormularioInvalidoException(errores);
             }
-        }
-        return bibliotecaUsuario;
+
+            List<BibliotecaDTO> bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
+                    .filter(b -> b.getUsuarioId().equals(idUsuario))
+                    .map(entidad -> {
+                        UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
+                        JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
+                        return new BibliotecaDTO(
+                                entidad.getId(),
+                                u,
+                                entidad.getUsuarioId(),
+                                j,
+                                entidad.getJuegoId(),
+                                entidad.getFechaAdquisicion(),
+                                entidad.getNumHorasTotal(),
+                                entidad.getUltimaFechaJuego(),
+                                entidad.getEstadoInstalacion()
+                        );
+                    })
+                    .toList();
+
+            if (orden != null) {
+                switch (orden.toLowerCase()) {
+                    case "alfabetico":
+                        bibliotecaUsuario.sort((b1, b2) -> b1.getJuegoDTO().getTitulo()
+                                .compareToIgnoreCase(b2.getJuegoDTO().getTitulo()));
+                        break;
+                    case "tiempo":
+                        bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getNumHorasTotal));
+                        break;
+                    case "ultimasesion":
+                        bibliotecaUsuario.sort((b1, b2) -> {
+                            LocalDateTime f1 = b1.getUltimaFechaJuego() != null ? b1.getUltimaFechaJuego() : LocalDateTime.MIN;
+                            LocalDateTime f2 = b2.getUltimaFechaJuego() != null ? b2.getUltimaFechaJuego() : LocalDateTime.MIN;
+                            return f1.compareTo(f2);
+                        });
+                        break;
+                    case "fechaadquisicion":
+                        bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getFechaAdquisicion));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Opción no encontrada");
+                }
+            }
+            return bibliotecaUsuario;
+        });
     }
 
     /**
@@ -127,42 +127,40 @@ public class BibliotecaControlador {
      *                                     en la biblioteca o hay inconsistencias en las fechas.
      */
     public BibliotecaDTO aniadirJuegosBiblioteca(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+        return tm.inTransaction(() -> {
+            ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        if (idUsuario == null || idJuego == null) {
-            if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
-            if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
-            throw new FormularioInvalidoException(errores);
-        }
-
-        var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
-        if (usuarioOpt.isEmpty()) {
-            errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
-        }
-
-        var juegoOpt = juegoRepo.obtenerPorId(idJuego);
-        if (juegoOpt.isEmpty()) {
-            errores.add(new ErrorDTO("juego", ErrorTipo.NO_ENCONTRADO));
-        }
-
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException(errores);
-        }
-
-        boolean duplicadoBiblioteca = false;
-        for (var b : bibliotecaRepo.obtenerTodos()) {
-            if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
-                duplicadoBiblioteca = true;
-                break;
+            if (idUsuario == null || idJuego == null) {
+                if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+                if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+                throw new FormularioInvalidoException(errores);
             }
-        }
 
-        if (duplicadoBiblioteca) {
-            errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
-            throw new FormularioInvalidoException(errores);
-        }
+            var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
+            if (usuarioOpt.isEmpty()) {
+                errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+            }
 
-        BibliotecaEntidad entidad = tm.inTransaction(()-> {
+            var juegoOpt = juegoRepo.obtenerPorId(idJuego);
+            if (juegoOpt.isEmpty()) {
+                errores.add(new ErrorDTO("juego", ErrorTipo.NO_ENCONTRADO));
+            }
+
+            if (!errores.isEmpty()) {
+                throw new FormularioInvalidoException(errores);
+            }
+
+            boolean duplicadoBiblioteca = false;
+            for (var b : bibliotecaRepo.obtenerTodos()) {
+                if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
+                    duplicadoBiblioteca = true;
+                    break;
+                }
+            }
+            if (duplicadoBiblioteca) {
+                errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
+                throw new FormularioInvalidoException(errores);
+            }
 
             var form = new BibliotecaForm(
                     idUsuario,
@@ -173,18 +171,17 @@ public class BibliotecaControlador {
                     EstadoInstalacion.NO_INSTALADO
             );
 
-            return bibliotecaRepo.crear(form)
+            BibliotecaEntidad entidad = bibliotecaRepo.crear(form)
                     .orElseThrow(() -> {
                         errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
                         return new IllegalArgumentException("Error al crear en biblioteca");
                     });
+
+            UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
+            JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
+
+            return BibliotecaMapper.paraDTO(entidad, u, j);
         });
-
-        UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
-        JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
-
-        return BibliotecaMapper.paraDTO(entidad, u, j);
-
     }
 
     /**
@@ -201,41 +198,40 @@ public class BibliotecaControlador {
      * @throws FormularioInvalidoException Si el juego no existe en la biblioteca del usuario.
      * @throws RuntimeException            Si ocurre un error inesperado durante la persistencia en el repositorio.
      */
-    public void eliminarJuego(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+    public void eliminarBiblioteca(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
 
-        if (idUsuario == null || idJuego == null) {
-            if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
-            if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
-            throw new FormularioInvalidoException(errores);
-        }
+        tm.inTransaction(() -> {
 
-        BibliotecaEntidad registro = null;
+            ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
-            if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
-                registro = b;
-                break;
+            if (idUsuario == null || idJuego == null) {
+                if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+                if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+                throw new FormularioInvalidoException(errores);
             }
-        }
 
-        if (registro == null) {
-            errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-            throw new FormularioInvalidoException(errores);
-        }
+            BibliotecaEntidad registro = null;
 
-        final Long registroId = registro.getId();
+            for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
+                if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
+                    registro = b;
+                    break;
+                }
+            }
 
-        tm.inTransaction(()-> {
+            if (registro == null) {
+                errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                throw new FormularioInvalidoException(errores);
+            }
+
+            final Long registroId = registro.getId();
             boolean eliminado = bibliotecaRepo.eliminar(registroId);
 
             if (!eliminado) {
                 throw new IllegalArgumentException("Error al eliminar el juego de la biblioteca");
             }
             return null;
-
         });
-
     }
 
     /**
@@ -254,33 +250,34 @@ public class BibliotecaControlador {
      * @throws RuntimeException            Si ocurre un fallo técnico durante la actualización en el repositorio.
      */
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        BibliotecaEntidad registroBiblio = null;
+         return tm.inTransaction(() -> {
+            ArrayList<ErrorDTO> errores = new ArrayList<>();
 
-        for (var b : bibliotecaRepo.obtenerTodos()) {
-            if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
-                registroBiblio = b;
-                break;
+            BibliotecaEntidad registroBiblio = null;
+
+            for (var b : bibliotecaRepo.obtenerTodos()) {
+                if (b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego)) {
+                    registroBiblio = b;
+                    break;
+                }
             }
-        }
 
-        if (registroBiblio == null) {
-            errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-            throw new FormularioInvalidoException(errores);
-        }
+            if (registroBiblio == null) {
+                errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                throw new FormularioInvalidoException(errores);
+            }
 
-        if (horasASumar < 0) {
-            errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
-        }
+            if (horasASumar < 0) {
+                errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
+            }
 
-        if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
-        }
+            if (!errores.isEmpty()) {
+                throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+            }
 
-        final BibliotecaEntidad registroFinal = registroBiblio;
+            final BibliotecaEntidad registroFinal = registroBiblio;
 
-        BibliotecaEntidad actualizado = tm.inTransaction(()->{
             var formActualizado = new BibliotecaForm(
                     registroFinal.getUsuarioId(),
                     registroFinal.getJuegoId(),
@@ -290,21 +287,22 @@ public class BibliotecaControlador {
                     registroFinal.getEstadoInstalacion()
             );
 
-            return bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
+             BibliotecaEntidad actualizado = bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
                     .orElseThrow(() -> {
                         errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
                         return new IllegalArgumentException("Error al actualizar la biblioteca");
                     });
 
+            UsuarioDTO u = usuarioRepo.obtenerPorId(actualizado.getUsuarioId())
+                    .map(UsuarioMapper::paraDTO).orElse(null);
+            JuegoDTO j = juegoRepo.obtenerPorId(actualizado.getJuegoId())
+                    .map(JuegoMapper::paraDTO).orElse(null);
+
+            return BibliotecaMapper.paraDTO(actualizado, u, j);
+
         });
 
-        UsuarioDTO u = usuarioRepo.obtenerPorId(actualizado.getUsuarioId())
-                .map(UsuarioMapper::paraDTO).orElse(null);
-        JuegoDTO j = juegoRepo.obtenerPorId(actualizado.getJuegoId())
-                .map(JuegoMapper::paraDTO).orElse(null);
 
-
-        return BibliotecaMapper.paraDTO(actualizado, u, j);
     }
 
     /**
@@ -321,24 +319,27 @@ public class BibliotecaControlador {
      */
     public SesionInfoDTO consultarUltimaSesion(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
 
-        BibliotecaEntidad registro = bibliotecaRepo.obtenerTodos().stream()
-                .filter(b -> b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego))
-                .findFirst()
-                .orElseThrow(() -> {
-                    ArrayList<ErrorDTO> errores = new ArrayList<>();
-                    errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
-                    return new FormularioInvalidoException(errores);
-                });
+        return tm.inTransaction(()->{
+            BibliotecaEntidad registro = bibliotecaRepo.obtenerTodos().stream()
+                    .filter(b -> b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego))
+                    .findFirst()
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDTO> errores = new ArrayList<>();
+                        errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(errores);
+                    });
 
-        if (registro.getUltimaFechaJuego() == null) {
-            return new SesionInfoDTO(null, null, true);
-        }
+            if (registro.getUltimaFechaJuego() == null) {
+                return new SesionInfoDTO(null, null, true);
+            }
 
-        LocalDateTime ultimaSesion = registro.getUltimaFechaJuego();
+            LocalDateTime ultimaSesion = registro.getUltimaFechaJuego();
 
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, LocalDateTime.now());
+            long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimaSesion, LocalDateTime.now());
 
-        return new SesionInfoDTO(ultimaSesion.toLocalDate(), dias, false);
+            return new SesionInfoDTO(ultimaSesion.toLocalDate(), dias, false);
+        });
+
     }
 
     /**
@@ -392,7 +393,7 @@ public class BibliotecaControlador {
         }
         return new EstadisticasBiblioDTO(
                 totalJuegos,
-                (int)horasTotales,
+                (int) horasTotales,
                 juegosInstalados,
                 juegoMasJuegado,
                 valorTotalBiblioteca,
