@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5db707d4-17e0-4c08-b30a-e3172cf8fad3" name="Changes" comment="arreglados todos tm.inTransaction codigo compila">
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/excepciones/FormularioInvalidoException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/excepciones/FormularioInvalidoException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/BibliotecaForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/BibliotecaForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/CompraForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/CompraForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/JuegoForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/JuegoForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ResenaForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ResenaForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/UsuarioForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/UsuarioForm.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MiriamFG&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MiriamFG/GestorSteam.git&quot;,
+    &quot;accountId&quot;: &quot;b3ade66e-acfe-4467-876c-4c1e53e2c7ec&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="3DfuMl3oCPippQgj6kv49h3NOrF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.GestorSteam [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.GestorSteam [install].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/a25miriamfg/Documents/programacion 25-26/GestorSteam&quot;
+  }
+}</component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean" />
+      <command value="mvn install" />
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.miriam.Main" />
+      <module name="GestorSteam" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.miriam.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5db707d4-17e0-4c08-b30a-e3172cf8fad3" name="Changes" comment="" />
+      <created>1778685399272</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1778685399272</updated>
+    </task>
+    <task id="LOCAL-00001" summary="arreglados todos tm.inTransaction codigo compila">
+      <option name="closed" value="true" />
+      <created>1778700960711</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1778700960711</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="arreglados todos tm.inTransaction codigo compila" />
+    <option name="LAST_COMMIT_MESSAGE" value="arreglados todos tm.inTransaction codigo compila" />
+  </component>
+</project>

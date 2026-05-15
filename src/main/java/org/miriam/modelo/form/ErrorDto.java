@@ -1,11 +1,11 @@
 package org.miriam.modelo.form;
 
-public class ErrorDTO {
+public class ErrorDto {
     private String c;
     private ErrorTipo m;
     private Object[] params;
 
-    public ErrorDTO(String c, ErrorTipo m, Object... params) {
+    public ErrorDto(String c, ErrorTipo m, Object... params) {
         this.c = c;
         this.m = m;
         this.params = params;

@@ -1,7 +1,6 @@
 package org.miriam.controlador;
 
 import org.miriam.excepciones.FormularioInvalidoException;
-import org.miriam.mapper.CompraMapper;
 import org.miriam.mapper.JuegoMapper;
 import org.miriam.mapper.ResenaMapper;
 import org.miriam.mapper.UsuarioMapper;
@@ -11,7 +10,7 @@ import org.miriam.modelo.dto.UsuarioDTO;
 import org.miriam.modelo.entidad.BibliotecaEntidad;
 import org.miriam.modelo.entidad.ResenaEntidad;
 import org.miriam.modelo.enums.EstadoResena;
-import org.miriam.modelo.form.ErrorDTO;
+import org.miriam.modelo.form.ErrorDto;
 import org.miriam.modelo.form.ErrorTipo;
 import org.miriam.modelo.form.ResenaForm;
 import org.miriam.repositorio.interfaces.*;
@@ -19,7 +18,6 @@ import org.miriam.transaction.ITransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ResenaControlador {
     private final IResenaRepo resenaRepo;
@@ -60,7 +58,7 @@ public class ResenaControlador {
      */
     public ResenaDTO escribirResena(Long idUsuario, Long idJuego, Boolean recomendado, String texto) throws FormularioInvalidoException {
         return tm.inTransaction(()->{
-            ArrayList<ErrorDTO> errores = new ArrayList<>();
+            ArrayList<ErrorDto> errores = new ArrayList<>();
 
             BibliotecaEntidad registroBiblio = null;
             for (BibliotecaEntidad b : bibliotecaRepo.obtenerTodos()) {
@@ -71,12 +69,12 @@ public class ResenaControlador {
             }
 
             if (registroBiblio == null) {
-                errores.add(new ErrorDTO("juego", ErrorTipo.NO_PROPIETARIO));
+                errores.add(new ErrorDto("juego", ErrorTipo.NO_PROPIETARIO));
             }
 
             for (ResenaEntidad r : resenaRepo.obtenerTodos()) {
                 if (r.getUsuarioId().equals(idUsuario) && r.getJuegoId().equals(idJuego)) {
-                    errores.add(new ErrorDTO("resena", ErrorTipo.DUPLICADO));
+                    errores.add(new ErrorDto("resena", ErrorTipo.DUPLICADO));
                     break;
                 }
             }
@@ -256,7 +254,7 @@ public class ResenaControlador {
             );
 
             ResenaEntidad resenaActualizada = resenaRepo.actualizar(idResena, formEliminar).
-                    orElseThrow(()-> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("resenaNoEliminada", ErrorTipo.NO_ACTUALIZADO))));
+                    orElseThrow(()-> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("resenaNoEliminada", ErrorTipo.NO_ACTUALIZADO))));
 
             UsuarioDTO usuarioDTO = UsuarioMapper.paraDTO(usuarioRepo.obtenerPorId(idUsuario).get());
             JuegoDTO juegoDTO = JuegoMapper.paraDTO(juegoRepo.obtenerPorId(resena.getJuegoId()).get());

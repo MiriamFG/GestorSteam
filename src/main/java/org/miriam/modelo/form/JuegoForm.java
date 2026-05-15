@@ -103,61 +103,61 @@ public class JuegoForm {
      * @throws FormularioInvalidoException si uno o más campos no cumplen las reglas de validación
      */
     public void validarForumulario() throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDto> errores = new ArrayList<>();
 
         if (titulo == null || titulo.trim().isEmpty()) {
-            errores.add(new ErrorDTO("titulo", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("titulo", ErrorTipo.REQUERIDO));
         } else {
             if (titulo.length() < LONGITUD_1 || titulo.length() > LONGITUD_100) {
-                errores.add(new ErrorDTO("titulo", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_1, LONGITUD_100));
+                errores.add(new ErrorDto("titulo", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_1, LONGITUD_100));
             }
         }
 
         if (descipcion != null && descipcion.length() > LONGITUD_2000) {
-            errores.add(new ErrorDTO("descripcion", ErrorTipo.CAMPO_LARGO, LONGITUD_2000));
+            errores.add(new ErrorDto("descripcion", ErrorTipo.CAMPO_LARGO, LONGITUD_2000));
         }
 
         if (desarrollador == null || desarrollador.trim().isEmpty()) {
-            errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("nombreDesarrollador", ErrorTipo.REQUERIDO));
         } else {
             if (desarrollador.length() < LONGITUD_2 || desarrollador.length() > LONGITUD_100) {
-                errores.add(new ErrorDTO("nombreDesarrollador", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_2, JuegoForm.LONGITUD_100));
+                errores.add(new ErrorDto("nombreDesarrollador", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_2, JuegoForm.LONGITUD_100));
             }
         }
 
         if (fechaLanz == null) {
-            errores.add(new ErrorDTO("fechaLanzamiento", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("fechaLanzamiento", ErrorTipo.REQUERIDO));
         }
 
         if (precioBase == null) {
-            errores.add(new ErrorDTO("precioBase", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("precioBase", ErrorTipo.REQUERIDO));
         } else if (precioBase < PRECIO_MINIMO || precioBase > MAX_PRECIO) {
-            errores.add(new ErrorDTO("precioBase", ErrorTipo.CAMPO_ENTRE, PRECIO_MINIMO, MAX_PRECIO));
+            errores.add(new ErrorDto("precioBase", ErrorTipo.CAMPO_ENTRE, PRECIO_MINIMO, MAX_PRECIO));
         }
 
         var value =  new BigDecimal(String.valueOf(precioBase));
         if(value.stripTrailingZeros().scale() > LONGITUD_2)
-            errores.add(new ErrorDTO("Precio Base", ErrorTipo.MAX_DECIMALES));
+            errores.add(new ErrorDto("Precio Base", ErrorTipo.MAX_DECIMALES));
 
 
         if (descuentoActual == null) {
             descuentoActual = 0;
         } else {
             if (descuentoActual < LONGITUD_0 || descuentoActual > LONGITUD_100) {
-                errores.add(new ErrorDTO("descuento", ErrorTipo.LONGITUD_INVALIDA, MIN_DESCUENTO, MAX_DESCUENTO));
+                errores.add(new ErrorDto("descuento", ErrorTipo.LONGITUD_INVALIDA, MIN_DESCUENTO, MAX_DESCUENTO));
             }
         }
 
         if (clasificacionEdad == null) {
-            errores.add(new ErrorDTO("clasificacionEdad", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("clasificacionEdad", ErrorTipo.REQUERIDO));
         }
 
         if (idiomasDisponibles == null || idiomasDisponibles.isEmpty()) {
-            errores.add(new ErrorDTO("idioma", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("idioma", ErrorTipo.REQUERIDO));
         }
         for (String idioma : idiomasDisponibles) {
             if (idioma.length() > LONGITUD_IDIOMAS) {
-                errores.add(new ErrorDTO("idioma", ErrorTipo.CAMPO_LARGO, LONGITUD_IDIOMAS));
+                errores.add(new ErrorDto("idioma", ErrorTipo.CAMPO_LARGO, LONGITUD_IDIOMAS));
             }
         }
 

@@ -64,28 +64,28 @@ public class ResenaForm {
      * @throws FormularioInvalidoException si uno o más campos son inválidos
      */
     public void validarFormulario() throws FormularioInvalidoException {
-        List<ErrorDTO> errores = new ArrayList<>();
+        List<ErrorDto> errores = new ArrayList<>();
 
         if (idUsuario == null) {
-            errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("usuario", ErrorTipo.REQUERIDO));
         }
 
         if (idJuego == null) {
-            errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("juego", ErrorTipo.REQUERIDO));
         }
 
         if (recomendado == null) {
-            errores.add(new ErrorDTO("recomendado", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("recomendado", ErrorTipo.REQUERIDO));
         }
 
         if (textoResena == null || textoResena.trim().isEmpty()) {
-            errores.add(new ErrorDTO("texto", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("texto", ErrorTipo.REQUERIDO));
         } else if (textoResena.length() < 50 || textoResena.length() > 8000) {
-            errores.add(new ErrorDTO("texto", ErrorTipo.LONGITUD_INVALIDA, 50, 8000));
+            errores.add(new ErrorDto("texto", ErrorTipo.LONGITUD_INVALIDA, 50, 8000));
         }
 
         if (!errores.isEmpty()) {
-            throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+            throw new FormularioInvalidoException((ArrayList<ErrorDto>) errores);
         }
     }
 

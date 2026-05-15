@@ -95,35 +95,35 @@ public class UsuarioForm {
     final int CIEN = 100;
 
     public void validarFormulario() throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDto> errores = new ArrayList<>();
 
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
-            errores.add(new ErrorDTO("nombre", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("nombre", ErrorTipo.REQUERIDO));
         } else {
             if (nombreUsuario.length() < LONGITUD_3 || nombreUsuario.length() > LONGITUD_20) {
-                errores.add(new ErrorDTO("nombre", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_3, LONGITUD_20));
+                errores.add(new ErrorDto("nombre", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_3, LONGITUD_20));
             }
             if (!nombreUsuario.matches("^[A-Za-z0-9+_.-]+$")) {
-                errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
+                errores.add(new ErrorDto("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
             if (Character.isDigit(nombreUsuario.charAt(0))) {
-                errores.add(new ErrorDTO("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
+                errores.add(new ErrorDto("nombreUsuario", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
         if (email == null || email.trim().isEmpty()) {
-            errores.add(new ErrorDTO("email", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("email", ErrorTipo.REQUERIDO));
         } else {
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                errores.add(new ErrorDTO("email", ErrorTipo.FORMATO_INVALIDO));
+                errores.add(new ErrorDto("email", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
         if (contrasena == null || contrasena.isEmpty()) {
-            errores.add(new ErrorDTO("contrasena", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("contrasena", ErrorTipo.REQUERIDO));
         } else {
             if (contrasena.length() < LONGITUD_8) {
-                errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
+                errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
 
             boolean mayuscula = false;
@@ -147,35 +147,35 @@ public class UsuarioForm {
             }
 
             if (!mayuscula || !minuscula || !numero) {
-                errores.add(new ErrorDTO("contrasena", ErrorTipo.CONTRASENA_VALIDA));
+                errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
         }
 
         if (nombreReal == null || nombreReal.trim().isEmpty()) {
-            errores.add(new ErrorDTO("nombreReal", ErrorTipo.FORMATO_INVALIDO));
+            errores.add(new ErrorDto("nombreReal", ErrorTipo.FORMATO_INVALIDO));
         } else {
             if (nombreReal.length() < LONGITUD_2 || nombreReal.length() > LONGITUD_50) {
-                errores.add(new ErrorDTO("nombreReal", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_2, LONGITUD_50));
+                errores.add(new ErrorDto("nombreReal", ErrorTipo.LONGITUD_INVALIDA, LONGITUD_2, LONGITUD_50));
             }
         }
 
 
         if (pais == null || pais.trim().isEmpty()) {
-            errores.add(new ErrorDTO("pais", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("pais", ErrorTipo.REQUERIDO));
         }
 
         if (fechaNac == null) {
-            errores.add(new ErrorDTO("fechaNac", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("fechaNac", ErrorTipo.REQUERIDO));
         } else {
             int anioAct = LocalDate.now().getYear();
             int anioNac = fechaNac.getYear();
 
             if (anioAct - anioNac < ANIO_MENOR) {
-                errores.add(new ErrorDTO("fechaNac", ErrorTipo.FORMATO_INVALIDO));
+                errores.add(new ErrorDto("fechaNac", ErrorTipo.FORMATO_INVALIDO));
             }
 
             if (fechaNac.isAfter(LocalDate.now())) {
-                errores.add(new ErrorDTO("fechaNac", ErrorTipo.FECHA_FUTURA));
+                errores.add(new ErrorDto("fechaNac", ErrorTipo.FECHA_FUTURA));
             }
 
         }
@@ -183,7 +183,7 @@ public class UsuarioForm {
 
 
         if (avatar != null && avatar.length() > CIEN) {
-            errores.add(new ErrorDTO("avatar", ErrorTipo.CAMPO_LARGO, CIEN));
+            errores.add(new ErrorDto("avatar", ErrorTipo.CAMPO_LARGO, CIEN));
         }
 
         if (!errores.isEmpty()) {

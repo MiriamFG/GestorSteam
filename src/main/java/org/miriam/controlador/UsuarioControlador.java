@@ -5,17 +5,15 @@ import org.miriam.mapper.UsuarioMapper;
 import org.miriam.modelo.dto.UsuarioDTO;
 import org.miriam.modelo.entidad.UsuarioEntidad;
 import org.miriam.modelo.enums.EstadoCuenta;
-import org.miriam.modelo.form.ErrorDTO;
+import org.miriam.modelo.form.ErrorDto;
 import org.miriam.modelo.form.ErrorTipo;
 import org.miriam.modelo.form.UsuarioForm;
 import org.miriam.repositorio.implementacion.PaisesRepoInMemory;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import org.miriam.transaction.ITransactionManager;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class UsuarioControlador {
 
@@ -54,26 +52,26 @@ public class UsuarioControlador {
 
         form.validarFormulario();
 
-        var errores = new ArrayList<ErrorDTO>();
+        var errores = new ArrayList<ErrorDto>();
 
         boolean paisValido = paisRepo.obtenerTodos().stream().anyMatch(p -> p.equalsIgnoreCase(form.getPais()));
         if (!paisValido) {
-            errores.add(new ErrorDTO("pais", ErrorTipo.NO_ENCONTRADO));
+            errores.add(new ErrorDto("pais", ErrorTipo.NO_ENCONTRADO));
         }
 
         UsuarioEntidad nuevoUsuario = tm.inTransaction(() -> {
             if (usuarioRepo.obtenerPorNombre(form.getNombreUsuario()).isPresent()) {
-                errores.add(new ErrorDTO("usuario", ErrorTipo.EXISTENTE));
+                errores.add(new ErrorDto("usuario", ErrorTipo.EXISTENTE));
             }
 
             if (usuarioRepo.obtenerPorEmail(form.getEmail()).isPresent()) {
-                errores.add(new ErrorDTO("email", ErrorTipo.REGISTRADO));
+                errores.add(new ErrorDto("email", ErrorTipo.REGISTRADO));
             }
             if (!errores.isEmpty()) {
                 throw new FormularioInvalidoException(errores);
             }
 
-            return usuarioRepo.crear(form).orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+            return usuarioRepo.crear(form).orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
 
         });
 
@@ -91,7 +89,7 @@ public class UsuarioControlador {
 
         UsuarioEntidad usuario = tm.inTransaction(()-> {
             var usuarioEncontrado = usuarioRepo.obtenerPorNombre(nombreUsuario)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
 
             return usuarioEncontrado;
         });
@@ -122,18 +120,18 @@ public class UsuarioControlador {
     final double VALOR_QUINIENTOS = 500.00;
 
     public boolean aniadirSaldo(Long idUsuario, Double cantidad) throws FormularioInvalidoException {
-        var errores = new ArrayList<ErrorDTO>();
+        var errores = new ArrayList<ErrorDto>();
 
         if (cantidad <= VALOR_ZERO) {
-            errores.add(new ErrorDTO("saldo", ErrorTipo.VALOR_DEMASIADO_BAJO));
+            errores.add(new ErrorDto("saldo", ErrorTipo.VALOR_DEMASIADO_BAJO));
         }
 
         if (cantidad < VALOR_CINCO || cantidad > VALOR_QUINIENTOS) {
-            errores.add(new ErrorDTO("saldo", ErrorTipo.LONGITUD_INVALIDA, VALOR_CINCO, VALOR_QUINIENTOS));
+            errores.add(new ErrorDto("saldo", ErrorTipo.LONGITUD_INVALIDA, VALOR_CINCO, VALOR_QUINIENTOS));
         }
 
         if (Math.round(cantidad * VALOR_CIEN) / VALOR_CIEN != cantidad) {
-            errores.add(new ErrorDTO("saldo", ErrorTipo.MAX_DECIMALES, DOS_DECIMALES));
+            errores.add(new ErrorDto("saldo", ErrorTipo.MAX_DECIMALES, DOS_DECIMALES));
         }
 
         if (!errores.isEmpty()) {
@@ -146,7 +144,7 @@ public class UsuarioControlador {
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
             if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVA) {
-                errores.add(new ErrorDTO("cuenta", ErrorTipo.NO_ACTIVO));
+                errores.add(new ErrorDto("cuenta", ErrorTipo.NO_ACTIVO));
             }
 
             Double nuevoSaldo = usuario.getSaldoCartera() + cantidad;
@@ -169,7 +167,7 @@ public class UsuarioControlador {
 
         UsuarioEntidad usuario = tm.inTransaction(()->
              usuarioRepo.obtenerPorId(idUsuario)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDTO>) List.of(new ErrorDTO("UsuarioFormulario", ErrorTipo.ERROR_CREACION))))
+                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))))
 
         );
 

@@ -67,31 +67,31 @@ public class CompraForm {
      * @throws FormularioInvalidoException si uno o más campos no cumplen las reglas de validación
      */
     public void validarForumulario() throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDto> errores = new ArrayList<>();
 
         if (idUsuario == null) {
-            errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("usuario", ErrorTipo.REQUERIDO));
         }
 
         if (idJuego == null) {
-            errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("juego", ErrorTipo.REQUERIDO));
         }
 
         if (metodoPago == null) {
-            errores.add(new ErrorDTO("metodoPago", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("metodoPago", ErrorTipo.REQUERIDO));
         }
 
 
         if (precioSinDescuento == null) {
-            errores.add(new ErrorDTO("precioSinDescuento", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("precioSinDescuento", ErrorTipo.REQUERIDO));
         } else {
 
             if (precioSinDescuento < 0) {
-                errores.add(new ErrorDTO("precioSinDescuento", ErrorTipo.VALOR_DEMASIADO_BAJO));
+                errores.add(new ErrorDto("precioSinDescuento", ErrorTipo.VALOR_DEMASIADO_BAJO));
             }
 
             if (Math.round(precioSinDescuento * 100) / 100.0 != precioSinDescuento) {
-                errores.add(new ErrorDTO("precioSinDescuento", ErrorTipo.FORMATO_INVALIDO));
+                errores.add(new ErrorDto("precioSinDescuento", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 

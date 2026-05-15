@@ -62,40 +62,40 @@ public class BibliotecaForm {
      * @throws FormularioInvalidoException si los datos del formulario no cumplen las reglas de validación
      */
     public void validarForumulario() throws FormularioInvalidoException {
-        ArrayList<ErrorDTO> errores = new ArrayList<>();
+        ArrayList<ErrorDto> errores = new ArrayList<>();
 
         if (idUsuario == null) {
-            errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("usuario", ErrorTipo.REQUERIDO));
         }
 
         if (idJuego == null) {
-            errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+            errores.add(new ErrorDto("juego", ErrorTipo.REQUERIDO));
         }
 
         if (fechaAdquisicion == null) {
-            errores.add(new ErrorDTO("fecha", ErrorTipo.FECHA_OBLIGATORIA));
+            errores.add(new ErrorDto("fecha", ErrorTipo.FECHA_OBLIGATORIA));
         }
 
         if (fechaAdquisicion.isAfter(LocalDateTime.now())) {
-            errores.add(new ErrorDTO("fecha", ErrorTipo.FECHA_FUTURA));
+            errores.add(new ErrorDto("fecha", ErrorTipo.FECHA_FUTURA));
         }
         if (numHorasTotal != null) {
             if (numHorasTotal < 0) {
-                errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
+                errores.add(new ErrorDto("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
             }
             double valorPorDiez = numHorasTotal * 10;
             if (Math.abs(valorPorDiez - Math.round(valorPorDiez)) > 0.001) {
-                errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.FORMATO_INVALIDO));
+                errores.add(new ErrorDto("numHorasTotal", ErrorTipo.FORMATO_INVALIDO));
             }
         }
 
 
         if (ultimaFechaJuego != null) {
             if (ultimaFechaJuego.isAfter(LocalDateTime.now())) {
-                errores.add(new ErrorDTO("ultimaFechaJuego", ErrorTipo.FECHA_FUTURA));
+                errores.add(new ErrorDto("ultimaFechaJuego", ErrorTipo.FECHA_FUTURA));
             }
             if (fechaAdquisicion != null && ultimaFechaJuego.isBefore(fechaAdquisicion)) {
-                errores.add(new ErrorDTO("ultimaFechaJuego", ErrorTipo.VALOR_DEMASIADO_BAJO));
+                errores.add(new ErrorDto("ultimaFechaJuego", ErrorTipo.VALOR_DEMASIADO_BAJO));
             }
 
             if (estadoInstalacion == null) {

@@ -8,10 +8,9 @@ import org.miriam.modelo.dto.*;
 import org.miriam.modelo.entidad.BibliotecaEntidad;
 import org.miriam.modelo.enums.EstadoInstalacion;
 import org.miriam.modelo.form.BibliotecaForm;
-import org.miriam.modelo.form.ErrorDTO;
+import org.miriam.modelo.form.ErrorDto;
 import org.miriam.modelo.form.ErrorTipo;
 import org.miriam.repositorio.interfaces.IBibliotecaRepo;
-import org.miriam.repositorio.interfaces.ICompraRepo;
 import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import org.miriam.transaction.ITransactionManager;
@@ -59,8 +58,8 @@ public class BibliotecaControlador {
         return tm.inTransaction(() -> {
             var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
             if (usuarioOpt.isEmpty()) {
-                ArrayList<ErrorDTO> errores = new ArrayList<>();
-                errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                ArrayList<ErrorDto> errores = new ArrayList<>();
+                errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
                 throw new FormularioInvalidoException(errores);
             }
 
@@ -128,22 +127,22 @@ public class BibliotecaControlador {
      */
     public BibliotecaDTO aniadirJuegosBiblioteca(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
         return tm.inTransaction(() -> {
-            ArrayList<ErrorDTO> errores = new ArrayList<>();
+            ArrayList<ErrorDto> errores = new ArrayList<>();
 
             if (idUsuario == null || idJuego == null) {
-                if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
-                if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+                if (idUsuario == null) errores.add(new ErrorDto("usuario", ErrorTipo.REQUERIDO));
+                if (idJuego == null) errores.add(new ErrorDto("juego", ErrorTipo.REQUERIDO));
                 throw new FormularioInvalidoException(errores);
             }
 
             var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
             if (usuarioOpt.isEmpty()) {
-                errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
             }
 
             var juegoOpt = juegoRepo.obtenerPorId(idJuego);
             if (juegoOpt.isEmpty()) {
-                errores.add(new ErrorDTO("juego", ErrorTipo.NO_ENCONTRADO));
+                errores.add(new ErrorDto("juego", ErrorTipo.NO_ENCONTRADO));
             }
 
             if (!errores.isEmpty()) {
@@ -158,7 +157,7 @@ public class BibliotecaControlador {
                 }
             }
             if (duplicadoBiblioteca) {
-                errores.add(new ErrorDTO("biblioteca", ErrorTipo.DUPLICADO));
+                errores.add(new ErrorDto("biblioteca", ErrorTipo.DUPLICADO));
                 throw new FormularioInvalidoException(errores);
             }
 
@@ -173,7 +172,7 @@ public class BibliotecaControlador {
 
             BibliotecaEntidad entidad = bibliotecaRepo.crear(form)
                     .orElseThrow(() -> {
-                        errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
                         return new IllegalArgumentException("Error al crear en biblioteca");
                     });
 
@@ -202,11 +201,11 @@ public class BibliotecaControlador {
 
         tm.inTransaction(() -> {
 
-            ArrayList<ErrorDTO> errores = new ArrayList<>();
+            ArrayList<ErrorDto> errores = new ArrayList<>();
 
             if (idUsuario == null || idJuego == null) {
-                if (idUsuario == null) errores.add(new ErrorDTO("usuario", ErrorTipo.REQUERIDO));
-                if (idJuego == null) errores.add(new ErrorDTO("juego", ErrorTipo.REQUERIDO));
+                if (idUsuario == null) errores.add(new ErrorDto("usuario", ErrorTipo.REQUERIDO));
+                if (idJuego == null) errores.add(new ErrorDto("juego", ErrorTipo.REQUERIDO));
                 throw new FormularioInvalidoException(errores);
             }
 
@@ -220,7 +219,7 @@ public class BibliotecaControlador {
             }
 
             if (registro == null) {
-                errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                errores.add(new ErrorDto("biblioteca", ErrorTipo.NO_ENCONTRADO));
                 throw new FormularioInvalidoException(errores);
             }
 
@@ -252,7 +251,7 @@ public class BibliotecaControlador {
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
 
          return tm.inTransaction(() -> {
-            ArrayList<ErrorDTO> errores = new ArrayList<>();
+            ArrayList<ErrorDto> errores = new ArrayList<>();
 
             BibliotecaEntidad registroBiblio = null;
 
@@ -264,16 +263,16 @@ public class BibliotecaControlador {
             }
 
             if (registroBiblio == null) {
-                errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                errores.add(new ErrorDto("biblioteca", ErrorTipo.NO_ENCONTRADO));
                 throw new FormularioInvalidoException(errores);
             }
 
             if (horasASumar < 0) {
-                errores.add(new ErrorDTO("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
+                errores.add(new ErrorDto("numHorasTotal", ErrorTipo.VALOR_DEMASIADO_BAJO));
             }
 
             if (!errores.isEmpty()) {
-                throw new FormularioInvalidoException((ArrayList<ErrorDTO>) errores);
+                throw new FormularioInvalidoException((ArrayList<ErrorDto>) errores);
             }
 
             final BibliotecaEntidad registroFinal = registroBiblio;
@@ -289,7 +288,7 @@ public class BibliotecaControlador {
 
              BibliotecaEntidad actualizado = bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
                     .orElseThrow(() -> {
-                        errores.add(new ErrorDTO("usuario", ErrorTipo.NO_ENCONTRADO));
+                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
                         return new IllegalArgumentException("Error al actualizar la biblioteca");
                     });
 
@@ -324,8 +323,8 @@ public class BibliotecaControlador {
                     .filter(b -> b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego))
                     .findFirst()
                     .orElseThrow(() -> {
-                        ArrayList<ErrorDTO> errores = new ArrayList<>();
-                        errores.add(new ErrorDTO("biblioteca", ErrorTipo.NO_ENCONTRADO));
+                        ArrayList<ErrorDto> errores = new ArrayList<>();
+                        errores.add(new ErrorDto("biblioteca", ErrorTipo.NO_ENCONTRADO));
                         return new FormularioInvalidoException(errores);
                     });
 
