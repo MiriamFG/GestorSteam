@@ -46,7 +46,6 @@ public class CompraControlador {
 
     }
 
-
     /**
      * Inicia el proceso de compra de un juego por parte del usuario.
      * <p>
@@ -162,12 +161,12 @@ public class CompraControlador {
      */
     public CompraDTO procesarPago(Long idCompra) throws FormularioInvalidoException {
 
-        CompraEntidad compraActualizada = tm.inTransaction(() -> {
+        return tm.inTransaction(() -> {
             ArrayList<ErrorDto> errores = new ArrayList<>();
 
             CompraEntidad compra = compraRepo.obtenerPorId(idCompra)
                     .orElseThrow(() -> {
-                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        errores.add(new ErrorDto("compra", ErrorTipo.NO_ENCONTRADO));
                         return new FormularioInvalidoException(errores);
                     });
 
@@ -185,7 +184,11 @@ public class CompraControlador {
 
                 double precioFinal = compra.getPrecioSinDescuento() * (1 - (compra.getDescuentoAplicado() / VALOR_CIEN));
 
-                double importeADevolver = 0;
+                if (usuario.getSaldoCartera() < precioFinal) {
+                    errores.add(new ErrorDto("saldo", ErrorTipo.VALOR_DEMASIADO_BAJO));
+                    throw new FormularioInvalidoException(errores);
+                }
+
                 boolean actualizado = usuarioRepo.actualizarSoloSaldo(usuario.getId(), usuario.getSaldoCartera() - precioFinal);
                 if (!actualizado) {
                     errores.add(new ErrorDto("usuario saldo", ErrorTipo.NO_ACTUALIZADO));
@@ -203,16 +206,15 @@ public class CompraControlador {
                     EstadoCompra.COMPLETADA
             );
 
-            return compraRepo.actualizar(compra.getId(), formActualizado)
+            CompraEntidad compraActualizada = compraRepo.actualizar(compra.getId(), formActualizado)
                     .orElseThrow(() -> {
                         ArrayList<ErrorDto> err = new ArrayList<>();
-                        err.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        err.add(new ErrorDto("compra", ErrorTipo.NO_ACTUALIZADO));
                         return new FormularioInvalidoException(err);
                     });
 
+            return CompraMapper.paraDTO(compraActualizada);
         });
-
-        return CompraMapper.paraDTO(compraActualizada);
 
     }
 

@@ -22,4 +22,10 @@ public class ErrorDto {
     public Object[] getParams() {
         return params;
     }
+
+    @Override
+    public String toString() {
+        return c + ": " + m;
+    }
+
 }

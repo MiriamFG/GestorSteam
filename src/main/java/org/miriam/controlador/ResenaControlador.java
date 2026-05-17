@@ -36,7 +36,6 @@ public class ResenaControlador {
         this.juegoRepo = juegoRepo;
         this.bibliotecaRepo = bibliotecaRepo;
         this.tm = tm;
-
     }
 
     /**
@@ -88,7 +87,7 @@ public class ResenaControlador {
                 if (registroBiblio == null) {
                     errores.add(new ErrorDto("juego", ErrorTipo.NO_PROPIETARIO));
                 } else {
-                    if (form.getHorasJuegoResena() != null && form.getHorasJuegoResena() > registroBiblio.getNumHorasTotal().doubleValue()) {
+                    if (form.getHorasJuegoResena() != null && form.getHorasJuegoResena() < 0) {
                         errores.add(new ErrorDto("horasJuego", ErrorTipo.VALOR_INVALIDO));
                     }
                 }
@@ -309,16 +308,25 @@ public class ResenaControlador {
                 err.add(new ErrorDto("usuario", ErrorTipo.NO_PROPIETARIO));
                 throw new FormularioInvalidoException(err);
             }
-            ResenaForm formEliminar = new ResenaForm(resena.getUsuarioId(), resena.getJuegoId(), resena.getRecomendado(), resena.getTextoResena(), resena.getHorasJuegoResena(), EstadoResena.ELIMINADA);
 
-            ResenaEntidad resenaActualizada = resenaRepo.actualizar(idResena, formEliminar).orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("resenaNoEliminada", ErrorTipo.NO_ACTUALIZADO))));
+            ResenaForm formEliminar = new ResenaForm(
+                    resena.getUsuarioId(),
+                    resena.getJuegoId(),
+                    resena.getRecomendado(),
+                    resena.getTextoResena(),
+                    resena.getHorasJuegoResena(),
+                    EstadoResena.ELIMINADA
+            );
 
-            UsuarioDTO usuarioDTO = UsuarioMapper.paraDTO(usuarioRepo.obtenerPorId(idUsuario).get());
-            JuegoDTO juegoDTO = JuegoMapper.paraDTO(juegoRepo.obtenerPorId(resena.getJuegoId()).get());
+            ResenaEntidad resenaActualizada = resenaRepo.actualizar(idResena, formEliminar)
+                    .orElseThrow(() -> new FormularioInvalidoException(
+                            new ArrayList<>(List.of(new ErrorDto("resena", ErrorTipo.NO_ACTUALIZADO)))
+                    ));
+
+            UsuarioDTO usuarioDTO = usuarioRepo.obtenerPorId(idUsuario).map(UsuarioMapper::paraDTO).orElse(null);
+            JuegoDTO juegoDTO = juegoRepo.obtenerPorId(resena.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
 
             return ResenaMapper.paraDTO(resenaActualizada, usuarioDTO, juegoDTO);
-
         });
     }
-
 }

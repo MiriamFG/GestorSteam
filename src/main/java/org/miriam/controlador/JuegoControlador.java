@@ -146,12 +146,12 @@ public class JuegoControlador {
 
         return tm.inTransaction(() -> {
             JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+                    .orElseThrow(() -> new FormularioInvalidoException(
+                            new ArrayList<>(List.of(new ErrorDto("juego", ErrorTipo.NO_ENCONTRADO)))
+                    ));
 
             return JuegoMapper.paraDTO(juego);
-
         });
-
     }
 
     /**
@@ -249,5 +249,4 @@ public class JuegoControlador {
 
         return JuegoMapper.paraDTO(actualizado);
     }
-
 }

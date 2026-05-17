@@ -4,13 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85d978e0-a73f-4471-a0d8-ec234d696ae2" name="Changes" comment="ultimos cambios, pasan los 130 test">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorTipo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorTipo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ExceptionSupplier.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/HibernateTransactionManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ISesionManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ITransactionManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/NoOpTransactionManager.java" beforeDir="false" />
+    <list default="true" id="85d978e0-a73f-4471-a0d8-ec234d696ae2" name="Changes" comment="cambios definitivos, tests OK">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/steamdb.mv.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/EstadisticasBiblioDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/EstadisticasBiblioDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorDto.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,11 +105,20 @@
       <option name="project" value="LOCAL" />
       <updated>1779023453829</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="cambios definitivos, tests OK">
+      <option name="closed" value="true" />
+      <created>1779024007634</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1779024007634</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ultimos cambios, pasan los 130 test" />
-    <option name="LAST_COMMIT_MESSAGE" value="ultimos cambios, pasan los 130 test" />
+    <MESSAGE value="cambios definitivos, tests OK" />
+    <option name="LAST_COMMIT_MESSAGE" value="cambios definitivos, tests OK" />
   </component>
 </project>

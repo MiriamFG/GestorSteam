@@ -17,7 +17,6 @@ import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import org.miriam.transaction.ITransactionManager;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -58,28 +57,47 @@ public class BibliotecaControlador {
     public List<BibliotecaDTO> verBibliotecaPersonal(Long idUsuario, String orden) throws FormularioInvalidoException {
 
         return tm.inTransaction(() -> {
-            UsuarioEntidad usuarioEntidad = usuarioRepo.obtenerPorId(idUsuario)
-                    .orElseThrow(() -> {
-                        ArrayList<ErrorDto> errores = new ArrayList<>();
-                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
-                        return new FormularioInvalidoException(errores);
-                    });
 
-            UsuarioDTO usuarioDto = UsuarioMapper.paraDTO(usuarioEntidad);
+            UsuarioEntidad usuarioEntidad =
+                    usuarioRepo.obtenerPorId(idUsuario)
+                            .orElseThrow(() -> {
 
-            Comparator<BibliotecaDTO> comparator = obtenerCriterioOrdenacion(orden);
+                                ArrayList<ErrorDto> errores =
+                                        new ArrayList<>();
 
-            java.util.Map<Long, JuegoDTO> mapaJuegos = juegoRepo.obtenerTodos().stream()
-                    .collect(java.util.stream.Collectors.toMap(
-                            JuegoEntidad::getId,
-                            JuegoMapper::paraDTO,
-                            (existente, reemplazo) -> existente // Por si acaso hubiera IDs duplicados
-                    ));
+                                errores.add(
+                                        new ErrorDto(
+                                                "usuario",
+                                                ErrorTipo.NO_ENCONTRADO
+                                        )
+                                );
 
-            return bibliotecaRepo.obtenerTodos().stream()
+                                return new FormularioInvalidoException(
+                                        errores
+                                );
+                            });
+
+            UsuarioDTO usuarioDto =
+                    UsuarioMapper.paraDTO(usuarioEntidad);
+
+            Comparator<BibliotecaDTO> comparator =
+                    obtenerCriterioOrdenacion(orden);
+
+            java.util.Map<Long, JuegoDTO> mapaJuegos =
+                    juegoRepo.obtenerTodos().stream()
+                            .collect(java.util.stream.Collectors.toMap(
+                                    JuegoEntidad::getId,
+                                    JuegoMapper::paraDTO,
+                                    (existente, reemplazo) -> existente
+                            ));
+
+            List<BibliotecaDTO> biblioteca = bibliotecaRepo.obtenerTodos()
+                    .stream()
                     .filter(b -> b.getUsuarioId().equals(idUsuario))
                     .map(entidad -> {
-                        JuegoDTO juegoDto = mapaJuegos.get(entidad.getJuegoId());
+
+                        JuegoDTO juegoDto =
+                                mapaJuegos.get(entidad.getJuegoId());
 
                         return new BibliotecaDTO(
                                 entidad.getId(),
@@ -95,6 +113,8 @@ public class BibliotecaControlador {
                     })
                     .sorted(comparator)
                     .toList();
+
+            return biblioteca;
         });
     }
 
@@ -261,10 +281,8 @@ public class BibliotecaControlador {
      * @throws RuntimeException            Si ocurre un fallo técnico durante la actualización en el repositorio.
      */
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
-
         return tm.inTransaction(() -> {
             ArrayList<ErrorDto> errores = new ArrayList<>();
-
             BibliotecaEntidad registroBiblio = null;
 
             for (var b : bibliotecaRepo.obtenerTodos()) {
@@ -284,11 +302,10 @@ public class BibliotecaControlador {
             }
 
             if (!errores.isEmpty()) {
-                throw new FormularioInvalidoException((ArrayList<ErrorDto>) errores);
+                throw new FormularioInvalidoException(new ArrayList<>(errores));
             }
 
             final BibliotecaEntidad registroFinal = registroBiblio;
-
             var formActualizado = new BibliotecaForm(
                     registroFinal.getUsuarioId(),
                     registroFinal.getJuegoId(),
@@ -300,20 +317,15 @@ public class BibliotecaControlador {
 
             BibliotecaEntidad actualizado = bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
                     .orElseThrow(() -> {
-                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        errores.add(new ErrorDto("biblioteca", ErrorTipo.NO_ACTUALIZADO));
                         return new IllegalArgumentException("Error al actualizar la biblioteca");
                     });
 
-            UsuarioDTO u = usuarioRepo.obtenerPorId(actualizado.getUsuarioId())
-                    .map(UsuarioMapper::paraDTO).orElse(null);
-            JuegoDTO j = juegoRepo.obtenerPorId(actualizado.getJuegoId())
-                    .map(JuegoMapper::paraDTO).orElse(null);
+            UsuarioDTO u = usuarioRepo.obtenerPorId(actualizado.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
+            JuegoDTO j = juegoRepo.obtenerPorId(actualizado.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
 
             return BibliotecaMapper.paraDTO(actualizado, u, j);
-
         });
-
-
     }
 
     /**
@@ -365,21 +377,44 @@ public class BibliotecaControlador {
      * @param idUsuario Identificador del usuario para el cual se generan las estadísticas.
      * @return EstadisticasBiblioDTO con el resumen ejecutivo de la biblioteca.
      */
-    public EstadisticasBiblioDTO consultarEstadisticas(Long idUsuario) {
-        int totalJuegos = 0;
-        double horasTotales = 0.0;
-        int juegosInstalados = 0;
-        double valorTotalBiblioteca = 0.0;
-        int juegosNuncaJugados = 0;
-        double maxHoras = -1;
-        String juegoMasJuegado = "Ninguno";
+    public EstadisticasBiblioDTO consultarEstadisticas(Long idUsuario) throws FormularioInvalidoException {
+        return tm.inTransaction(() -> {
 
-        for (BibliotecaEntidad registro : bibliotecaRepo.obtenerTodos()) {
-            if (registro.getUsuarioId().equals(idUsuario)) {
+            int totalJuegos = 0;
+            double horasTotales = 0.0;
+            int juegosInstalados = 0;
+            double valorTotalBiblioteca = 0.0;
+            int juegosNuncaJugados = 0;
+            double maxHoras = -1;
+            String juegoMasJugado = "SIN JUEGOS";
+
+            List<BibliotecaEntidad> bibliotecaUsuario =
+                    bibliotecaRepo.obtenerTodos().stream()
+                            .filter(registro ->
+                                    registro.getUsuarioId().equals(idUsuario))
+                            .toList();
+
+            // SI LA BIBLIOTECA ESTA VACIA
+            if (bibliotecaUsuario.isEmpty()) {
+
+                return new EstadisticasBiblioDTO(
+                        0,
+                        0,
+                        0,
+                        "SIN JUEGOS",
+                        0.0,
+                        0
+                );
+            }
+
+            for (BibliotecaEntidad registro : bibliotecaUsuario) {
+
                 totalJuegos++;
+
                 horasTotales += registro.getNumHorasTotal();
 
-                if (registro.getEstadoInstalacion() == EstadoInstalacion.INSTALADO) {
+                if (registro.getEstadoInstalacion()
+                        == EstadoInstalacion.INSTALADO) {
                     juegosInstalados++;
                 }
 
@@ -390,26 +425,32 @@ public class BibliotecaControlador {
                 if (registro.getNumHorasTotal() > maxHoras) {
                     maxHoras = registro.getNumHorasTotal();
 
-                    var juego = juegoRepo.obtenerPorId(registro.getJuegoId());
+                    var juego =
+                            juegoRepo.obtenerPorId(registro.getJuegoId());
+
                     if (juego.isPresent()) {
-                        juegoMasJuegado = juego.get().getTitulo();
+                        juegoMasJugado = juego.get().getTitulo();
                     }
                 }
 
-                var juegoParaPrecio = juegoRepo.obtenerPorId(registro.getJuegoId());
-                if (juegoParaPrecio.isPresent()) {
-                    valorTotalBiblioteca += juegoParaPrecio.get().getPrecioBase();
+                var juegoPrecio =
+                        juegoRepo.obtenerPorId(registro.getJuegoId());
+
+                if (juegoPrecio.isPresent()) {
+
+                    valorTotalBiblioteca +=
+                            juegoPrecio.get().getPrecioBase();
                 }
             }
-        }
-        return new EstadisticasBiblioDTO(
-                totalJuegos,
-                (int) horasTotales,
-                juegosInstalados,
-                juegoMasJuegado,
-                valorTotalBiblioteca,
-                juegosNuncaJugados
-        );
 
+            return new EstadisticasBiblioDTO(
+                    totalJuegos,
+                    (int) horasTotales,
+                    juegosInstalados,
+                    juegoMasJugado,
+                    valorTotalBiblioteca,
+                    juegosNuncaJugados
+            );
+        });
     }
 }

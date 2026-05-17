@@ -28,7 +28,6 @@ public class UsuarioControlador {
         this.tm = tm;
     }
 
-
     /**
      * Registrar un nuevo usuario en el sistema tras realizar validaciones de seguridad y negocio.
      * <p>
@@ -95,18 +94,16 @@ public class UsuarioControlador {
      * @throws IllegalArgumentException si no existe ningun usuario con ese nombre en el repositorio.
      */
     public UsuarioDTO consultarPerfil(String nombreUsuario) throws FormularioInvalidoException {
-
         return tm.inTransaction(() -> {
             UsuarioEntidad usuario = usuarioRepo.obtenerPorNombre(nombreUsuario)
-                    .orElse(null);
-
-            if (usuario == null) {
-                return null;
-            }
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDto> err = new ArrayList<>();
+                        err.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(err);
+                    });
 
             return UsuarioMapper.paraDTO(usuario);
         });
-
     }
 
     public UsuarioDTO consultarPerfil(Long idUsuario) throws FormularioInvalidoException {
@@ -208,5 +205,4 @@ public class UsuarioControlador {
             return usuario.getSaldoCartera();
         });
     }
-
 }
