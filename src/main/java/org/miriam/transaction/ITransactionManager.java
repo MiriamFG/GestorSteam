@@ -1,7 +1,6 @@
 package org.miriam.transaction;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.miriam.excepciones.*;
 

@@ -5,6 +5,8 @@ import org.miriam.modelo.enums.EstadoCuenta;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
 @Table(name = "usuarios")
 @Entity
 
@@ -45,7 +47,7 @@ public class UsuarioEntidad {
         this.nombreReal = nombreReal;
         this.pais = pais;
         this.fechaNac = fechaNac;
-        this.fechaReg = fechaReg;
+        this.fechaReg = Objects.requireNonNullElse(fechaReg, LocalDateTime.now());
         this.avatar = avatar;
         this.saldoCartera = saldoCartera;
         this.estadoCuenta = estadoCuenta;
@@ -95,6 +97,14 @@ public class UsuarioEntidad {
         return estadoCuenta;
     }
 
+    public void ingresarSaldo(double cantidad) {
+
+        if (cantidad < 0) {
+            throw new IllegalArgumentException("La cantidad no puede ser negativa");
+        }
+
+        this.saldoCartera += cantidad;
+    }
 }
 
 

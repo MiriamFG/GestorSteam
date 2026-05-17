@@ -5,6 +5,7 @@ import org.miriam.modelo.enums.EstadoCompra;
 import org.miriam.modelo.enums.MetodoPago;
 
 import java.time.LocalDate;
+
 @Table(name = "compra")
 @Entity
 
@@ -41,7 +42,6 @@ public class CompraEntidad {
         this.descuentoAplicado = 0d;
         this.estadoCompra = estadoCompra;
     }
-
 
 
     public Long getId() {

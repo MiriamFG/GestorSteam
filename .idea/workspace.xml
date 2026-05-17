@@ -4,24 +4,52 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5db707d4-17e0-4c08-b30a-e3172cf8fad3" name="Changes" comment="arreglados todos tm.inTransaction codigo compila">
+    <list default="true" id="85d978e0-a73f-4471-a0d8-ec234d696ae2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/excepciones/FormularioInvalidoException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/excepciones/FormularioInvalidoException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/BibliotecaForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/BibliotecaForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/CompraForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/CompraForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/mapper/UsuarioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/mapper/UsuarioMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/JuegoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/JuegoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/UsuarioDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/UsuarioDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/BibliotecaEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/BibliotecaEntidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/CompraEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/CompraEntidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/JuegoEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/JuegoEntidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/ResenaEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/ResenaEntidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/UsuarioEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/UsuarioEntidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorTipo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorTipo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/JuegoForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/JuegoForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ResenaForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ResenaForm.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/UsuarioForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/UsuarioForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/ResenaRepoInMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/ResenaRepoInMemory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/UsuarioRepoInMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/UsuarioRepoInMemory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/BibliotecaRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/BibliotecaRepoHibernate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/CompraRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/CompraRepoHibernate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/JuegoRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/JuegoRepoHibernate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/ResenaRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/ResenaRepoHibernate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/UsuarioRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/UsuarioRepoHibernate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/interfaces/IUsuarioRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/interfaces/IUsuarioRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/HibernateTransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/HibernateTransactionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/ITransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/ITransactionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/NoOpTransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/NoOpTransactionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ITransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/transaction/ITransactionManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Exception" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,13 +63,13 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/MiriamFG/GestorSteam.git&quot;,
-    &quot;accountId&quot;: &quot;b3ade66e-acfe-4467-876c-4c1e53e2c7ec&quot;
+    &quot;accountId&quot;: &quot;ee834b61-0db5-428c-8618-f190e6949d5a&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 5
+  &quot;associatedIndex&quot;: 6
 }</component>
-  <component name="ProjectId" id="3DfuMl3oCPippQgj6kv49h3NOrF" />
+  <component name="ProjectId" id="3DqDjpLZbBCJdkUfLK0ztUQQmbU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -49,21 +77,18 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.GestorSteam [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.GestorSteam [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.GestorSteam [clean,install].executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/a25miriamfg/Documents/programacion 25-26/GestorSteam&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/proyecto/GestorSteam&quot;
   }
 }</component>
   <component name="RunAnythingCache">
     <option name="myCommands">
-      <command value="mvn clean" />
-      <command value="mvn install" />
+      <command value="mvn clean install" />
     </option>
   </component>
   <component name="RunManager">
@@ -88,25 +113,12 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="5db707d4-17e0-4c08-b30a-e3172cf8fad3" name="Changes" comment="" />
-      <created>1778685399272</created>
+      <changelist id="85d978e0-a73f-4471-a0d8-ec234d696ae2" name="Changes" comment="" />
+      <created>1779000843283</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1778685399272</updated>
+      <updated>1779000843283</updated>
     </task>
-    <task id="LOCAL-00001" summary="arreglados todos tm.inTransaction codigo compila">
-      <option name="closed" value="true" />
-      <created>1778700960711</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1778700960711</updated>
-    </task>
-    <option name="localTasksCounter" value="2" />
     <servers />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="arreglados todos tm.inTransaction codigo compila" />
-    <option name="LAST_COMMIT_MESSAGE" value="arreglados todos tm.inTransaction codigo compila" />
   </component>
 </project>

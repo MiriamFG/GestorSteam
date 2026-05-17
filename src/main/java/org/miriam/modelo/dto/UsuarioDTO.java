@@ -17,7 +17,17 @@ public class UsuarioDTO {
     private Double saldoCartera;
     private EstadoCuenta estadoCuenta;
 
-    public UsuarioDTO(Long id, String nombreUsuario, String email, String nombreReal, LocalDate fechaNac, LocalDateTime fechaReg, String avatar, Double saldoCartera, EstadoCuenta estadoCuenta) {
+    public UsuarioDTO(Long id,
+                      String nombreUsuario,
+                      String email,
+                      String nombreReal,
+                      String pais,
+                      LocalDate fechaNac,
+                      LocalDateTime fechaReg,
+                      String avatar,
+                      Double saldoCartera,
+                      EstadoCuenta estadoCuenta) {
+
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;

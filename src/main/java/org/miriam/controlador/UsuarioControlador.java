@@ -13,7 +13,6 @@ import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import org.miriam.transaction.ITransactionManager;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class UsuarioControlador {
 
@@ -25,6 +24,7 @@ public class UsuarioControlador {
 
     public UsuarioControlador(IUsuarioRepo usuarioRepo, PaisesRepoInMemory paisRepo, ITransactionManager tm) {
         this.usuarioRepo = usuarioRepo;
+        this.paisRepo = paisRepo;
         this.tm = tm;
     }
 
@@ -52,14 +52,10 @@ public class UsuarioControlador {
 
         form.validarFormulario();
 
-        var errores = new ArrayList<ErrorDto>();
+        return tm.inTransaction(() -> {
 
-        boolean paisValido = paisRepo.obtenerTodos().stream().anyMatch(p -> p.equalsIgnoreCase(form.getPais()));
-        if (!paisValido) {
-            errores.add(new ErrorDto("pais", ErrorTipo.NO_ENCONTRADO));
-        }
+            var errores = new ArrayList<ErrorDto>();
 
-        UsuarioEntidad nuevoUsuario = tm.inTransaction(() -> {
             if (usuarioRepo.obtenerPorNombre(form.getNombreUsuario()).isPresent()) {
                 errores.add(new ErrorDto("usuario", ErrorTipo.EXISTENTE));
             }
@@ -67,15 +63,28 @@ public class UsuarioControlador {
             if (usuarioRepo.obtenerPorEmail(form.getEmail()).isPresent()) {
                 errores.add(new ErrorDto("email", ErrorTipo.REGISTRADO));
             }
+
+            boolean paisValido = paisRepo.obtenerTodos().stream().anyMatch(p -> p.equalsIgnoreCase(form.getPais()));
+            if (!paisValido) {
+                errores.add(new ErrorDto("pais", ErrorTipo.NO_ENCONTRADO));
+            }
+
             if (!errores.isEmpty()) {
                 throw new FormularioInvalidoException(errores);
             }
 
-            return usuarioRepo.crear(form).orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+            UsuarioEntidad nuevoUsuario = usuarioRepo.crear(form).orElseThrow(() -> {
+                var err = new ArrayList<ErrorDto>();
+                err.add(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION));
+                return new FormularioInvalidoException(err);
+            });
 
+            return UsuarioMapper.paraDTO(nuevoUsuario);
         });
+    }
 
-        return UsuarioMapper.paraDTO(nuevoUsuario);
+    public UsuarioDTO creaUsuarioDTO(UsuarioForm form) throws FormularioInvalidoException {
+        return registrarUsuario(form);
     }
 
     /**
@@ -85,17 +94,33 @@ public class UsuarioControlador {
      * @return el UsuarioEntidad correspondiente al nombre indicado.
      * @throws IllegalArgumentException si no existe ningun usuario con ese nombre en el repositorio.
      */
-    public UsuarioDTO consultarPerfilPorNombre(String nombreUsuario) throws FormularioInvalidoException {
+    public UsuarioDTO consultarPerfil(String nombreUsuario) throws FormularioInvalidoException {
 
-        UsuarioEntidad usuario = tm.inTransaction(()-> {
-            var usuarioEncontrado = usuarioRepo.obtenerPorNombre(nombreUsuario)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+        return tm.inTransaction(() -> {
+            UsuarioEntidad usuario = usuarioRepo.obtenerPorNombre(nombreUsuario)
+                    .orElse(null);
 
-            return usuarioEncontrado;
+            if (usuario == null) {
+                return null;
+            }
+
+            return UsuarioMapper.paraDTO(usuario);
         });
 
-        return UsuarioMapper.paraDTO(usuario);
+    }
 
+    public UsuarioDTO consultarPerfil(Long idUsuario) throws FormularioInvalidoException {
+
+        return tm.inTransaction(() -> {
+            UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
+                    .orElse(null);
+
+            if (usuario == null) {
+                return null;
+            }
+
+            return UsuarioMapper.paraDTO(usuario);
+        });
     }
 
     /**
@@ -119,7 +144,7 @@ public class UsuarioControlador {
     final double VALOR_CIEN = 100.00;
     final double VALOR_QUINIENTOS = 500.00;
 
-    public boolean aniadirSaldo(Long idUsuario, Double cantidad) throws FormularioInvalidoException {
+    public UsuarioDTO aniadirSaldo(Long idUsuario, Double cantidad) throws FormularioInvalidoException {
         var errores = new ArrayList<ErrorDto>();
 
         if (cantidad <= VALOR_ZERO) {
@@ -141,17 +166,23 @@ public class UsuarioControlador {
         return tm.inTransaction(() -> {
 
             UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                    .orElseThrow(() -> {
+                        var errId = new ArrayList<ErrorDto>();
+                        errId.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(errId);
+                    });
 
             if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVA) {
-                errores.add(new ErrorDto("cuenta", ErrorTipo.NO_ACTIVO));
+                var errActivo = new ArrayList<ErrorDto>();
+                errActivo.add(new ErrorDto("cuenta", ErrorTipo.NO_ACTIVO));
+                throw new FormularioInvalidoException(errActivo);
             }
 
-            Double nuevoSaldo = usuario.getSaldoCartera() + cantidad;
+            usuario.ingresarSaldo(cantidad);
 
-            boolean usuarioActualizado = usuarioRepo.actualizarSoloSaldo(idUsuario, nuevoSaldo);
+            usuarioRepo.actualizar(usuario);
 
-            return usuarioActualizado;
+            return UsuarioMapper.paraDTO(usuario);
         });
     }
 
@@ -163,15 +194,19 @@ public class UsuarioControlador {
      * @return Una String que representa el saldo formateado.
      * @throws IllegalArgumentException Si el ID proporcionado no corresponde a ningún usuario existente.
      */
-    public UsuarioDTO consultarSaldo(Long idUsuario) throws FormularioInvalidoException {
+    public Double consultarSaldo(Long idUsuario) throws FormularioInvalidoException {
 
-        UsuarioEntidad usuario = tm.inTransaction(()->
-             usuarioRepo.obtenerPorId(idUsuario)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))))
+        return tm.inTransaction(() -> {
+            UsuarioEntidad usuario = usuarioRepo.obtenerPorId(idUsuario)
+                    .orElseThrow(() -> {
+                        var errores = new ArrayList<ErrorDto>();
+                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(errores);
+                    });
 
-        );
-
-        return UsuarioMapper.paraDTO(usuario);
+            double importeADevolver = 0;
+            return usuario.getSaldoCartera();
+        });
     }
 
 }

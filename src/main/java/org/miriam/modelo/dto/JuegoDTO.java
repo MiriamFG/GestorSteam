@@ -36,7 +36,6 @@ public class JuegoDTO {
     }
 
 
-
     public Long getId() {
         return id;
     }

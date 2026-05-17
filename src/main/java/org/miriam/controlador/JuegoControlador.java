@@ -49,7 +49,7 @@ public class JuegoControlador {
 
         List<ErrorDto> errores = new ArrayList<>();
 
-        JuegoEntidad juego = tm.inTransaction(()->{
+        JuegoEntidad juego = tm.inTransaction(() -> {
 
             if (juegoRepo.obtenerPorTitulo(form.getTitulo()).isPresent()) {
                 errores.add(new ErrorDto("titulo", ErrorTipo.EXISTENTE));
@@ -60,7 +60,7 @@ public class JuegoControlador {
             }
 
             return juegoRepo.crear(form)
-                    .orElseThrow((()-> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION)))));
+                    .orElseThrow((() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION)))));
 
         });
 
@@ -80,9 +80,13 @@ public class JuegoControlador {
      * @param estado        Estado actual del juego.
      * @return List de JuegoDTO que cumplen con todos los criterios. Si no hay coincidencias devuelve lista vacía.
      */
-    public List<JuegoDTO> buscarJuego(String titulo, String categoria, Double precioMin, Double precioMax, ClasificacionEdad clasificacion, EstadoJuego estado) {
+    public List<JuegoDTO> buscarJuego(String titulo, String categoria, Double precioMin, Double precioMax, ClasificacionEdad clasificacion, EstadoJuego estado) throws FormularioInvalidoException {
 
-        return juegoRepo.obtenerTodos().stream()
+        List<JuegoEntidad> todosLosJuegos = tm.inTransaction(() -> {
+            return juegoRepo.obtenerTodos();
+        });
+
+        return todosLosJuegos.stream()
                 .filter(t -> titulo == null || t.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
                 .filter(c -> categoria == null || c.getCategoria().equalsIgnoreCase(categoria))
                 .filter(m -> precioMin == null || m.getPrecioBase() >= precioMin)
@@ -107,24 +111,28 @@ public class JuegoControlador {
      *              fecha: ordena por fecha de lanzamiento de mas antiguo a nuevo.
      * @return una List de JuegoDTO ordenada segun el criterio.
      */
-    public List<JuegoDTO> consultarCatalogo(String orden) {
-        var juegos = juegoRepo.obtenerTodos().stream()
-                .map(JuegoMapper::paraDTO)
-                .collect(Collectors.toList());
-
+    public List<JuegoDTO> consultarCatalogo(String orden) throws FormularioInvalidoException {
+        List<JuegoDTO> juegos = tm.inTransaction(() -> {
+            return juegoRepo.obtenerTodos().stream()
+                    .map(JuegoMapper::paraDTO)
+                    .collect(Collectors.toList());
+        });
 
         if ("alfabetico".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getTitulo, String.CASE_INSENSITIVE_ORDER))
-                    .toList();;
+            juegos = juegos.stream()
+                    .sorted(Comparator.comparing(JuegoDTO::getTitulo, String.CASE_INSENSITIVE_ORDER))
+                    .toList();
         } else if ("precio".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparingDouble(JuegoDTO::getPrecioBase))
-                    .toList();;
+            juegos = juegos.stream()
+                    .sorted(Comparator.comparingDouble(JuegoDTO::getPrecioBase))
+                    .toList();
         } else if ("fecha".equalsIgnoreCase(orden)) {
-            juegos.stream().sorted(Comparator.comparing(JuegoDTO::getFechaLanz, Comparator.nullsLast(Comparator.naturalOrder())))
+            juegos = juegos.stream()
+                    .sorted(Comparator.comparing(JuegoDTO::getFechaLanz, Comparator.nullsLast(Comparator.naturalOrder())))
                     .toList();
         }
-        return juegos;
 
+        return juegos;
     }
 
     /**
@@ -136,7 +144,7 @@ public class JuegoControlador {
      */
     public JuegoDTO consultarJuego(Long id) throws FormularioInvalidoException {
 
-        return tm.inTransaction(()->{
+        return tm.inTransaction(() -> {
             JuegoEntidad juego = juegoRepo.obtenerPorId(id)
                     .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
 
@@ -160,14 +168,19 @@ public class JuegoControlador {
     public JuegoDTO aplicarDescuento(Long id, Integer descuento) throws FormularioInvalidoException {
 
         if (descuento == null || descuento < CERO || descuento > CIEN) {
-            List<ErrorDto> errores = List.of(new ErrorDto("descuento", ErrorTipo.VALOR_DEMASIADO_ALTO));
-            throw new FormularioInvalidoException((ArrayList<ErrorDto>) errores);
+            ArrayList<ErrorDto> errores = new ArrayList<>();
+            errores.add(new ErrorDto("descuento", ErrorTipo.VALOR_DEMASIADO_ALTO));
+
+            throw new FormularioInvalidoException(errores);
         }
 
-        JuegoEntidad actualizado = tm.inTransaction(()-> {
+        JuegoEntidad actualizado = tm.inTransaction(() -> {
 
             JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDto> listaErrores = new ArrayList<>(List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION)));
+                        return new FormularioInvalidoException(listaErrores);
+                    });
 
             JuegoForm form = new JuegoForm(
                     juego.getTitulo(),
@@ -183,7 +196,10 @@ public class JuegoControlador {
             );
 
             return juegoRepo.actualizar(id, form)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDto> listaErrores = new ArrayList<>(List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION)));
+                        return new FormularioInvalidoException(listaErrores);
+                    });
         });
 
         return JuegoMapper.paraDTO(actualizado);
@@ -201,10 +217,14 @@ public class JuegoControlador {
         if (nuevoEstado == null) {
             throw new IllegalArgumentException("Estado inválido");
         }
-        JuegoEntidad actualizado = tm.inTransaction(()->{
+        JuegoEntidad actualizado = tm.inTransaction(() -> {
 
             JuegoEntidad juego = juegoRepo.obtenerPorId(id)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDto> listaErrores = new ArrayList<>();
+                        listaErrores.add(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION));
+                        return new FormularioInvalidoException(listaErrores);
+                    });
 
             JuegoForm form = new JuegoForm(
                     juego.getTitulo(),
@@ -220,7 +240,11 @@ public class JuegoControlador {
             );
 
             return juegoRepo.actualizar(id, form)
-                    .orElseThrow(() -> new FormularioInvalidoException((ArrayList<ErrorDto>) List.of(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION))));
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDto> listaErrores = new ArrayList<>();
+                        listaErrores.add(new ErrorDto("UsuarioFormulario", ErrorTipo.ERROR_CREACION));
+                        return new FormularioInvalidoException(listaErrores);
+                    });
         });
 
         return JuegoMapper.paraDTO(actualizado);

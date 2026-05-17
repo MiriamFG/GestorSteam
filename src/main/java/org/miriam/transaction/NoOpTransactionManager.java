@@ -3,7 +3,6 @@ package org.miriam.transaction;
 import java.util.Optional;
 
 import org.miriam.excepciones.FormularioInvalidoException;
-import org.miriam.excepciones.FormularioInvalidoException;
 
 /**
  * Implementaci�n no-op de {@link ITransactionManager}.

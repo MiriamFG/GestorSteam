@@ -126,27 +126,9 @@ public class UsuarioForm {
                 errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
 
-            boolean mayuscula = false;
-            boolean minuscula = false;
-            boolean numero = false;
+            String regexContrasena = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$";
 
-            for (int i = 0; i < contrasena.length(); i++) {
-                char letra = contrasena.charAt(i);
-
-                if (Character.isUpperCase(letra)) {
-                    mayuscula = true;
-                }
-
-                if (Character.isLowerCase(letra)) {
-                    minuscula = true;
-                }
-
-                if (Character.isDigit(letra)) {
-                    numero = true;
-                }
-            }
-
-            if (!mayuscula || !minuscula || !numero) {
+            if (!contrasena.matches(regexContrasena)) {
                 errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_VALIDA));
             }
         }
@@ -179,8 +161,6 @@ public class UsuarioForm {
             }
 
         }
-
-
 
         if (avatar != null && avatar.length() > CIEN) {
             errores.add(new ErrorDto("avatar", ErrorTipo.CAMPO_LARGO, CIEN));

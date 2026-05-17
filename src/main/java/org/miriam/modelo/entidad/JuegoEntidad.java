@@ -7,6 +7,7 @@ import org.miriam.modelo.enums.EstadoJuego;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @Table(name = "juegos")
 @Entity
 public class JuegoEntidad {

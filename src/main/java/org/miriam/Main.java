@@ -1,25 +1,5 @@
 package org.miriam;
 
-import org.miriam.controlador.CompraControlador;
-import org.miriam.controlador.JuegoControlador;
-import org.miriam.controlador.UsuarioControlador;
-import org.miriam.excepciones.FormularioInvalidoException;
-import org.miriam.modelo.entidad.CompraEntidad;
-import org.miriam.modelo.entidad.JuegoEntidad;
-import org.miriam.modelo.entidad.UsuarioEntidad;
-import org.miriam.modelo.enums.ClasificacionEdad;
-import org.miriam.modelo.enums.EstadoCuenta;
-import org.miriam.modelo.enums.EstadoJuego;
-import org.miriam.modelo.enums.MetodoPago;
-import org.miriam.modelo.form.JuegoForm;
-import org.miriam.modelo.form.UsuarioForm;
-import org.miriam.repositorio.implementacion.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 public class Main {
     static void main() {
 
@@ -77,5 +57,9 @@ public class Main {
   //     }
 
   // }
+
+    public static void main(String[] args) {
+
+    }
 
 }

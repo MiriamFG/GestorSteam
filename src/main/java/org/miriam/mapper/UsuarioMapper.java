@@ -6,10 +6,12 @@ import org.miriam.modelo.entidad.UsuarioEntidad;
 public class UsuarioMapper {
 
     public static UsuarioDTO paraDTO(UsuarioEntidad usuario) {
+        double importeADevolver = 0;
         return new UsuarioDTO(
                 usuario.getId(),
                 usuario.getNombreUsuario(),
                 usuario.getEmail(),
+                usuario.getNombreReal(),
                 usuario.getPais(),
                 usuario.getFechaNac(),
                 usuario.getFechaReg(),

@@ -6,6 +6,8 @@ import org.miriam.mapper.JuegoMapper;
 import org.miriam.mapper.UsuarioMapper;
 import org.miriam.modelo.dto.*;
 import org.miriam.modelo.entidad.BibliotecaEntidad;
+import org.miriam.modelo.entidad.JuegoEntidad;
+import org.miriam.modelo.entidad.UsuarioEntidad;
 import org.miriam.modelo.enums.EstadoInstalacion;
 import org.miriam.modelo.form.BibliotecaForm;
 import org.miriam.modelo.form.ErrorDto;
@@ -15,6 +17,7 @@ import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import org.miriam.transaction.ITransactionManager;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,7 +41,6 @@ public class BibliotecaControlador {
         this.tm = tm;
     }
 
-
     /**
      * Recupera y organiza el catálogo de juegos adquiridos por un usuario.
      * <p>
@@ -56,23 +58,34 @@ public class BibliotecaControlador {
     public List<BibliotecaDTO> verBibliotecaPersonal(Long idUsuario, String orden) throws FormularioInvalidoException {
 
         return tm.inTransaction(() -> {
-            var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
-            if (usuarioOpt.isEmpty()) {
-                ArrayList<ErrorDto> errores = new ArrayList<>();
-                errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
-                throw new FormularioInvalidoException(errores);
-            }
+            UsuarioEntidad usuarioEntidad = usuarioRepo.obtenerPorId(idUsuario)
+                    .orElseThrow(() -> {
+                        ArrayList<ErrorDto> errores = new ArrayList<>();
+                        errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
+                        return new FormularioInvalidoException(errores);
+                    });
 
-            List<BibliotecaDTO> bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
+            UsuarioDTO usuarioDto = UsuarioMapper.paraDTO(usuarioEntidad);
+
+            Comparator<BibliotecaDTO> comparator = obtenerCriterioOrdenacion(orden);
+
+            java.util.Map<Long, JuegoDTO> mapaJuegos = juegoRepo.obtenerTodos().stream()
+                    .collect(java.util.stream.Collectors.toMap(
+                            JuegoEntidad::getId,
+                            JuegoMapper::paraDTO,
+                            (existente, reemplazo) -> existente // Por si acaso hubiera IDs duplicados
+                    ));
+
+            return bibliotecaRepo.obtenerTodos().stream()
                     .filter(b -> b.getUsuarioId().equals(idUsuario))
                     .map(entidad -> {
-                        UsuarioDTO u = usuarioRepo.obtenerPorId(entidad.getUsuarioId()).map(UsuarioMapper::paraDTO).orElse(null);
-                        JuegoDTO j = juegoRepo.obtenerPorId(entidad.getJuegoId()).map(JuegoMapper::paraDTO).orElse(null);
+                        JuegoDTO juegoDto = mapaJuegos.get(entidad.getJuegoId());
+
                         return new BibliotecaDTO(
                                 entidad.getId(),
-                                u,
+                                usuarioDto,
                                 entidad.getUsuarioId(),
-                                j,
+                                juegoDto,
                                 entidad.getJuegoId(),
                                 entidad.getFechaAdquisicion(),
                                 entidad.getNumHorasTotal(),
@@ -80,33 +93,32 @@ public class BibliotecaControlador {
                                 entidad.getEstadoInstalacion()
                         );
                     })
+                    .sorted(comparator)
                     .toList();
-
-            if (orden != null) {
-                switch (orden.toLowerCase()) {
-                    case "alfabetico":
-                        bibliotecaUsuario.sort((b1, b2) -> b1.getJuegoDTO().getTitulo()
-                                .compareToIgnoreCase(b2.getJuegoDTO().getTitulo()));
-                        break;
-                    case "tiempo":
-                        bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getNumHorasTotal));
-                        break;
-                    case "ultimasesion":
-                        bibliotecaUsuario.sort((b1, b2) -> {
-                            LocalDateTime f1 = b1.getUltimaFechaJuego() != null ? b1.getUltimaFechaJuego() : LocalDateTime.MIN;
-                            LocalDateTime f2 = b2.getUltimaFechaJuego() != null ? b2.getUltimaFechaJuego() : LocalDateTime.MIN;
-                            return f1.compareTo(f2);
-                        });
-                        break;
-                    case "fechaadquisicion":
-                        bibliotecaUsuario.sort(Comparator.comparing(BibliotecaDTO::getFechaAdquisicion));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Opción no encontrada");
-                }
-            }
-            return bibliotecaUsuario;
         });
+    }
+
+    private Comparator<BibliotecaDTO> obtenerCriterioOrdenacion(String orden) {
+        if (orden == null) {
+            return (b1, b2) -> 0;
+        }
+
+        return switch (orden.toLowerCase()) {
+            case "alfabetico" -> Comparator.comparing(
+                    b -> b.getJuegoDTO() != null ? b.getJuegoDTO().getTitulo() : "",
+                    String.CASE_INSENSITIVE_ORDER
+            );
+            case "tiempo" -> Comparator.comparing(BibliotecaDTO::getNumHorasTotal);
+            case "ultimasesion" -> Comparator.comparing(
+                    BibliotecaDTO::getUltimaFechaJuego,
+                    Comparator.nullsFirst(LocalDateTime::compareTo)
+            );
+            case "fechaadquisicion" -> Comparator.comparing(
+                    BibliotecaDTO::getFechaAdquisicion,
+                    Comparator.nullsFirst(LocalDateTime::compareTo)
+            );
+            default -> throw new IllegalArgumentException("Opción de ordenación no válida: " + orden);
+        };
     }
 
     /**
@@ -250,7 +262,7 @@ public class BibliotecaControlador {
      */
     public BibliotecaDTO actualizarTiempoJuego(Long idUsuario, Long idJuego, int horasASumar) throws FormularioInvalidoException {
 
-         return tm.inTransaction(() -> {
+        return tm.inTransaction(() -> {
             ArrayList<ErrorDto> errores = new ArrayList<>();
 
             BibliotecaEntidad registroBiblio = null;
@@ -286,7 +298,7 @@ public class BibliotecaControlador {
                     registroFinal.getEstadoInstalacion()
             );
 
-             BibliotecaEntidad actualizado = bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
+            BibliotecaEntidad actualizado = bibliotecaRepo.actualizar(registroFinal.getId(), formActualizado)
                     .orElseThrow(() -> {
                         errores.add(new ErrorDto("usuario", ErrorTipo.NO_ENCONTRADO));
                         return new IllegalArgumentException("Error al actualizar la biblioteca");
@@ -318,7 +330,7 @@ public class BibliotecaControlador {
      */
     public SesionInfoDTO consultarUltimaSesion(Long idUsuario, Long idJuego) throws FormularioInvalidoException {
 
-        return tm.inTransaction(()->{
+        return tm.inTransaction(() -> {
             BibliotecaEntidad registro = bibliotecaRepo.obtenerTodos().stream()
                     .filter(b -> b.getUsuarioId().equals(idUsuario) && b.getJuegoId().equals(idJuego))
                     .findFirst()

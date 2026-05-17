@@ -3,12 +3,9 @@ package org.miriam.repositorio.implementacionHibernate;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.miriam.modelo.entidad.JuegoEntidad;
 import org.miriam.modelo.entidad.UsuarioEntidad;
 import org.miriam.modelo.enums.EstadoCuenta;
-import org.miriam.modelo.form.JuegoForm;
 import org.miriam.modelo.form.UsuarioForm;
-import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.repositorio.interfaces.IUsuarioRepo;
 import org.miriam.transaction.ISesionManager;
 
@@ -58,11 +55,20 @@ public class UsuarioRepoHibernate implements IUsuarioRepo {
     }
 
     @Override
+    public void actualizar(UsuarioEntidad usuario) {
+        var session = sesionManager.getSession();
+        session.merge(usuario);
+    }
+
+    @Override
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
         var session = sesionManager.getSession();
-        var user = new UsuarioEntidad(0L, form.getNombreUsuario(), form.getEmail(), form.getContrasena(),
+
+        var user = new UsuarioEntidad(null, form.getNombreUsuario(), form.getEmail(), form.getContrasena(),
                 form.getNombreReal(), form.getPais(), form.getFechaNac(), LocalDateTime.now(), form.getAvatar(), 0.0, EstadoCuenta.ACTIVA);
         session.persist(user);
+        session.flush();
+        session.clear();
         return Optional.of(user);
     }
 

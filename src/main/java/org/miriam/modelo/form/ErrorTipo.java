@@ -25,7 +25,8 @@ public enum ErrorTipo {
     PROHIBIDO("el usuario no tiene acceso"),
     ERROR_CREACION("error al crear"),
     ESTADO_INVALIDO("el estado no es válido"),
-    NO_ACTUALIZADO("no se ha podido actualizar");
+    NO_ACTUALIZADO("no se ha podido actualizar"),
+    VALOR_INVALIDO("El valor es inválido");
 
 
     private final String mensaje;

@@ -40,7 +40,7 @@ public class ResenaRepoInMemory implements IResenaRepo {
             throw new IllegalArgumentException("Reseña no encontrada");
         }
         var resenaActualizada = new ResenaEntidad(id, form.getIdUsuario(), form.getIdJuego(),
-                form.getRecomendado(), form.getTextoResena(), form.getHorasJuegoResena(), resenaOpc.get().getFechaPubli(), LocalDate.now(),resenaOpc.get().getEstadoResena());
+                form.getRecomendado(), form.getTextoResena(), form.getHorasJuegoResena(), resenaOpc.get().getFechaPubli(), LocalDate.now(), resenaOpc.get().getEstadoResena());
         resenas.removeIf(r -> r.getId().equals(id));
         resenas.add(resenaActualizada);
         return Optional.of(resenaActualizada);

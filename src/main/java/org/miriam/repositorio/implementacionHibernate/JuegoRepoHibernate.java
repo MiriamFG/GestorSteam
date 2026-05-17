@@ -10,6 +10,7 @@ import org.miriam.modelo.form.JuegoForm;
 import org.miriam.repositorio.interfaces.IJuegoRepo;
 import org.miriam.transaction.ISesionManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +37,14 @@ public class JuegoRepoHibernate implements IJuegoRepo {
     @Override
     public Optional<JuegoEntidad> crear(JuegoForm form) {
         var session = sesionManager.getSession();
-        var juego = new JuegoEntidad(0L, form.getTitulo(), form.getDescipcion(),
+
+        List<String> idiomas = form.getIdiomasDisponibles() != null ? form.getIdiomasDisponibles() : new ArrayList<>();
+
+        var juego = new JuegoEntidad(null, form.getTitulo(), form.getDescipcion(),
                 form.getDesarrollador(), form.getFechaLanz(),
                 form.getPrecioBase(), form.getDescuentoActual(),
                 form.getCategoria(), form.getClasificacionEdad(),form.getIdiomasDisponibles(), form.getEstadoJuego());
+
         session.persist(juego);
         return Optional.of(juego);
 
@@ -60,7 +65,7 @@ public class JuegoRepoHibernate implements IJuegoRepo {
         CriteriaQuery<JuegoEntidad> cq = cb.createQuery(JuegoEntidad.class);
         Root<JuegoEntidad> root = cq.from(JuegoEntidad.class);
 
-        cq.select(root).orderBy(cb.asc(root.get("nombre")));
+        cq.select(root).orderBy(cb.asc(root.get("titulo")));
 
         return session.createQuery(cq).getResultList();
 

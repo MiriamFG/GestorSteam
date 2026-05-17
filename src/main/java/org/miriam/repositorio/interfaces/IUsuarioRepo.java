@@ -13,4 +13,6 @@ public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
 
 
     boolean actualizarSoloSaldo(Long id, Double nuevoSaldo);
+
+    void actualizar(UsuarioEntidad usuario);
 }

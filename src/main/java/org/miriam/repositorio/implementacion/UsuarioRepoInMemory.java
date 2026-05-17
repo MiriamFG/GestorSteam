@@ -63,7 +63,6 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         if (obtenerPorId(id).isPresent()){
             UsuarioEntidad antiguo = obtenerPorId(id).get();
 
-            // Creamos un nuevo objeto con los mismos datos pero el nuevo saldo
             UsuarioEntidad actualizado = new UsuarioEntidad(
                     antiguo.getId(),
                     antiguo.getNombreUsuario(),
@@ -80,14 +79,18 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
             USUARIOS.removeIf(usuario -> usuario.getId().equals(id));
             USUARIOS.add(actualizado);
-
-            if(!Objects.equals(antiguo.getSaldoCartera(), actualizado.getSaldoCartera())){
-                return true;
-            }else{
-                return false;
-            }
+            return !Objects.equals(
+                    antiguo.getSaldoCartera(),
+                    actualizado.getSaldoCartera()
+            );
         }
         return false;
+    }
+
+    @Override
+    public void actualizar(UsuarioEntidad usuario) {
+        USUARIOS.removeIf(u -> u.getId().equals(usuario.getId()));
+        USUARIOS.add(usuario);
     }
 
     @Override
@@ -97,6 +100,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
+
         return USUARIOS.stream()
                 .filter(u -> u.getNombreUsuario().equalsIgnoreCase(nombre))
                 .findFirst();
@@ -104,8 +108,16 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public Optional<UsuarioEntidad> obtenerPorEmail(String email) {
+
         return USUARIOS.stream()
-                .filter(u -> u.getNombreUsuario().equalsIgnoreCase(email))
+                .filter(u -> u.getEmail().equalsIgnoreCase(email))
                 .findFirst();
+    }
+
+    public static void limpiarRepositorio() {
+
+        USUARIOS.clear();
+
+        idCount = 1L;
     }
 }

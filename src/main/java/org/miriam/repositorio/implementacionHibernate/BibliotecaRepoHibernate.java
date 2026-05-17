@@ -33,7 +33,7 @@ public class BibliotecaRepoHibernate implements IBibliotecaRepo {
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
         var session = sesionManager.getSession();
-        var biblio = new BibliotecaEntidad(0L, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());
+        var biblio = new BibliotecaEntidad(null, form.getIdUsuario(), form.getIdJuego(), form.getFechaAdquisicion(), form.getNumHorasTotal(), form.getUltimaFechaJuego(), form.getEstadoInstalacion());
         session.persist(biblio);
         return Optional.of(biblio);
     }
@@ -53,7 +53,7 @@ public class BibliotecaRepoHibernate implements IBibliotecaRepo {
         CriteriaQuery<BibliotecaEntidad> cq = cb.createQuery(BibliotecaEntidad.class);
         Root<BibliotecaEntidad> root = cq.from(BibliotecaEntidad.class);
 
-        cq.select(root).orderBy(cb.asc(root.get("nombreUsuario")));
+        cq.select(root);
 
         return session.createQuery(cq).getResultList();
     }

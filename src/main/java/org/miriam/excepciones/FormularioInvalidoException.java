@@ -4,6 +4,7 @@ import org.miriam.modelo.form.ErrorDto;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class FormularioInvalidoException extends Exception {
 
     private List<ErrorDto> errores;

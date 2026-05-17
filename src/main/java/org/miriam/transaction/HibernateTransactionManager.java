@@ -5,8 +5,6 @@ import org.miriam.excepciones.FormularioInvalidoException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.Optional;
-
 /**
  * Implementación Hibernate de {@link ITransactionManager}.
  * Gestiona el ciclo de vida de la sesión y la transacción.

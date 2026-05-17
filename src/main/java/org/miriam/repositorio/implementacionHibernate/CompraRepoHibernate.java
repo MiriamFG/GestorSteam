@@ -28,7 +28,7 @@ public class CompraRepoHibernate implements ICompraRepo {
     @Override
     public Optional<CompraEntidad> crear(CompraForm form) {
         var session = sesionManager.getSession();
-        var compra = new CompraEntidad(0L,form.getIdUsuario(), form.getIdJuego(), form.getFechaCompra(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getDescuentoAplicado(),form.getEstadoCompra());
+        var compra = new CompraEntidad(null,form.getIdUsuario(), form.getIdJuego(), form.getFechaCompra(), form.getMetodoPago(), form.getPrecioSinDescuento(), form.getDescuentoAplicado(),form.getEstadoCompra());
         session.persist(compra);
         return Optional.of(compra);
     }

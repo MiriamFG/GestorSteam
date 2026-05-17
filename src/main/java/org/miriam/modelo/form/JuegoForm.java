@@ -135,8 +135,8 @@ public class JuegoForm {
             errores.add(new ErrorDto("precioBase", ErrorTipo.CAMPO_ENTRE, PRECIO_MINIMO, MAX_PRECIO));
         }
 
-        var value =  new BigDecimal(String.valueOf(precioBase));
-        if(value.stripTrailingZeros().scale() > LONGITUD_2)
+        var value = new BigDecimal(String.valueOf(precioBase));
+        if (value.stripTrailingZeros().scale() > LONGITUD_2)
             errores.add(new ErrorDto("Precio Base", ErrorTipo.MAX_DECIMALES));
 
 
@@ -152,12 +152,15 @@ public class JuegoForm {
             errores.add(new ErrorDto("clasificacionEdad", ErrorTipo.REQUERIDO));
         }
 
-        if (idiomasDisponibles == null || idiomasDisponibles.isEmpty()) {
-            errores.add(new ErrorDto("idioma", ErrorTipo.REQUERIDO));
-        }
-        for (String idioma : idiomasDisponibles) {
-            if (idioma.length() > LONGITUD_IDIOMAS) {
-                errores.add(new ErrorDto("idioma", ErrorTipo.CAMPO_LARGO, LONGITUD_IDIOMAS));
+        if (idiomasDisponibles != null) {
+            if (idiomasDisponibles.isEmpty()) {
+                errores.add(new ErrorDto("idiomasDisponibles", ErrorTipo.REQUERIDO));
+            } else {
+                for (String idioma : idiomasDisponibles) {
+                    if (idioma != null && idioma.length() > LONGITUD_IDIOMAS) {
+                        errores.add(new ErrorDto("idioma", ErrorTipo.CAMPO_LARGO, LONGITUD_IDIOMAS));
+                    }
+                }
             }
         }
 
