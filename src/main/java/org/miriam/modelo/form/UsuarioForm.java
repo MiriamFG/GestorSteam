@@ -123,13 +123,13 @@ public class UsuarioForm {
             errores.add(new ErrorDto("contrasena", ErrorTipo.REQUERIDO));
         } else {
             if (contrasena.length() < LONGITUD_8) {
-                errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_VALIDA));
+                errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_CORTA));
             }
 
             String regexContrasena = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$";
 
             if (!contrasena.matches(regexContrasena)) {
-                errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_VALIDA));
+                errores.add(new ErrorDto("contrasena", ErrorTipo.CONTRASENA_DEBIL));
             }
         }
 

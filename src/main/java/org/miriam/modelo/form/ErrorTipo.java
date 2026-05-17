@@ -2,36 +2,55 @@ package org.miriam.modelo.form;
 
 public enum ErrorTipo {
 
-    REQUERIDO("El campo es obligatorio"),
-    FORMATO_INVALIDO("El formato es inválido"),
-    VALOR_DEMASIADO_ALTO("El valor es demasiado alto"),
-    VALOR_DEMASIADO_BAJO("El valor es demasiado bajo"),
-    NO_ENCONTRADO("No se encontró el elemento"),
-    LONGITUD_INVALIDA("el campo debe tener entre %d y &d caracteres"),
-    CONTRASENA_VALIDA("La contraseña debe ter al menos 8 caracteres"),
-    CAMPO_LARGO("El campo no puede superar los % caracteres"),
-    MAX_DECIMALES("Maximo % decimales permitidos"),
-    SALDO_INSUFICIENTE("el saldo es insuficiente"),
-    CAMPO_ENTRE("El campo debe estar entre %d y %d"),
-    PRECIO_DECIMALES("El precio base no puede tener más de 2 decimales"),
-    FECHA_FUTURA("futura no válida"),
-    FECHA_OBLIGATORIA("es obligatoria"),
-    FECHA_INVALIDA("es invalida"),
-    EXISTENTE("ya existe en el sistema"),
-    REGISTRADO("ya está registrado en el sistema"),
-    NO_ACTIVO("el elemento está activo"),
-    NO_PROPIETARIO("no tienes este juego"),
-    DUPLICADO("El elemento está duplicado"),
-    PROHIBIDO("el usuario no tiene acceso"),
-    ERROR_CREACION("error al crear"),
-    ESTADO_INVALIDO("el estado no es válido"),
-    NO_ACTUALIZADO("no se ha podido actualizar"),
-    VALOR_INVALIDO("El valor es inválido");
+    // --- ERRORES GENERALES DE VALIDACIÓN ---
+    REQUERIDO("El campo es obligatorio."),
+    FORMATO_INVALIDO("El formato es inválido."),
+    VALOR_INVALIDO("El valor proporcionado es inválido."),
+    VALOR_DEMASIADO_ALTO("El valor es demasiado alto."),
+    VALOR_DEMASIADO_BAJO("El valor es demasiado bajo."),
+    LONGITUD_INVALIDA("El campo debe tener entre %d y %d caracteres."),
+    CAMPO_LARGO("El campo no puede superar los %d caracteres."),
+    CAMPO_ENTRE("El campo debe estar entre %d y %d."),
+    MAX_DECIMALES("Máximo %d decimales permitidos."),
+
+    // --- ERRORES DE NEGOCIO / ENTIDADES ---
+    NO_ENCONTRADO("No se encontró el elemento solicitado."),
+    EXISTENTE("El elemento ya existe en el sistema."),
+    DUPLICADO("El elemento está duplicado."),
+    NO_ACTIVO("El elemento no está activo."),
+    ESTADO_INVALIDO("El estado no es válido."),
+    SALDO_INSUFICIENTE("El saldo es insuficiente."),
+    REGISTRADO("El usuario ya está registrado en el sistema."),
+
+    // --- ERRORES DE SEGURIDAD / ACCESO ---
+    PROHIBIDO("El usuario no tiene acceso a este recurso."),
+    NO_PROPIETARIO("No eres el propietario de este juego."),
+    CONTRASENA_DEBIL("La contraseña debe tener al menos 8 caracteres."),
+    CONTRASENA_CORTA("La contraseña debe tener al menos %d caracteres."),
+
+    // --- ERRORES DE FECHAS ---
+    FECHA_OBLIGATORIA("La fecha es obligatoria."),
+    FECHA_INVALIDA("La fecha introducida es inválida."),
+    FECHA_FUTURA("La fecha no puede ser futura."),
+
+    // --- ERRORES DE OPERACIONES / BD ---
+    ERROR_CREACION("Error al crear el elemento."),
+    NO_ACTUALIZADO("No se ha podido actualizar el elemento."), ;
 
 
     private final String mensaje;
 
     private ErrorTipo(String mensaje) {
         this.mensaje = mensaje;
+    }
+    /**
+     * Permite obtener el mensaje formateado dinámicamente si contiene %d o %s.
+     * Ejemplo: ErrorTipo.LONGITUD_INVALIDA.getMensajeFormateado(3, 10);
+     */
+    public String getMensajeFormateado(Object... args) {
+        if (args == null || args.length == 0) {
+            return this.mensaje;
+        }
+        return String.format(this.mensaje, args);
     }
 }

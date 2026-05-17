@@ -4,39 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85d978e0-a73f-4471-a0d8-ec234d696ae2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/BibliotecaControlador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/CompraControlador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/JuegoControlador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/ResenaControlador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/controlador/UsuarioControlador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/excepciones/FormularioInvalidoException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/excepciones/FormularioInvalidoException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/mapper/UsuarioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/mapper/UsuarioMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/JuegoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/JuegoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/UsuarioDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/dto/UsuarioDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/BibliotecaEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/BibliotecaEntidad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/CompraEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/CompraEntidad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/JuegoEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/JuegoEntidad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/ResenaEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/ResenaEntidad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/UsuarioEntidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/entidad/UsuarioEntidad.java" afterDir="false" />
+    <list default="true" id="85d978e0-a73f-4471-a0d8-ec234d696ae2" name="Changes" comment="ultimos cambios, pasan los 130 test">
       <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorTipo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/ErrorTipo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/JuegoForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/JuegoForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/UsuarioForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/modelo/form/UsuarioForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/ResenaRepoInMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/ResenaRepoInMemory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/UsuarioRepoInMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacion/UsuarioRepoInMemory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/BibliotecaRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/BibliotecaRepoHibernate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/CompraRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/CompraRepoHibernate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/JuegoRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/JuegoRepoHibernate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/ResenaRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/ResenaRepoHibernate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/UsuarioRepoHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/implementacionHibernate/UsuarioRepoHibernate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/interfaces/IUsuarioRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/repositorio/interfaces/IUsuarioRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/HibernateTransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/HibernateTransactionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/ITransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/ITransactionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/NoOpTransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/miriam/transaction/NoOpTransactionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ITransactionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/transaction/ITransactionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ExceptionSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/HibernateTransactionManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ISesionManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/ITransactionManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transaction/NoOpTransactionManager.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,6 +93,19 @@
       <option name="presentableId" value="Default" />
       <updated>1779000843283</updated>
     </task>
+    <task id="LOCAL-00001" summary="ultimos cambios, pasan los 130 test">
+      <option name="closed" value="true" />
+      <created>1779023453829</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779023453829</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="ultimos cambios, pasan los 130 test" />
+    <option name="LAST_COMMIT_MESSAGE" value="ultimos cambios, pasan los 130 test" />
   </component>
 </project>
